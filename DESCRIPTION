@@ -3,10 +3,7 @@ Title: Heteroskedastic linear regression
 Version: 0.0.0.9000
 Authors@R: 
     person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre"))
-Description: This package allows to estimate heteroskedastic linear model
-    with variance component estimated as a function of a linear predictor.
-    It uses a log-link to estimate parameters of both mean and variance component via 
-    Maximum-Likelihood estimation.
+Description: Heteroskedastic linear regression model with variance component estimated via logarithmic link.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
