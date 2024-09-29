@@ -15,7 +15,7 @@
 #'
 #' @importFrom stats Gamma glm.fit
 #' @examples
-mvreg.start <- function(y, x, z, start.s2 = c("residuals", "gamma", "zero")){
+mvreg_start <- function(y, x, z, start.s2 = c("residuals", "gamma", "zero")){
   start.s2 <- match.arg(start.s2)
   p <- ncol(z)
   k <- ncol(x)

@@ -68,7 +68,7 @@ mvreg <- function(formula.mu,
   p <- ncol(z)
 
 
-  start.list <- mvreg.start(y, x, z, start.s2 = start.s2)
+  start.list <- mvreg_start(y, x, z, start.s2 = start.s2)
 
   start <- start.list$start
   names(start) <- c(colnames(x), colnames(z))
@@ -76,7 +76,7 @@ mvreg <- function(formula.mu,
   b0 <- start[1:k]
   t0 <- start[(k+1):length(start)]
 
-  fit.list <- mvreg.fit(y, x, z, b0, t0, tol = tol, maxit = maxit)
+  fit.list <- mvreg_fit(y, x, z, b0, t0, tol = tol, maxit = maxit)
 
   it <- fit.list$it
 

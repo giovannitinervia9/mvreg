@@ -17,7 +17,7 @@
 #' @export
 #'
 #' @examples
-mvreg.fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100){
+mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100){
 
   p <- ncol(z)
   k <- ncol(x)
