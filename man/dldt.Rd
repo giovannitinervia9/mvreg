@@ -23,3 +23,16 @@ Gradient with respect to tau.
 \description{
 Gradient of model loglikelihood with respect to tau
 }
+\examples{
+mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+y <- mvreg_mod$y # response variable
+x <- mvreg_mod$x # model.matrix for mean component
+z <- mvreg_mod$z # model.matrix for variance component
+b <- coef(mvreg_mod, "mu") # coefficients of mean component
+t <- coef(mvreg_mod, "s2") # coefficients of variance component
+
+# first derivatives
+dldb(y, x, z, b, t) # w.r.t. mean coefficients
+dldt(y, x, z, b, t) # w.r.t. variance coefficients
+
+}

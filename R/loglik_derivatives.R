@@ -13,6 +13,16 @@
 #' @export
 #'
 #' @examples
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+#' y <- mvreg_mod$y # response variable
+#' x <- mvreg_mod$x # model.matrix for mean component
+#' z <- mvreg_mod$z # model.matrix for variance component
+#' b <- coef(mvreg_mod, "mu") # coefficients of mean component
+#' t <- coef(mvreg_mod, "s2") # coefficients of variance component
+#'
+#' # loglikelihood
+#' ll(y, x, z, b, t)
+#'
 ll <- function(y, x, z, b, t) {
   eta.mu <- x %*% b
   eta.s2 <- z %*% t
@@ -37,6 +47,17 @@ ll <- function(y, x, z, b, t) {
 #' @export
 #'
 #' @examples
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+#' y <- mvreg_mod$y # response variable
+#' x <- mvreg_mod$x # model.matrix for mean component
+#' z <- mvreg_mod$z # model.matrix for variance component
+#' b <- coef(mvreg_mod, "mu") # coefficients of mean component
+#' t <- coef(mvreg_mod, "s2") # coefficients of variance component
+#'
+#' # first derivatives
+#' dldb(y, x, z, b, t) # w.r.t. mean coefficients
+#' dldt(y, x, z, b, t) # w.r.t. variance coefficients
+#'
 dldb <- function(y, x, z, b, t) {
   eta.mu <- x %*% b
   eta.s2 <- z %*% t
@@ -62,6 +83,19 @@ dldb <- function(y, x, z, b, t) {
 #' @export
 #'
 #' @examples
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+#' y <- mvreg_mod$y # response variable
+#' x <- mvreg_mod$x # model.matrix for mean component
+#' z <- mvreg_mod$z # model.matrix for variance component
+#' b <- coef(mvreg_mod, "mu") # coefficients of mean component
+#' t <- coef(mvreg_mod, "s2") # coefficients of variance component
+#'
+#' # second derivatives
+#' d2ldb(y, x, z, b, t) # w.r.t. mean coefficients
+#' d2ldt(y, x, z, b, t) # w.r.t. variance coefficients
+#' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
+#' d2l(y, x, z, b, t) # full hessian
+#'
 d2ldb <- function(y, x, z, b, t) {
   h <- matrix(NA, ncol(x), ncol(x))
   eta.s2 <- z %*% t
@@ -93,6 +127,17 @@ d2ldb <- function(y, x, z, b, t) {
 #' @export
 #'
 #' @examples
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+#' y <- mvreg_mod$y # response variable
+#' x <- mvreg_mod$x # model.matrix for mean component
+#' z <- mvreg_mod$z # model.matrix for variance component
+#' b <- coef(mvreg_mod, "mu") # coefficients of mean component
+#' t <- coef(mvreg_mod, "s2") # coefficients of variance component
+#'
+#' # first derivatives
+#' dldb(y, x, z, b, t) # w.r.t. mean coefficients
+#' dldt(y, x, z, b, t) # w.r.t. variance coefficients
+#'
 dldt <- function(y, x, z, b, t) {
   eta.mu <- x %*% b
   eta.s2 <- z %*% t
@@ -122,6 +167,19 @@ dldt <- function(y, x, z, b, t) {
 #' @export
 #'
 #' @examples
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+#' y <- mvreg_mod$y # response variable
+#' x <- mvreg_mod$x # model.matrix for mean component
+#' z <- mvreg_mod$z # model.matrix for variance component
+#' b <- coef(mvreg_mod, "mu") # coefficients of mean component
+#' t <- coef(mvreg_mod, "s2") # coefficients of variance component
+#'
+#' # second derivatives
+#' d2ldb(y, x, z, b, t) # w.r.t. mean coefficients
+#' d2ldt(y, x, z, b, t) # w.r.t. variance coefficients
+#' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
+#' d2l(y, x, z, b, t) # full hessian
+#'
 d2ldt <- function(y, x, z, b, t) {
   h <- matrix(NA, ncol(z), ncol(z))
   eta.mu <- x %*% b
@@ -154,6 +212,19 @@ d2ldt <- function(y, x, z, b, t) {
 #' @export
 #'
 #' @examples
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+#' y <- mvreg_mod$y # response variable
+#' x <- mvreg_mod$x # model.matrix for mean component
+#' z <- mvreg_mod$z # model.matrix for variance component
+#' b <- coef(mvreg_mod, "mu") # coefficients of mean component
+#' t <- coef(mvreg_mod, "s2") # coefficients of variance component
+#'
+#' # second derivatives
+#' d2ldb(y, x, z, b, t) # w.r.t. mean coefficients
+#' d2ldt(y, x, z, b, t) # w.r.t. variance coefficients
+#' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
+#' d2l(y, x, z, b, t) # full hessian
+#'
 d2ldbdt <- function(y, x, z, b, t) {
   h <- matrix(NA, ncol(x), ncol(z))
 
@@ -188,6 +259,19 @@ d2ldbdt <- function(y, x, z, b, t) {
 #' @export
 #'
 #' @examples
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+#' y <- mvreg_mod$y # response variable
+#' x <- mvreg_mod$x # model.matrix for mean component
+#' z <- mvreg_mod$z # model.matrix for variance component
+#' b <- coef(mvreg_mod, "mu") # coefficients of mean component
+#' t <- coef(mvreg_mod, "s2") # coefficients of variance component
+#'
+#' # second derivatives
+#' d2ldb(y, x, z, b, t) # w.r.t. mean coefficients
+#' d2ldt(y, x, z, b, t) # w.r.t. variance coefficients
+#' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
+#' d2l(y, x, z, b, t) # full hessian
+#'
 d2l <- function(y, x, z, b, t) {
   hbb <- d2ldb(y, x, z, b, t)
   htt <- d2ldt(y, x, z, b, t)

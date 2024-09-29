@@ -23,3 +23,18 @@ Hessian of loglikelihood with respect to tau.
 \description{
 Hessian of model loglikelihood with respect to tau
 }
+\examples{
+mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+y <- mvreg_mod$y # response variable
+x <- mvreg_mod$x # model.matrix for mean component
+z <- mvreg_mod$z # model.matrix for variance component
+b <- coef(mvreg_mod, "mu") # coefficients of mean component
+t <- coef(mvreg_mod, "s2") # coefficients of variance component
+
+# second derivatives
+d2ldb(y, x, z, b, t) # w.r.t. mean coefficients
+d2ldt(y, x, z, b, t) # w.r.t. variance coefficients
+d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
+d2l(y, x, z, b, t) # full hessian
+
+}
