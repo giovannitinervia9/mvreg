@@ -1,5 +1,3 @@
-
-
 #-------------------------------------------------------------------------------
 
 
@@ -17,12 +15,54 @@
 #'
 #' @importFrom stats terms model.frame model.response var as.formula
 #' @examples
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+#' mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris) # different formulas
+#' summary(mvreg_mod1)
+#' summary(mvreg_mod)
+#'
+#' # coef
+#' coef(mvreg_mod)
+#' coef(mvreg_mod, partition = "mu")
+#'
+#' # vcov
+#' vcov(mvreg_mod)
+#' vcov(mvreg_mod, partition = "s2")
+#'
+#' # fitted
+#' fitted(mvreg_mod)
+#' fitted(mvreg_mod, type = "mu")
+#' fitted(mvreg_mod, type = "log.s2")
+#' fitted(mvreg_mod, type = "s2")
+#'
+#' # logLik
+#' logLik(mvreg_mod)
+#' logLik(mvreg_mod1)
+#'
+#' # predict without newdata
+#' predict(mvreg_mod1)
+#' predict(mvreg_mod1, type = "mu")
+#' predict(mvreg_mod1, type = "log.s2", se.fit = TRUE)
+#' predict(mvreg_mod1, type = "s2", interval = TRUE)
+#' predict(mvreg_mod1, se.fit = TRUE, interval = TRUE, sig.level = 0.99)
+#'
+#' # predict with newdata
+#'
+#' unique(c(mvreg_mod1$colx, mvreg_mod1$colz)) # getting names of explanatory variables
+#'
+#' newdata <- data.frame(
+#'  Species = levels(iris$Species),
+#'  Sepal.Width = c(min(iris$Sepal.Width), mean(iris$Sepal.Width), max(iris$Sepal.Width))
+#'  )
+#'
+#' newdata <- expand.grid(newdata)
+#'
+#' predict(mvreg_mod1, newdata = newdata, se.fit = TRUE, interval = TRUE)
 mvreg <- function(formula.mu,
-                   formula.s2 = NULL,
-                   data = NULL,
-                   tol = 1e-10,
-                   maxit = 100L,
-                   start.s2 = c("residuals", "gamma", "zero")) {
+                  formula.s2 = NULL,
+                  data = NULL,
+                  tol = 1e-10,
+                  maxit = 100L,
+                  start.s2 = c("residuals", "gamma", "zero")) {
   cl <- match.call()
 
   if (is.null(data)) {
@@ -46,13 +86,12 @@ mvreg <- function(formula.mu,
   if (is.null(formula.s2)) {
     z <- x
     colz <- colx
-  } else{
+  } else {
     mf.s2 <- model.frame(formula.s2, data)
     z <- model.matrix(attr(mf.s2, "terms"), mf.s2)
     if (any(all.vars(formula.s2) == response)) {
       colz <- all.vars(formula.s2)[-which(all.vars(formula.s2) == response)]
-    }
-    else{
+    } else {
       colz <- all.vars(formula.s2)
     }
   }
@@ -74,7 +113,7 @@ mvreg <- function(formula.mu,
   names(start) <- c(colnames(x), colnames(z))
 
   b0 <- start[1:k]
-  t0 <- start[(k+1):length(start)]
+  t0 <- start[(k + 1):length(start)]
 
   fit.list <- mvreg_fit(y, x, z, b0, t0, tol = tol, maxit = maxit)
 
@@ -83,7 +122,7 @@ mvreg <- function(formula.mu,
   theta0 <- fit.list$theta
   names(theta0) <- c(colnames(x), colnames(z))
   b0 <- theta0[1L:k]
-  t0 <- theta0[(k+1L):length(theta0)]
+  t0 <- theta0[(k + 1L):length(theta0)]
   vtheta <- fit.list$vtheta
 
   colnames(vtheta) <- rownames(vtheta) <- names(theta0)

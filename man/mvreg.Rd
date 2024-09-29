@@ -32,3 +32,47 @@ An object of class mvreg
 \description{
 Heteroscedastic linear model with variance as a function of linear predictor.
 }
+\examples{
+mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris) # different formulas
+summary(mvreg_mod1)
+summary(mvreg_mod)
+
+# coef
+coef(mvreg_mod)
+coef(mvreg_mod, partition = "mu")
+
+# vcov
+vcov(mvreg_mod)
+vcov(mvreg_mod, partition = "s2")
+
+# fitted
+fitted(mvreg_mod)
+fitted(mvreg_mod, type = "mu")
+fitted(mvreg_mod, type = "log.s2")
+fitted(mvreg_mod, type = "s2")
+
+# logLik
+logLik(mvreg_mod)
+logLik(mvreg_mod1)
+
+# predict without newdata
+predict(mvreg_mod1)
+predict(mvreg_mod1, type = "mu")
+predict(mvreg_mod1, type = "log.s2", se.fit = TRUE)
+predict(mvreg_mod1, type = "s2", interval = TRUE)
+predict(mvreg_mod1, se.fit = TRUE, interval = TRUE, sig.level = 0.99)
+
+# predict with newdata
+
+unique(c(mvreg_mod1$colx, mvreg_mod1$colz)) # getting names of explanatory variables
+
+newdata <- data.frame(
+ Species = levels(iris$Species),
+ Sepal.Width = c(min(iris$Sepal.Width), mean(iris$Sepal.Width), max(iris$Sepal.Width))
+ )
+
+newdata <- expand.grid(newdata)
+
+predict(mvreg_mod1, newdata = newdata, se.fit = TRUE, interval = TRUE)
+}

@@ -1,5 +1,3 @@
-
-
 #-------------------------------------------------------------------------------
 
 
@@ -15,7 +13,7 @@
 #'
 #' @importFrom stats Gamma glm.fit
 #' @examples
-mvreg_start <- function(y, x, z, start.s2 = c("residuals", "gamma", "zero")){
+mvreg_start <- function(y, x, z, start.s2 = c("residuals", "gamma", "zero")) {
   start.s2 <- match.arg(start.s2)
   p <- ncol(z)
   k <- ncol(x)
@@ -23,14 +21,12 @@ mvreg_start <- function(y, x, z, start.s2 = c("residuals", "gamma", "zero")){
   b0 <- as.vector(solve(crossprod(x)) %*% crossprod(x, y))
 
   if (start.s2 == "residuals") {
-    r <- log((y - x %*% b0) ^ 2)
+    r <- log((y - x %*% b0)^2)
     t0 <- as.vector(solve(crossprod(z)) %*% crossprod(z, r))
-  }
-  else if (start.s2 == "gamma"){
+  } else if (start.s2 == "gamma") {
     r <- (y - x %*% b0)^2
     t0 <- glm.fit(z, r, family = Gamma(link = "log"))$coefficients
-  }
-  else if (start.s2 == "zero") {
+  } else if (start.s2 == "zero") {
     t0 <- rep(0, p)
     t0[1] <- log(var(y))
   }

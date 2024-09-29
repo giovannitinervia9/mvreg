@@ -19,3 +19,9 @@ Specified coefficients of mvreg model.
 \description{
 Extract mvreg coefficients
 }
+\examples{
+mvreg_mod <- mvreg(Sepal.Length ~ Species, ~ Species, data = iris)
+summary(mvreg_mod)
+coef(mvreg_mod)
+coef(mvreg_mod, partition = "s2")
+}

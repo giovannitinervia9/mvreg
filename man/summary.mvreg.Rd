@@ -17,3 +17,9 @@ A summary.mvreg object.
 \description{
 Summary method for mvreg
 }
+\examples{
+mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
+mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris) # different formulas
+summary(mvreg_mod1)
+summary(mvreg_mod)
+}

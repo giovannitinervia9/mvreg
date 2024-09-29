@@ -1,5 +1,3 @@
-
-
 #-------------------------------------------------------------------------------
 
 
@@ -17,20 +15,27 @@
 #' @export
 #'
 #' @examples
-mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100){
-
+mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100) {
   p <- ncol(z)
   k <- ncol(x)
 
-  gb <- function(b, t){dldb(y, x, z, b, t)}
+  gb <- function(b, t) {
+    dldb(y, x, z, b, t)
+  }
 
-  gt <- function(b, t){dldt(y, x, z, b, t)}
+  gt <- function(b, t) {
+    dldt(y, x, z, b, t)
+  }
 
 
-  hb <- function(b, t){d2ldb(y, x, z, b, t)}
+  hb <- function(b, t) {
+    d2ldb(y, x, z, b, t)
+  }
 
 
-  ht <- function(b, t){d2ldt(y, x, z, b, t)}
+  ht <- function(b, t) {
+    d2ldt(y, x, z, b, t)
+  }
 
 
   h <- function(theta) {
@@ -50,7 +55,6 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100){
     it <- it + 1L
     t0 <- t1
     b0 <- b1
-
   }
 
   theta0 <- c(b0, t0)
