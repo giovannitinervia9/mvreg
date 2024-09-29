@@ -43,7 +43,6 @@ predict(mvreg_mod1, type = "s2", interval = TRUE)
 predict(mvreg_mod1, se.fit = TRUE, interval = TRUE, sig.level = 0.99)
 
 # predict with newdata
-
 unique(c(mvreg_mod1$colx, mvreg_mod1$colz)) # getting names of explanatory variables
 
 newdata <- data.frame(
