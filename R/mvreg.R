@@ -104,6 +104,7 @@ mvreg <- function(formula.mu,
 
   k <- ncol(x)
   p <- ncol(z)
+  nobs <- nrow(x)
 
 
   start.list <- mvreg_start(y, x, z, start.s2 = start.s2)
@@ -148,6 +149,7 @@ mvreg <- function(formula.mu,
     y = y,
     x = x,
     z = z,
+    nobs = nobs,
     call = cl,
     df.residual = length(y) - (p + k),
     residuals = residuals,

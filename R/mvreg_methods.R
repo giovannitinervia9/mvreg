@@ -277,6 +277,7 @@ logLik.mvreg <- function(x) {
   val <- x$logLik
   df <- ncol(x$x) + ncol(x$z)
   attr(val, "df") <- df
+  attr(val, "nobs") <- x$nobs
   class(val) <- "logLik"
   val
 }
