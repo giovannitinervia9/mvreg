@@ -15,6 +15,23 @@
 #' @export
 #'
 #' @examples
+#' n <- 100
+#' x1 <- rnorm(n)
+#' x2 <- factor(sample(letters[1:3], n, TRUE))
+#' x <- model.matrix(~ x1 + x2)
+#' z1 <- factor(sample(letters[1:3], n, TRUE))
+#' z <- model.matrix(~z1)
+#'
+#' b <- rnorm(ncol(x))
+#' t <- rnorm(ncol(z))
+#'
+#' y <- rnorm(n, mean = x %*% b, sd = sqrt(exp(z %*% t)))
+#'
+#' start.list <- mvreg_start(y, x, z, start.s2 = "gamma")
+#' b0 <- start.list$b0
+#' t0 <- start.list$t0
+#'
+#' mvreg_fit(y, x, z, b0, t0)
 mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100) {
   p <- ncol(z)
   k <- ncol(x)

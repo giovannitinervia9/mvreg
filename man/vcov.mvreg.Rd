@@ -20,7 +20,7 @@ Specified partition of Variance-Covariance matrix of model's parameters.
 Variance-Covariance matrix for mvreg
 }
 \examples{
-mvreg_mod <- mvreg(Sepal.Length ~ Species, ~ Species, data = iris)
+mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
 summary(mvreg_mod)
 vcov(mvreg_mod)
 vcov(mvreg_mod, partition = "mu")

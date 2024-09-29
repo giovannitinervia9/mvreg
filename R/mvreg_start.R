@@ -13,10 +13,26 @@
 #'
 #' @importFrom stats Gamma glm.fit
 #' @examples
+#' n <- 100
+#' x1 <- rnorm(n)
+#' x2 <- factor(sample(letters[1:3], n, TRUE))
+#' x <- model.matrix(~ x1 + x2)
+#' z1 <- factor(sample(letters[1:3], n, TRUE))
+#' z <- model.matrix(~z1)
+#'
+#' b <- rnorm(ncol(x))
+#' t <- rnorm(ncol(z))
+#'
+#' y <- rnorm(n, mean = x %*% b, sd = sqrt(exp(z %*% t)))
+#'
+#' mvreg_start(y, x, z, start.s2 = "residuals")
+#' mvreg_start(y, x, z, start.s2 = "gamma")
+#' mvreg_start(y, x, z, start.s2 = "zero")
 mvreg_start <- function(y, x, z, start.s2 = c("residuals", "gamma", "zero")) {
   start.s2 <- match.arg(start.s2)
-  p <- ncol(z)
   k <- ncol(x)
+  p <- ncol(z)
+
 
   b0 <- as.vector(solve(crossprod(x)) %*% crossprod(x, y))
 
@@ -33,5 +49,7 @@ mvreg_start <- function(y, x, z, start.s2 = c("residuals", "gamma", "zero")) {
 
   start <- c(b0, t0)
   names(start) <- c(colnames(x), colnames(z))
+  b0 <- start[1:k]
+  t0 <- start[(k + 1):length(start)]
   list(start = start, b0 = b0, t0 = t0)
 }

@@ -26,3 +26,8 @@ Print summary for mvreg.
 \description{
 Print method for summary.mvreg
 }
+\examples{
+mod <- mvreg(Sepal.Length ~ Species, data = iris)
+s <- summary(mod)
+print(s)
+}

@@ -13,6 +13,8 @@
 #' @importFrom stats coef
 #'
 #' @examples
+#' mod <- mvreg(Sepal.Length ~ Species, data = iris)
+#' print(mod)
 print.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
   cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),
     "\n\n",
@@ -45,7 +47,7 @@ print.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
 #' @export
 #'
 #' @examples
-#' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~ Species, data = iris)
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
 #' summary(mvreg_mod)
 #' vcov(mvreg_mod)
 #' vcov(mvreg_mod, partition = "mu")
@@ -78,7 +80,7 @@ vcov.mvreg <- function(object, partition = c("all", "mu", "s2"), ...) {
 #' @export
 #'
 #' @examples
-#' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~ Species, data = iris)
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
 #' summary(mvreg_mod)
 #' coef(mvreg_mod)
 #' coef(mvreg_mod, partition = "s2")
@@ -110,7 +112,7 @@ coef.mvreg <- function(object, partition = c("all", "mu", "s2"), ...) {
 #'
 #' @examples
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
-#' mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris) # different formulas
+#' mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
 #' summary(mvreg_mod1)
 #' summary(mvreg_mod)
 summary.mvreg <- function(object, ...) {
@@ -172,6 +174,9 @@ summary.mvreg <- function(object, ...) {
 #'
 #' @importFrom stats printCoefmat
 #' @examples
+#' mod <- mvreg(Sepal.Length ~ Species, data = iris)
+#' s <- summary(mod)
+#' print(s)
 print.summary.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L),
                                 signif.stars = getOption("show.signif.stars"), ...) {
   residuals.summary <- summary(x$residuals)
@@ -230,6 +235,12 @@ print.summary.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L),
 #' @export
 #'
 #' @examples
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
+#' # fitted
+#' fitted(mvreg_mod)
+#' fitted(mvreg_mod, type = "mu")
+#' fitted(mvreg_mod, type = "log.s2")
+#' fitted(mvreg_mod, type = "s2")
 fitted.mvreg <- function(x, type = c("all", "mu", "log.s2", "s2")) {
   type <- match.arg(type)
   if (type == "all") {
@@ -260,6 +271,8 @@ fitted.mvreg <- function(x, type = c("all", "mu", "log.s2", "s2")) {
 #' @export
 #'
 #' @examples
+#' mod <- mvreg(Sepal.Length ~ Species, data = iris)
+#' logLik(mod)
 logLik.mvreg <- function(x) {
   val <- x$logLik
   df <- ncol(x$x) + ncol(x$z)
@@ -281,12 +294,33 @@ logLik.mvreg <- function(x) {
 #' @param interval A logical value indicating if confidence intervals are to be returned.
 #' @param sig.level Confidence level for confidence intervals.
 #'
-#' @return
+#' @return Predicted values for the different components of mvreg model. If specified, standard error estimates and confidence interval are returned.
 #' @export
 #'
 #' @importFrom stats model.matrix update qnorm
 #'
 #' @examples
+#' mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
+#'
+#' # predict without newdata
+#' predict(mvreg_mod1)
+#' predict(mvreg_mod1, type = "mu")
+#' predict(mvreg_mod1, type = "log.s2", se.fit = TRUE)
+#' predict(mvreg_mod1, type = "s2", interval = TRUE)
+#' predict(mvreg_mod1, se.fit = TRUE, interval = TRUE, sig.level = 0.99)
+#'
+#' # predict with newdata
+#'
+#' unique(c(mvreg_mod1$colx, mvreg_mod1$colz)) # getting names of explanatory variables
+#'
+#' newdata <- data.frame(
+#'   Species = levels(iris$Species),
+#'   Sepal.Width = c(min(iris$Sepal.Width), mean(iris$Sepal.Width), max(iris$Sepal.Width))
+#' )
+#'
+#' newdata <- expand.grid(newdata)
+#'
+#' predict(mvreg_mod1, newdata = newdata, se.fit = TRUE, interval = TRUE)
 predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata, se.fit = F, interval = F, sig.level = 0.95) {
   type <- match.arg(type)
   coln <- unique(c(object$colx, object$colz))

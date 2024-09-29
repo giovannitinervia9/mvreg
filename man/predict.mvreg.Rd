@@ -26,6 +26,32 @@
 
 \item{sig.level}{Confidence level for confidence intervals.}
 }
+\value{
+Predicted values for the different components of mvreg model. If specified, standard error estimates and confidence interval are returned.
+}
 \description{
 Predict method for mvreg
+}
+\examples{
+mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
+
+# predict without newdata
+predict(mvreg_mod1)
+predict(mvreg_mod1, type = "mu")
+predict(mvreg_mod1, type = "log.s2", se.fit = TRUE)
+predict(mvreg_mod1, type = "s2", interval = TRUE)
+predict(mvreg_mod1, se.fit = TRUE, interval = TRUE, sig.level = 0.99)
+
+# predict with newdata
+
+unique(c(mvreg_mod1$colx, mvreg_mod1$colz)) # getting names of explanatory variables
+
+newdata <- data.frame(
+  Species = levels(iris$Species),
+  Sepal.Width = c(min(iris$Sepal.Width), mean(iris$Sepal.Width), max(iris$Sepal.Width))
+)
+
+newdata <- expand.grid(newdata)
+
+predict(mvreg_mod1, newdata = newdata, se.fit = TRUE, interval = TRUE)
 }

@@ -17,3 +17,11 @@ Fitted values for a given component of a mvreg model.
 \description{
 Fitted values of mvreg model
 }
+\examples{
+mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
+# fitted
+fitted(mvreg_mod)
+fitted(mvreg_mod, type = "mu")
+fitted(mvreg_mod, type = "log.s2")
+fitted(mvreg_mod, type = "s2")
+}

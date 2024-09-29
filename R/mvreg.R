@@ -16,7 +16,7 @@
 #' @importFrom stats terms model.frame model.response var as.formula
 #' @examples
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
-#' mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris) # different formulas
+#' mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
 #' summary(mvreg_mod1)
 #' summary(mvreg_mod)
 #'
@@ -50,9 +50,9 @@
 #' unique(c(mvreg_mod1$colx, mvreg_mod1$colz)) # getting names of explanatory variables
 #'
 #' newdata <- data.frame(
-#'  Species = levels(iris$Species),
-#'  Sepal.Width = c(min(iris$Sepal.Width), mean(iris$Sepal.Width), max(iris$Sepal.Width))
-#'  )
+#'   Species = levels(iris$Species),
+#'   Sepal.Width = c(min(iris$Sepal.Width), mean(iris$Sepal.Width), max(iris$Sepal.Width))
+#' )
 #'
 #' newdata <- expand.grid(newdata)
 #'

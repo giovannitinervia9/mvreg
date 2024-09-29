@@ -15,3 +15,7 @@ Loglikelihood value of a fitted mvreg model.
 \description{
 logLik for mvreg
 }
+\examples{
+mod <- mvreg(Sepal.Length ~ Species, data = iris)
+logLik(mod)
+}

@@ -19,3 +19,7 @@ Print informations about the model.
 \description{
 Print method for mvreg
 }
+\examples{
+mod <- mvreg(Sepal.Length ~ Species, data = iris)
+print(mod)
+}
