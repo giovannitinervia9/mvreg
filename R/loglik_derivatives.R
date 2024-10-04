@@ -24,8 +24,8 @@
 #' ll(y, x, z, b, t)
 #'
 ll <- function(y, x, z, b, t) {
-  eta.mu <- x %*% b
-  eta.s2 <- z %*% t
+  eta.mu <- as.vector(x %*% b)
+  eta.s2 <- as.vector(z %*% t)
   r <- -0.5 * sum(log(2 * pi) + eta.s2 + (y - eta.mu)^2 / exp(eta.s2))
   names(r) <- NULL
   r
@@ -59,8 +59,8 @@ ll <- function(y, x, z, b, t) {
 #' dldt(y, x, z, b, t) # w.r.t. variance coefficients
 #'
 dldb <- function(y, x, z, b, t) {
-  eta.mu <- x %*% b
-  eta.s2 <- z %*% t
+  eta.mu <- as.vector(x %*% b)
+  eta.s2 <- as.vector(z %*% t)
   const <- (y - eta.mu) / exp(eta.s2)
   r <- apply(x, 2, function(x) sum(const * x))
   names(r) <- colnames(x)
@@ -98,7 +98,7 @@ dldb <- function(y, x, z, b, t) {
 #'
 d2ldb <- function(y, x, z, b, t) {
   h <- matrix(NA, ncol(x), ncol(x))
-  eta.s2 <- z %*% t
+  eta.s2 <- as.vector(z %*% t)
   const <- exp(eta.s2)
 
   for (j in 1:ncol(x)) {
@@ -139,8 +139,8 @@ d2ldb <- function(y, x, z, b, t) {
 #' dldt(y, x, z, b, t) # w.r.t. variance coefficients
 #'
 dldt <- function(y, x, z, b, t) {
-  eta.mu <- x %*% b
-  eta.s2 <- z %*% t
+  eta.mu <- as.vector(x %*% b)
+  eta.s2 <- as.vector(z %*% t)
   const <- 1 - (y - eta.mu)^2 * exp(-eta.s2)
 
   r <- apply(z, 2, function(z) {
@@ -182,8 +182,8 @@ dldt <- function(y, x, z, b, t) {
 #'
 d2ldt <- function(y, x, z, b, t) {
   h <- matrix(NA, ncol(z), ncol(z))
-  eta.mu <- x %*% b
-  eta.s2 <- z %*% t
+  eta.mu <- as.vector(x %*% b)
+  eta.s2 <- as.vector(z %*% t)
   const <- (y - eta.mu)^2 * exp(-eta.s2)
 
   for (j in 1:ncol(z)) {
@@ -228,8 +228,8 @@ d2ldt <- function(y, x, z, b, t) {
 d2ldbdt <- function(y, x, z, b, t) {
   h <- matrix(NA, ncol(x), ncol(z))
 
-  eta.mu <- x %*% b
-  eta.s2 <- z %*% t
+  eta.mu <- as.vector(x %*% b)
+  eta.s2 <- as.vector(z %*% t)
   const <- (y - eta.mu) * exp(-eta.s2)
 
   for (j in 1:ncol(x)) {
