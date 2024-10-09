@@ -1,6 +1,9 @@
 ---
 title: "mvreg"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
 vignette: >
   %\VignetteIndexEntry{mvreg}
   %\VignetteEngine{knitr::rmarkdown}
