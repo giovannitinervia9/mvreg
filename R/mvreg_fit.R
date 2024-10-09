@@ -10,7 +10,8 @@
 #' @param t0 Starting values for parameters of variance component.
 #' @param tol Positive value indicating what is the minimum difference between parameter estimates between two iterations to stop the algorithm.
 #' @param maxit Integer value indicating the maximum number of iteration.
-#'
+#' @param method Method chosen for estimation of parameters of mean component
+
 #' @return Estimate of coefficients and variance-covariance matrix
 #' @export
 #'
@@ -32,7 +33,8 @@
 #' t0 <- start.list$t0
 #'
 #' mvreg_fit(y, x, z, b0, t0)
-mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100) {
+mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls", "full_nr")) {
+  method <- match.arg(method)
   p <- ncol(z)
   k <- ncol(x)
 
@@ -65,13 +67,25 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100) {
   dev <- 2
   it <- 0L
 
-  while (any(abs(dev) > tol) && it < maxit) {
-    t1 <- as.vector(t0 - solve(ht(b0, t0)) %*% gt(b0, t0))
-    b1 <- as.vector(b0 - solve(hb(b0, t1)) %*% gb(b0, t1))
-    dev <- c(b1, t1) - c(b0, t0)
-    it <- it + 1L
-    t0 <- t1
-    b0 <- b1
+  if (method == "full_nr") {
+    while (any(abs(dev) > tol) && it < maxit) {
+      t1 <- as.vector(t0 - solve(ht(b0, t0)) %*% gt(b0, t0))
+      b1 <- as.vector(b0 - solve(hb(b0, t1)) %*% gb(b0, t1))
+      dev <- c(b1, t1) - c(b0, t0)
+      it <- it + 1L
+      t0 <- t1
+      b0 <- b1
+    }
+  } else {
+    while (any(abs(dev) > tol) && it < maxit) {
+      t1 <- as.vector(t0 - solve(ht(b0, t0)) %*% gt(b0, t0))
+      w <- as.vector(1/exp(z%*%t1))
+      b1 <- solve(crossprod(x*w, x), crossprod(x*w, y))
+      dev <- c(b1, t1) - c(b0, t0)
+      it <- it + 1L
+      t0 <- t1
+      b0 <- b1
+    }
   }
 
   theta0 <- c(b0, t0)
@@ -81,3 +95,4 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100) {
 
   list(theta = theta0, b = b0, t = t0, vtheta = vtheta, it = it)
 }
+

@@ -9,6 +9,7 @@
 #' @param tol Positive value indicating what is the minimum difference between parameter estimates between two iterations to stop the algorithm.
 #' @param maxit Integer value indicating the maximum number of iteration.
 #' @param start.s2 A character vector indicating how to select initial values for variance component parameters.
+#' @param method Method chosen for estimation of parameters of mean component
 #'
 #' @return An object of class mvreg
 #' @export
@@ -61,8 +62,10 @@ mvreg <- function(formula.mu,
                   data = NULL,
                   tol = 1e-10,
                   maxit = 100L,
-                  start.s2 = c("residuals", "gamma", "zero")) {
+                  start.s2 = c("residuals", "gamma", "zero"),
+                  method = c("wls", "full_nr")) {
   cl <- match.call()
+  method <- match.arg(method)
 
   if (is.null(data)) {
     data <- environment()
@@ -115,7 +118,7 @@ mvreg <- function(formula.mu,
   b0 <- start[1:k]
   t0 <- start[(k + 1):length(start)]
 
-  fit.list <- mvreg_fit(y, x, z, b0, t0, tol = tol, maxit = maxit)
+  fit.list <- mvreg_fit(y, x, z, b0, t0, tol = tol, maxit = maxit, method = method)
 
   it <- fit.list$it
 

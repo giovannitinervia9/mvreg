@@ -10,7 +10,8 @@ mvreg(
   data = NULL,
   tol = 1e-10,
   maxit = 100L,
-  start.s2 = c("residuals", "gamma", "zero")
+  start.s2 = c("residuals", "gamma", "zero"),
+  method = c("wls", "full_nr")
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ mvreg(
 \item{maxit}{Integer value indicating the maximum number of iteration.}
 
 \item{start.s2}{A character vector indicating how to select initial values for variance component parameters.}
+
+\item{method}{Method chosen for estimation of parameters of mean component}
 }
 \value{
 An object of class mvreg

@@ -4,7 +4,16 @@
 \alias{mvreg_fit}
 \title{Fitter function for mvreg}
 \usage{
-mvreg_fit(y, x, z, b0, t0, tol = 1e-10, maxit = 100)
+mvreg_fit(
+  y,
+  x,
+  z,
+  b0,
+  t0,
+  tol = 1e-10,
+  maxit = 100,
+  method = c("wls", "full_nr")
+)
 }
 \arguments{
 \item{y}{Response variable vector.}
@@ -20,6 +29,8 @@ mvreg_fit(y, x, z, b0, t0, tol = 1e-10, maxit = 100)
 \item{tol}{Positive value indicating what is the minimum difference between parameter estimates between two iterations to stop the algorithm.}
 
 \item{maxit}{Integer value indicating the maximum number of iteration.}
+
+\item{method}{Method chosen for estimation of parameters of mean component}
 }
 \value{
 Estimate of coefficients and variance-covariance matrix
