@@ -38,8 +38,8 @@ This problem can be handled in several ways, like sandwich variance estimation p
 # What does `mvreg` do?
 The approach that `mvreg` follows is to fit a model in which expected value and variance are jointly modelled as functions of linear predictors, which can have different structures for the two components. 
 
-Formally, the model is specified as $$Y_i \sim \mathcal{N}\left(\mu_i = \mathbf{x}_i'\boldsymbol{\beta}, \sigma^2_i = \exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}\right)$$
-where $\mathbf{x}_i$ is the $i$-th row vector of a design matrix $\mathbf{X}$ and $\boldsymbol{\beta}$ is the vector of parameters for the mean component, while $\mathbf{z}_i$ is the $i$-th row vector of a design matrix $\mathbf{Z}$ and $\boldsymbol{\tau}$ is the vector of parameters for the variance component.
+Formally, the model is specified as $$Y_i|\mathbf{x}_i, \mathbf{z}_i \sim \mathcal{N}\left(\mu_i = \mathbf{x}_i'\boldsymbol{\beta}, \sigma^2_i = \exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}\right)$$
+where $\mathbf{x}_i$ is the $i$-th row vector of a $n \times k$ design matrix $\mathbf{X}$ and $\boldsymbol{\beta}$ is the vector of parameters for the mean component, while $\mathbf{z}_i$ is the $i$-th row vector of a $n \times p$ design matrix $\mathbf{Z}$ and $\boldsymbol{\tau}$ is the vector of parameters for the variance component.
 
 In general, $\mathbf{X}$ and $\mathbf{Z}$ can share the same columns, can have totally different columns or the columns of $\mathbf{Z}$ can be a subset of the columns of $\mathbf{X}$ and viceversa.
 
@@ -124,6 +124,103 @@ mvreg(dist ~ speed + I(speed^2),
       ~speed, data = cars)
 ```
 `formula.s2` can be both a two-side formula or a only right-side formula. `mvreg()` essentially ignores the left side of `formula.s2`, as it is needed only to build the design matrix for variance component.
+
+
+# Methods and applications
+Let's look at the statistical methods behind `mvreg`.
+
+## Model specification, pdf and loglikelihood
+
+As before, the model is specified as
+
+$$Y_i|\mathbf{x}_i, \mathbf{z}_i \sim \mathcal{N}\left(\mu_i = \mathbf{x}_i'\boldsymbol{\beta}, \sigma^2_i = \exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}\right)$$
+with probability density function
+
+$$f(y_i|\mathbf{x}_i, \mathbf{z}_i) = \dfrac{1}{\sqrt{2\pi\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}}\exp\left\{ -\dfrac{1}{2}\dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}} \right\}$$
+
+and log-likelihood function
+
+
+$$ \ell(\boldsymbol{\beta},\boldsymbol{\tau}) = -\dfrac{1}{2}\sum_{i=1}^n \left\{\log(2\pi) + \mathbf{z}_i'\boldsymbol{\tau} + \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}} \right\} $$
+
+The expressions for the first and second derivatives of the log-likelihood are provided as follows:
+
+$$\dfrac{\partial \ell}{\partial \beta_j} = \sum_{i=1}^n \dfrac{y_i - \mathbf{x}_i'\boldsymbol{\beta}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}x_{ij}$$
+$$\dfrac{\partial^2 \ell}{\partial \beta_j \partial \beta_l} = -\sum_{i=1}^n \dfrac{x_{ij}x_{il}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}$$
+
+$$\dfrac{\partial \ell}{\partial \tau_j} = -\dfrac{1}{2}\sum_{i=1}^n\left\{ 1 - \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}z_{ij}\right\} $$
+
+$$\dfrac{\partial^2 \ell}{\partial \tau_j \partial \tau_l} = -\dfrac{1}{2}\sum_{i=1}^n \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}z_{ij}z_{il} $$
+
+$$\dfrac{\partial^2 \ell}{\partial \beta_j \partial \tau_j} = -\sum_{i=1}^n \dfrac{y_i - \mathbf{x}_i'\boldsymbol{\beta}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}x_{ij}z_{il}$$
+
+With $\mathcal{U}_\boldsymbol{\beta}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \left\{\dfrac{\partial \ell}{\partial \beta_j} \right\}_j$ and $\mathcal{U}_\boldsymbol{\tau}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \left\{\dfrac{\partial \ell}{\partial \tau_j} \right\}_j$ we indicate the gradient column vectors with respect to $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ respectively.
+
+With $\mathcal{J}_\boldsymbol{\beta}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \left\{-\dfrac{\partial^2 \ell}{\partial \beta_j \partial \beta_l} \right\}_{jl}$ and $\mathcal{J}_\boldsymbol{\tau}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \left\{-\dfrac{\partial^2 \ell}{\partial \tau_j \partial \tau_l} \right\}_{jl}$ we indicate the blocks of the observed Fisher information matrix with respect to $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ respectively.
+
+Similarly, $\mathcal{J}_{\boldsymbol{\beta} \boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \left\{-\dfrac{\partial^2 \ell}{\partial \beta_j \partial \tau_l} \right\}_{jl}$ is the block of cross derivatives with respect to $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$.
+
+The full hessian is 
+
+$$\mathcal{J}(\boldsymbol{\beta}, \boldsymbol{\tau}) = 
+\begin{bmatrix}
+    \mathcal{J}_{\boldsymbol{\beta}}(\boldsymbol{\beta}, \boldsymbol{\tau}) & \mathcal{J}_{\boldsymbol{\beta} \boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau}) \\
+    \mathcal{J}_{\boldsymbol{\beta} \boldsymbol{\tau}}'(\boldsymbol{\beta}, \boldsymbol{\tau}) & \mathcal{J}_{\boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau})
+\end{bmatrix}$$
+
+
+## Parameters estimation
+The vectors of parameters $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ are estimated via maximum likelihood.
+
+A closed form expression for $\hat{\boldsymbol{\beta}}$ is the WLS estimator $\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$, in which $\mathbf{W}$ is a diagonal matrix with $w_i = \dfrac{1}{\exp\left\{\mathbf{z}_i'\hat{\boldsymbol{\tau}}\right\}}$.
+
+There is not a closed form expression for $\hat{\boldsymbol{\tau}}$, so Newton-Raphson method is required to estimate it.
+
+### Starting values
+Starting values are provided by function `mvreg_start()`, which takes in input the vector of response variable `y`, the design matrices `x` and `z` and the specification of the method to get the first guess of $\hat{\boldsymbol{\tau}}_0$ via the argument `start.s2`.
+A starting value of $\hat{\boldsymbol{\beta}}_0$ is computed via classic OLS estimation.
+There are three different ways to get a initial guess of $\hat{\boldsymbol{\tau}}_0$.
+
+The default method is provided by `start.s2 = "residuals"`, in which $\hat{\boldsymbol{\beta}}_0$ is used to estimate empirical residuals $\hat{\varepsilon}_i = y_i - \mathbf{x}_i'\hat{\boldsymbol{\beta}}_0$. Then the log of the squares of these residuals are regressed on $\mathbf{Z}$ to find a first guess of $\hat{\boldsymbol{\tau}}_0$. 
+
+A second option is `start.s2 = "gamma"`, in which the squares of the empirical residuals are regressed on $\mathbf{Z}$ via a Gamma glm regression.
+
+The last option is `start.s2 = "zero"`, in which a first guess is simply given by  $\hat{\boldsymbol{\tau}}_0 = (\log\hat{S}^2, 0, 0, \ldots, 0)_p'$.
+
+### Estimation algorithm
+The algorithm for fitting the parameters via maximum likelihood is contained in the `mvreg_fit()` function, which takes in input the vector of response variable `y`, the design matrices `x` and `z` and starting values `b0` and `t0` provided by `mvreg_start()`.
+
+At the $k$-th iteration, the algorithm takes values of $\hat{\boldsymbol{\beta}}_{k-1}$ and $\hat{\boldsymbol{\tau}}_{k-1}$ and uses them to compute 
+
+$$\hat{\boldsymbol{\tau}}_k = \hat{\boldsymbol{\tau}}_{k-1} + \mathcal{J}^{-1}_\boldsymbol{\tau}(\hat{\boldsymbol{\beta}}_{k-1}, \hat{\boldsymbol{\tau}}_{k-1}) \mathcal{U}_\boldsymbol{\tau}(\hat{\boldsymbol{\beta}}_{k-1}, \hat{\boldsymbol{\tau}}_{k-1})$$
+
+Then weights $w_i$ are estimated via $w_i = \dfrac{1}{\exp\left\{\mathbf{z}_i'\hat{\boldsymbol{\tau}_{k}}\right\}}$ and used to to compute $$\hat{\boldsymbol{\beta}}_k = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$$
+
+The algorithm continues until $|(\hat{\boldsymbol{\beta}},\hat{\boldsymbol{\tau}})_k - (\hat{\boldsymbol{\beta}},\hat{\boldsymbol{\tau}})_{k-1}| < \boldsymbol{\varepsilon}$
+
+This algorithm is the default choice for `mvreg_fit()`, but an argument `method` is available. If `method = "wls"` the algorithm just described is used, else if `method = "full_nr"` the closed form expression for $\hat{\boldsymbol{\beta}}$ is not used and Newton method is used for parameters of both mean and variance components.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
