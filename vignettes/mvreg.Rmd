@@ -130,34 +130,3 @@ mvreg(dist ~ speed + I(speed^2),
 
 
 
-
-
-
-
-
-
-
-$$n = 85$$
-
-$$\sum_{i=1}^n x_i = 67$$
-$$\sum_{i=1}^n x_i^2 = 169$$
-
-a 
-
-$$\bar{x} = \dfrac{\sum_{i=1}^n x_i}{n} = \dfrac{67}{85} = 0.79$$
-b
-
-$$S^2 = \dfrac{1}{n-1}\left( \dfrac{\sum_{i=1}^n x_i^2}{n} - \bar{x}^2  \right) = \dfrac{1}{84} \left( \dfrac{169}{85} - 0.79^2 \right) = 0.02$$
-
-c
-
-$$n = 85$$
-
-
-
-
-
-
-
-
-
