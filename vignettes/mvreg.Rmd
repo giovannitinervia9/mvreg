@@ -20,9 +20,9 @@ knitr::opts_chunk$set(fig.width=12/2.5, fig.height=8/2.5)
 
 ```{r setup, include = F}
 library(mvreg)
-suppressMessages(library(tidyverse))
-library(ggthemes)
-options(ggplot2.messages = FALSE)
+suppressMessages(require(dplyr))
+suppressMessages(require(ggplot2))
+suppressMessages(require(ggthemes))
 ```
 
 # Why `mvreg`? The heteroscedasticity problem
@@ -49,7 +49,7 @@ $$\log{(\sigma^2_i)} = \mathbf{z}_i'\boldsymbol{\tau}$$
 
 Model parameters are estimated using the maximum likelihood method, but before delving into technical details let's see how `mvreg` works.
 
-# `mvreg()` function, a `lm`-like function for heteroscedastic regression.
+## `mvreg()` function, a `lm`-like function for heteroscedastic regression.
 
 The main function that a generic user of `mvreg` should use is the `mvreg()` function. 
 This function allows to fit a heroscedastic linear model in which two different formulas can be specified, one for mean component and the other one for variance component.
@@ -61,11 +61,11 @@ For the first example we'll use the `cars`. This dataset contains only two varia
 ```{r, echo = F, warning = F, message = F}
 ggplot(cars, aes(x = speed, y = dist)) + 
   geom_point(shape = 1) + 
-  geom_smooth(linewidth = 0.5) +
+  geom_smooth(linewidth = 0.5, method = "lm") +
   theme_few()
 ```
 
-It is clearly evident that stopping distance increases as speed increases, and a keen eye might notice that for low values of speed the stopping distance tends to assume values closer to the curve estimated with `geom_smooth`, while, as speed increases, the points tend to be more dispersed.
+It is clearly evident that stopping distance increases as speed increases, and a keen eye might notice that for low values of speed the stopping distance tends to assume values closer to the regression line, while, as speed increases, the points tend to be more dispersed.
 
 Let's fit a classic linear model and check the relationship between the square root of the absolute value of residuals and the fitted values.
 
@@ -137,6 +137,21 @@ mvreg(dist ~ speed + I(speed^2),
 
 
 
+$$n = 85$$
+
+$$\sum_{i=1}^n x_i = 67$$
+$$\sum_{i=1}^n x_i^2 = 169$$
+
+a 
+
+$$\bar{x} = \dfrac{\sum_{i=1}^n x_i}{n} = \dfrac{67}{85} = 0.79$$
+b
+
+$$S^2 = \dfrac{1}{n-1}\left( \dfrac{\sum_{i=1}^n x_i^2}{n} - \bar{x}^2  \right) = \dfrac{1}{84} \left( \dfrac{169}{85} - 0.79^2 \right) = 0.02$$
+
+c
+
+$$n = 85$$
 
 
 

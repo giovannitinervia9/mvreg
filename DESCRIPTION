@@ -11,6 +11,9 @@ RoxygenNote: 7.3.2
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    dplyr,
+    ggplot2,
+    ggthemes
 Config/testthat/edition: 3
 VignetteBuilder: knitr

@@ -67,10 +67,11 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
   dev <- 2
   it <- 0L
 
-  if (method == "full_nr") {
+  if (method == "wls") {
     while (any(abs(dev) > tol) && it < maxit) {
       t1 <- as.vector(t0 - solve(ht(b0, t0)) %*% gt(b0, t0))
-      b1 <- as.vector(b0 - solve(hb(b0, t1)) %*% gb(b0, t1))
+      w <- as.vector(1/exp(z%*%t1))
+      b1 <- solve(crossprod(x*w, x), crossprod(x*w, y))
       dev <- c(b1, t1) - c(b0, t0)
       it <- it + 1L
       t0 <- t1
@@ -79,8 +80,7 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
   } else {
     while (any(abs(dev) > tol) && it < maxit) {
       t1 <- as.vector(t0 - solve(ht(b0, t0)) %*% gt(b0, t0))
-      w <- as.vector(1/exp(z%*%t1))
-      b1 <- solve(crossprod(x*w, x), crossprod(x*w, y))
+      b1 <- as.vector(b0 - solve(hb(b0, t1)) %*% gb(b0, t1))
       dev <- c(b1, t1) - c(b0, t0)
       it <- it + 1L
       t0 <- t1
