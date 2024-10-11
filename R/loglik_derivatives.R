@@ -78,6 +78,7 @@ dldb <- function(y, x, z, b, t) {
 #' @param z Matrix of explanatory variables for variance component.
 #' @param b Vector of parameters for mean component.
 #' @param t Vector of parameters for variance component.
+#' @param type A string to specify whether to output the observed or expected matrix
 #'
 #' @return Hessian of loglikelihood with respect to beta.
 #' @export
@@ -96,7 +97,8 @@ dldb <- function(y, x, z, b, t) {
 #' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
 #' d2l(y, x, z, b, t) # full hessian
 #'
-d2ldb <- function(y, x, z, b, t) {
+d2ldb <- function(y, x, z, b, t, type = c("observed", "expected")) {
+  type <- match.arg(type)
   h <- matrix(NA, ncol(x), ncol(x))
   eta.s2 <- as.vector(z %*% t)
   const <- exp(eta.s2)
@@ -162,6 +164,7 @@ dldt <- function(y, x, z, b, t) {
 #' @param z Matrix of explanatory variables for variance component.
 #' @param b Vector of parameters for mean component.
 #' @param t Vector of parameters for variance component.
+#' @param type A string to specify whether to output the observed or expected matrix
 #'
 #' @return Hessian of loglikelihood with respect to tau.
 #' @export
@@ -180,11 +183,18 @@ dldt <- function(y, x, z, b, t) {
 #' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
 #' d2l(y, x, z, b, t) # full hessian
 #'
-d2ldt <- function(y, x, z, b, t) {
+d2ldt <- function(y, x, z, b, t, type = c("observed", "expected")) {
+  type <- match.arg(type)
   h <- matrix(NA, ncol(z), ncol(z))
-  eta.mu <- as.vector(x %*% b)
-  eta.s2 <- as.vector(z %*% t)
-  const <- (y - eta.mu)^2 * exp(-eta.s2)
+
+  if (type == "observed") {
+    eta.mu <- as.vector(x %*% b)
+    eta.s2 <- as.vector(z %*% t)
+    const <- (y - eta.mu)^2 * exp(-eta.s2)
+  } else if (type == "expected") {
+      const <- 1
+    }
+
 
   for (j in 1:ncol(z)) {
     for (l in 1:ncol(z)) {
@@ -207,6 +217,7 @@ d2ldt <- function(y, x, z, b, t) {
 #' @param z Matrix of explanatory variables for variance component.
 #' @param b Vector of parameters for mean component.
 #' @param t Vector of parameters for variance component.
+#' @param type A string to specify whether to output the observed or expected matrix
 #'
 #' @return Hessian of loglikelihood with respect to beta and tau.
 #' @export
@@ -225,17 +236,24 @@ d2ldt <- function(y, x, z, b, t) {
 #' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
 #' d2l(y, x, z, b, t) # full hessian
 #'
-d2ldbdt <- function(y, x, z, b, t) {
-  h <- matrix(NA, ncol(x), ncol(z))
+d2ldbdt <- function(y, x, z, b, t, type = c("observed", "expected")) {
+  type <- match.arg(type)
 
-  eta.mu <- as.vector(x %*% b)
-  eta.s2 <- as.vector(z %*% t)
-  const <- (y - eta.mu) * exp(-eta.s2)
 
-  for (j in 1:ncol(x)) {
-    for (l in 1:ncol(z)) {
-      h[j, l] <- -sum(const * x[, j] * z[, l])
+  if (type == "observed") {
+    h <- matrix(NA, ncol(x), ncol(z))
+    eta.mu <- as.vector(x %*% b)
+    eta.s2 <- as.vector(z %*% t)
+    const <- (y - eta.mu) * exp(-eta.s2)
+
+    for (j in 1:ncol(x)) {
+      for (l in 1:ncol(z)) {
+        h[j, l] <- -sum(const * x[, j] * z[, l])
+      }
     }
+  }
+  else if (type == "expected") {
+    h <- matrix(0, ncol(x), ncol(z))
   }
 
   rownames(h) <- colnames(x)
@@ -254,6 +272,7 @@ d2ldbdt <- function(y, x, z, b, t) {
 #' @param z Matrix of explanatory variables for variance component.
 #' @param b Vector of parameters for mean component.
 #' @param t Vector of parameters for variance component.
+#' @param type A string to specify whether to output the observed or expected matrix
 #'
 #' @return Full hessian of model loglikelihood.
 #' @export
@@ -272,9 +291,10 @@ d2ldbdt <- function(y, x, z, b, t) {
 #' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
 #' d2l(y, x, z, b, t) # full hessian
 #'
-d2l <- function(y, x, z, b, t) {
-  hbb <- d2ldb(y, x, z, b, t)
-  htt <- d2ldt(y, x, z, b, t)
-  hbt <- d2ldbdt(y, x, z, b, t)
+d2l <- function(y, x, z, b, t, type = c("observed", "expected")) {
+  type <- match.arg(type)
+  hbb <- d2ldb(y, x, z, b, t, type)
+  htt <- d2ldt(y, x, z, b, t, type)
+  hbt <- d2ldbdt(y, x, z, b, t, type)
   rbind(cbind(hbb, hbt), cbind(t(hbt), htt))
 }
