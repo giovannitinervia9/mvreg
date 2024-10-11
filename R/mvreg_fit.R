@@ -11,6 +11,7 @@
 #' @param tol Positive value indicating what is the minimum difference between parameter estimates between two iterations to stop the algorithm.
 #' @param maxit Integer value indicating the maximum number of iteration.
 #' @param method Method chosen for estimation of parameters of mean component
+#' @param vcov.type A string to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates
 
 #' @return Estimate of coefficients and variance-covariance matrix
 #' @export
@@ -33,45 +34,22 @@
 #' t0 <- start.list$t0
 #'
 #' mvreg_fit(y, x, z, b0, t0)
-mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls", "full_nr")) {
+mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls", "full_nr"), vcov.type = c("expected", "observed")) {
+
   method <- match.arg(method)
+  vcov.type <- match.arg(vcov.type)
+
   p <- ncol(z)
   k <- ncol(x)
-
-  gb <- function(b, t) {
-    dldb(y, x, z, b, t)
-  }
-
-  gt <- function(b, t) {
-    dldt(y, x, z, b, t)
-  }
-
-
-  hb <- function(b, t) {
-    d2ldb(y, x, z, b, t)
-  }
-
-
-  ht <- function(b, t) {
-    d2ldt(y, x, z, b, t)
-  }
-
-
-  h <- function(theta) {
-    b <- theta[1:k]
-    t <- theta[(k + 1):length(theta)]
-    d2l(y, x, z, b, t)
-  }
-
 
   dev <- 2
   it <- 0L
 
   if (method == "wls") {
     while (any(abs(dev) > tol) && it < maxit) {
-      t1 <- as.vector(t0 - solve(ht(b0, t0)) %*% gt(b0, t0))
+      t1 <- as.vector(t0 - solve(d2ldt(y, x, z, b0, t0, type = "observed")) %*% dldt(y, x, z, b0, t0))
       w <- as.vector(1/exp(z%*%t1))
-      b1 <- solve(crossprod(x*w, x), crossprod(x*w, y))
+      b1 <- as.vector(solve(crossprod(x*w, x), crossprod(x*w, y)))
       dev <- c(b1, t1) - c(b0, t0)
       it <- it + 1L
       t0 <- t1
@@ -79,8 +57,8 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
     }
   } else {
     while (any(abs(dev) > tol) && it < maxit) {
-      t1 <- as.vector(t0 - solve(ht(b0, t0)) %*% gt(b0, t0))
-      b1 <- as.vector(b0 - solve(hb(b0, t1)) %*% gb(b0, t1))
+      t1 <- as.vector(t0 - solve(d2ldt(y, x, z, b0, t0, type = "observed")) %*% dldt(y, x, z, b0, t0))
+      b1 <- as.vector(b0 - solve(d2ldb(y, x, z, b0, t1, type = "observed")) %*% dldb(y, x, z, b0, t1))
       dev <- c(b1, t1) - c(b0, t0)
       it <- it + 1L
       t0 <- t1
@@ -90,7 +68,7 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
 
   theta0 <- c(b0, t0)
   names(theta0) <- c(colnames(x), colnames(z))
-  vtheta <- solve(-h(theta0))
+  vtheta <- solve(-d2l(y, x, z, b0, t0, type = vcov.type))
   colnames(vtheta) <- rownames(vtheta) <- names(theta0)
 
   list(theta = theta0, b = b0, t = t0, vtheta = vtheta, it = it)
