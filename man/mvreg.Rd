@@ -8,10 +8,11 @@ mvreg(
   formula.mu,
   formula.s2 = NULL,
   data = NULL,
-  tol = 1e-10,
+  tol = 0.0000000001,
   maxit = 100L,
   start.s2 = c("residuals", "gamma", "zero"),
-  method = c("wls", "full_nr")
+  method = c("wls", "full_nr"),
+  vcov.type = c("expected", "observed")
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ mvreg(
 \item{start.s2}{A character vector indicating how to select initial values for variance component parameters.}
 
 \item{method}{Method chosen for estimation of parameters of mean component}
+
+\item{vcov.type}{A string to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates}
 }
 \value{
 An object of class mvreg

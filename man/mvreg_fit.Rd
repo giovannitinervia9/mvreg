@@ -10,9 +10,10 @@ mvreg_fit(
   z,
   b0,
   t0,
-  tol = 1e-10,
+  tol = 0.0000000001,
   maxit = 100,
-  method = c("wls", "full_nr")
+  method = c("wls", "full_nr"),
+  vcov.type = c("expected", "observed")
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ mvreg_fit(
 \item{maxit}{Integer value indicating the maximum number of iteration.}
 
 \item{method}{Method chosen for estimation of parameters of mean component}
+
+\item{vcov.type}{A string to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates}
 }
 \value{
 Estimate of coefficients and variance-covariance matrix

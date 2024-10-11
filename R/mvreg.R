@@ -10,6 +10,7 @@
 #' @param maxit Integer value indicating the maximum number of iteration.
 #' @param start.s2 A character vector indicating how to select initial values for variance component parameters.
 #' @param method Method chosen for estimation of parameters of mean component
+#' @param vcov.type A string to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates
 #'
 #' @return An object of class mvreg
 #' @export
@@ -63,9 +64,11 @@ mvreg <- function(formula.mu,
                   tol = 1e-10,
                   maxit = 100L,
                   start.s2 = c("residuals", "gamma", "zero"),
-                  method = c("wls", "full_nr")) {
+                  method = c("wls", "full_nr"),
+                  vcov.type = c("expected", "observed")) {
   cl <- match.call()
   method <- match.arg(method)
+  vcov.type <- match.arg(vcov.type)
 
   if (is.null(data)) {
     data <- environment()
@@ -118,7 +121,7 @@ mvreg <- function(formula.mu,
   b0 <- start[1:k]
   t0 <- start[(k + 1):length(start)]
 
-  fit.list <- mvreg_fit(y, x, z, b0, t0, tol = tol, maxit = maxit, method = method)
+  fit.list <- mvreg_fit(y, x, z, b0, t0, tol = tol, maxit = maxit, method = method, vcov.type = vcov.type)
 
   it <- fit.list$it
 

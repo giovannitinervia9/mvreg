@@ -4,7 +4,7 @@
 \alias{d2ldbdt}
 \title{Hessian of model loglikelihood with respect to beta and tau}
 \usage{
-d2ldbdt(y, x, z, b, t)
+d2ldbdt(y, x, z, b, t, type = c("observed", "expected"))
 }
 \arguments{
 \item{y}{Vector of response variable.}
@@ -16,6 +16,8 @@ d2ldbdt(y, x, z, b, t)
 \item{b}{Vector of parameters for mean component.}
 
 \item{t}{Vector of parameters for variance component.}
+
+\item{type}{A string to specify whether to output the observed or expected matrix}
 }
 \value{
 Hessian of loglikelihood with respect to beta and tau.

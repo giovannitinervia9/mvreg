@@ -12,7 +12,7 @@
 #' @param maxit Integer value indicating the maximum number of iteration.
 #' @param method Method chosen for estimation of parameters of mean component
 #' @param vcov.type A string to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates
-
+#'
 #' @return Estimate of coefficients and variance-covariance matrix
 #' @export
 #'
