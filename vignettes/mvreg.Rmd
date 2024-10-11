@@ -129,7 +129,7 @@ mvreg(dist ~ speed + I(speed^2),
 # Methods and applications
 Let's look at the statistical methods behind `mvreg`.
 
-## Model specification, pdf and loglikelihood
+## Model specification and loglikelihood
 
 As before, the model is specified as
 
@@ -154,25 +154,38 @@ $$\dfrac{\partial^2 \ell}{\partial \tau_j \partial \tau_l} = -\dfrac{1}{2}\sum_{
 
 $$\dfrac{\partial^2 \ell}{\partial \beta_j \partial \tau_j} = -\sum_{i=1}^n \dfrac{y_i - \mathbf{x}_i'\boldsymbol{\beta}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}x_{ij}z_{il}$$
 
-With $\mathcal{U}_\boldsymbol{\beta}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \left\{\dfrac{\partial \ell}{\partial \beta_j} \right\}_j$ and $\mathcal{U}_\boldsymbol{\tau}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \left\{\dfrac{\partial \ell}{\partial \tau_j} \right\}_j$ we indicate the gradient column vectors with respect to $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ respectively.
+With $\mathcal{U}_\boldsymbol{\beta}(\boldsymbol{\beta}, \boldsymbol{\tau})$ and $\mathcal{U}_\boldsymbol{\tau}(\boldsymbol{\beta}, \boldsymbol{\tau})$ we indicate the gradient column vectors with respect to $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ respectively.
 
-With $\mathcal{J}_\boldsymbol{\beta}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \left\{-\dfrac{\partial^2 \ell}{\partial \beta_j \partial \beta_l} \right\}_{jl}$ and $\mathcal{J}_\boldsymbol{\tau}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \left\{-\dfrac{\partial^2 \ell}{\partial \tau_j \partial \tau_l} \right\}_{jl}$ we indicate the blocks of the observed Fisher information matrix with respect to $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ respectively.
+With $\mathcal{H}_\boldsymbol{\beta}(\boldsymbol{\beta}, \boldsymbol{\tau})$ and $\mathcal{H}_\boldsymbol{\tau}(\boldsymbol{\beta}, \boldsymbol{\tau})$ we indicate the blocks of the hessian matrix with respect to $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ respectively.
 
-Similarly, $\mathcal{J}_{\boldsymbol{\beta} \boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \left\{-\dfrac{\partial^2 \ell}{\partial \beta_j \partial \tau_l} \right\}_{jl}$ is the block of cross derivatives with respect to $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$.
+Similarly, $\mathcal{H}_{\boldsymbol{\beta} \boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau})$ is the block of cross derivatives with respect to $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$.
 
 The full hessian is 
 
-$$\mathcal{J}(\boldsymbol{\beta}, \boldsymbol{\tau}) = 
+$$\mathcal{H}(\boldsymbol{\beta}, \boldsymbol{\tau}) = 
 \begin{bmatrix}
-    \mathcal{J}_{\boldsymbol{\beta}}(\boldsymbol{\beta}, \boldsymbol{\tau}) & \mathcal{J}_{\boldsymbol{\beta} \boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau}) \\
-    \mathcal{J}_{\boldsymbol{\beta} \boldsymbol{\tau}}'(\boldsymbol{\beta}, \boldsymbol{\tau}) & \mathcal{J}_{\boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau})
+    \mathcal{H}_{\boldsymbol{\beta}}(\boldsymbol{\beta}, \boldsymbol{\tau}) & \mathcal{H}_{\boldsymbol{\beta} \boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau}) \\
+    \mathcal{H}_{\boldsymbol{\beta} \boldsymbol{\tau}}'(\boldsymbol{\beta}, \boldsymbol{\tau}) & \mathcal{H}_{\boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau})
 \end{bmatrix}$$
+
+$\mathcal{J}(\boldsymbol{\beta}, \boldsymbol{\tau}) = -\mathcal{H}(\boldsymbol{\beta}, \boldsymbol{\tau})$ is the observed Fisher information matrix.
+
+The expected Fisher information matrix is defined as $\mathcal{I}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \mathbb{E}(\mathcal{J}(\boldsymbol{\beta}, \boldsymbol{\tau}))$ and it is used in the computation of variance-covariance matrix of the estimates of parameters.
+
+We have
+
+$$\left\{\mathcal{I}_{\boldsymbol{\beta}}(\boldsymbol{\beta}, \boldsymbol{\tau})\right\}_{jl} = \sum_{i=1}^n \dfrac{x_{ij}x_{il}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}$$
+
+
+
+$$\left\{\mathcal{I}_{\boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau})\right\}_{jl} = \dfrac{1}{2}\sum_{i=1}^n z_{ij}z_{il}$$
+$$\left\{\mathcal{I}_{\boldsymbol{\beta}\boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau})\right\}_{jl} = 0$$
 
 
 ## Parameters estimation
 The vectors of parameters $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ are estimated via maximum likelihood.
 
-A closed form expression for $\hat{\boldsymbol{\beta}}$ is the WLS estimator $\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$, in which $\mathbf{W}$ is a diagonal matrix with $w_i = \dfrac{1}{\exp\left\{\mathbf{z}_i'\hat{\boldsymbol{\tau}}\right\}}$.
+A closed form expression for $\hat{\boldsymbol{\beta}}$ is the WLS estimator $\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$, in which $\mathbf{W}$ is a diagonal matrix with $w_{ij} = \dfrac{1}{\exp\left\{\mathbf{z}_i'\hat{\boldsymbol{\tau}}\right\}} \text{ } \forall i = j$.
 
 There is not a closed form expression for $\hat{\boldsymbol{\tau}}$, so Newton-Raphson method is required to estimate it.
 
@@ -192,7 +205,7 @@ The algorithm for fitting the parameters via maximum likelihood is contained in 
 
 At the $k$-th iteration, the algorithm takes values of $\hat{\boldsymbol{\beta}}_{k-1}$ and $\hat{\boldsymbol{\tau}}_{k-1}$ and uses them to compute 
 
-$$\hat{\boldsymbol{\tau}}_k = \hat{\boldsymbol{\tau}}_{k-1} + \mathcal{J}^{-1}_\boldsymbol{\tau}(\hat{\boldsymbol{\beta}}_{k-1}, \hat{\boldsymbol{\tau}}_{k-1}) \mathcal{U}_\boldsymbol{\tau}(\hat{\boldsymbol{\beta}}_{k-1}, \hat{\boldsymbol{\tau}}_{k-1})$$
+$$\hat{\boldsymbol{\tau}}_k = \hat{\boldsymbol{\tau}}_{k-1} - \mathcal{H}^{-1}_\boldsymbol{\tau}(\hat{\boldsymbol{\beta}}_{k-1}, \hat{\boldsymbol{\tau}}_{k-1}) \mathcal{U}_\boldsymbol{\tau}(\hat{\boldsymbol{\beta}}_{k-1}, \hat{\boldsymbol{\tau}}_{k-1})$$
 
 Then weights $w_i$ are estimated via $w_i = \dfrac{1}{\exp\left\{\mathbf{z}_i'\hat{\boldsymbol{\tau}_{k}}\right\}}$ and used to to compute $$\hat{\boldsymbol{\beta}}_k = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$$
 

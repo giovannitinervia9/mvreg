@@ -407,3 +407,64 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
     return(list(mu = dmu, log.s2 = dlogs2, s2 = ds2)[select])
   }
 }
+
+
+
+#-------------------------------------------------------------------------------
+
+
+
+#' Simulate Responses from a mvreg object
+#'
+#' @param object A mvreg object.
+#' @param nsim Number of response vectors to simulate
+#' @param seed NULL or an integer that will be used in a call to `set.seed` before simulating the response vectors. If set, the value is saved as the "seed" attribute of the returned value. The default, NULL will not change the random generator state, and return .Random.seed as the "seed" attribute.
+#' @param ... Additional optional arguments.
+#'
+#' @return A data.frame which columns are simulated response vectors.
+#' @export
+#'
+#' @importFrom stats rnorm runif simulate
+#'
+#' @examples
+#' mvreg.mod <- mvreg(Sepal.Length ~ Species, data = iris)
+#' simulate(mvreg.mod, nsim = 100, seed = 43)
+#'
+simulate.mvreg <- function(object, nsim = 1, seed = NULL, ...){
+
+  if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
+    runif(1)
+  if (is.null(seed))
+    RNGstate <- get(".Random.seed", envir = .GlobalEnv)
+  else {
+    R.seed <- get(".Random.seed", envir = .GlobalEnv)
+    set.seed(seed)
+    RNGstate <- structure(seed, kind = as.list(RNGkind()))
+    on.exit(assign(".Random.seed", R.seed, envir = .GlobalEnv))
+  }
+
+  x <- object$x
+  z <- object$z
+  b <- object$coefficients.mu
+  t <- object$coefficients.s2
+  n <- object$nobs
+
+  mu <- as.vector(x%*%b)
+  s <- as.vector(sqrt(exp(z%*%t)))
+
+
+  sim <- do.call(cbind,
+                 lapply(seq_len(nsim),
+                        function(i){
+                          y <- rnorm(n, mu, s)
+                        }))
+  colnames(sim) <- paste0("sim_", seq_len(nsim))
+
+  sim <- as.data.frame(sim)
+
+  attr(sim, "seed") <- RNGstate
+
+  sim
+
+}
+
