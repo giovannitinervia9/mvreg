@@ -109,8 +109,9 @@ mvreg_simul <- function(x, z, b, t,
 
 
   true_value <- c(b, t)
+  mean_value <- colMeans(sim_theta)
   prop_rej_h0 <- colSums(sim_p < sig.level)/nsim
-  distortion <- colMeans(sim_theta) - true_value
+  distortion <- mean_value - true_value
   variance <- apply(sim_theta, 2, var)
   SE <- sqrt(variance)
   MSE <- distortion^2 + variance
@@ -118,12 +119,13 @@ mvreg_simul <- function(x, z, b, t,
 
 
   tab <- data.frame(true_value = true_value,
-                    prop_rej_h0 = prop_rej_h0,
+                    mean_value = mean_value,
                     distortion = distortion,
                     variance = variance,
                     SE = SE,
                     MSE = MSE,
-                    RMSE = RMSE)
+                    RMSE = RMSE,
+                    prop_rej_h0 = prop_rej_h0)
 
   rownames(tab) <- c(colnames(x), colnames(z))
 
