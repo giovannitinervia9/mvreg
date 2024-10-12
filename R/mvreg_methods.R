@@ -298,7 +298,7 @@ logLik.mvreg <- function(x) {
 #' @return Predicted values for the different components of mvreg model. If specified, standard error estimates and confidence interval are returned.
 #' @export
 #'
-#' @importFrom stats model.matrix update qnorm
+#' @importFrom stats model.matrix update qnorm formula
 #'
 #' @examples
 #' mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
@@ -337,8 +337,10 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
     x <- object$x
     z <- object$z
   } else if (setequal(coln, colnames(newdata))) {
-    x <- model.matrix(update(object$formula.mu, NULL ~ .), newdata)
-    z <- model.matrix(update(object$formula.s2, NULL ~ .), newdata)
+    formula.mu <- formula(paste("~ ", deparse(object$formula.mu[[3]])))
+    formula.s2 <- formula(paste("~ ", deparse(object$formula.s2[[3]])))
+    x <- model.matrix(formula.mu, newdata)
+    z <- model.matrix(formula.s2, newdata)
   } else {
     stop("newdata must be a data.frame whose column names must be the
          same as the names of the variables in the model")
@@ -351,9 +353,9 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
   pred.log.s2 <- as.vector(z %*% t)
   pred.s2 <- exp(pred.log.s2)
 
-  if (se.fit == F & interval == F) {
+  if (se.fit == FALSE && interval == FALSE) {
     return(list(mu = pred.mu, log.s2 = pred.log.s2, s2 = pred.s2)[select])
-  } else if (se.fit == T & interval == F) {
+  } else if (se.fit == TRUE && interval == FALSE) {
     vcov.mu <- object$vcov.mu
     vcov.log.s2 <- object$vcov.s2
 
@@ -366,7 +368,7 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
     ds2 <- data.frame(pred.s2, se.s2)
 
     return(list(mu = dmu, log.s2 = dlogs2, s2 = ds2)[select])
-  } else if (se.fit == T & interval == T) {
+  } else if (se.fit == TRUE && interval == TRUE) {
     vcov.mu <- object$vcov.mu
     vcov.log.s2 <- object$vcov.s2
 
@@ -386,7 +388,7 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
     ds2 <- data.frame(pred.s2, se.s2, confint.s2)
 
     return(list(mu = dmu, log.s2 = dlogs2, s2 = ds2)[select])
-  } else if (se.fit == F & interval == T) {
+  } else if (se.fit == FALSE && interval == TRUE) {
     vcov.mu <- object$vcov.mu
     vcov.log.s2 <- object$vcov.s2
 
@@ -430,13 +432,13 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
 #' mvreg.mod <- mvreg(Sepal.Length ~ Species, data = iris)
 #' simulate(mvreg.mod, nsim = 100, seed = 43)
 #'
-simulate.mvreg <- function(object, nsim = 1, seed = NULL, ...){
-
-  if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
+simulate.mvreg <- function(object, nsim = 1, seed = NULL, ...) {
+  if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
     runif(1)
-  if (is.null(seed))
+  }
+  if (is.null(seed)) {
     RNGstate <- get(".Random.seed", envir = .GlobalEnv)
-  else {
+  } else {
     R.seed <- get(".Random.seed", envir = .GlobalEnv)
     set.seed(seed)
     RNGstate <- structure(seed, kind = as.list(RNGkind()))
@@ -449,15 +451,19 @@ simulate.mvreg <- function(object, nsim = 1, seed = NULL, ...){
   t <- object$coefficients.s2
   n <- object$nobs
 
-  mu <- as.vector(x%*%b)
-  s <- as.vector(sqrt(exp(z%*%t)))
+  mu <- as.vector(x %*% b)
+  s <- as.vector(sqrt(exp(z %*% t)))
 
 
-  sim <- do.call(cbind,
-                 lapply(seq_len(nsim),
-                        function(i){
-                          y <- rnorm(n, mu, s)
-                        }))
+  sim <- do.call(
+    cbind,
+    lapply(
+      seq_len(nsim),
+      function(i) {
+        rnorm(n, mu, s)
+      }
+    )
+  )
   colnames(sim) <- paste0("sim_", seq_len(nsim))
 
   sim <- as.data.frame(sim)
@@ -465,6 +471,4 @@ simulate.mvreg <- function(object, nsim = 1, seed = NULL, ...){
   attr(sim, "seed") <- RNGstate
 
   sim
-
 }
-

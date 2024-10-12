@@ -33,7 +33,6 @@ mvreg_start <- function(y, x, z, start.s2 = c("residuals", "gamma", "zero")) {
   k <- ncol(x)
   p <- ncol(z)
 
-
   b0 <- as.vector(solve(crossprod(x)) %*% crossprod(x, y))
 
   if (start.s2 == "residuals") {

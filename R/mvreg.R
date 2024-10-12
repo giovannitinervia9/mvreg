@@ -69,19 +69,15 @@ mvreg <- function(formula.mu,
   cl <- match.call()
   method <- match.arg(method)
   vcov.type <- match.arg(vcov.type)
+  start.s2 <- match.arg(start.s2)
 
   if (is.null(data)) {
     data <- environment()
   }
 
-  response <- all.vars(formula.mu)[attr(terms(formula.mu), "response")]
-  colx <- all.vars(formula.mu)[-which(all.vars(formula.mu) == response)]
-
-
-  start.s2 <- match.arg(start.s2)
-
-
   mf.mu <- model.frame(formula.mu, data)
+  colx <- colnames(mf.mu)[-1]
+  response <- colnames(mf.mu)[1]
   y <- model.response(mf.mu)
   x <- model.matrix(attr(mf.mu, "terms"), mf.mu)
 
@@ -89,16 +85,19 @@ mvreg <- function(formula.mu,
 
 
   if (is.null(formula.s2)) {
+    formula.s2 <- formula.mu
     z <- x
     colz <- colx
   } else {
-    mf.s2 <- model.frame(formula.s2, data)
-    z <- model.matrix(attr(mf.s2, "terms"), mf.s2)
-    if (any(all.vars(formula.s2) == response)) {
-      colz <- all.vars(formula.s2)[-which(all.vars(formula.s2) == response)]
+    if (sum(grepl(response, formula.s2)) == 1) {
+      formula.s2 <- formula.s2
     } else {
-      colz <- all.vars(formula.s2)
+      formula.s2 <- as.formula(paste0(response, " ", paste0(formula.s2, collapse = " ")))
     }
+
+    mf.s2 <- model.frame(formula.s2, data <- data)
+    colz <- colnames(mf.s2)[-1]
+    z <- model.matrix(attr(mf.s2, "terms"), mf.s2)
   }
 
 
@@ -162,8 +161,8 @@ mvreg <- function(formula.mu,
     response = response,
     colx = colx,
     colz = colz,
-    formula.mu = as.formula(formula.mu),
-    formula.s2 = as.formula(formula.s2)
+    formula.mu = formula.mu,
+    formula.s2 = formula.s2
   )
 
   class(results) <- "mvreg"

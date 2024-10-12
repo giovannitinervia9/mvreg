@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-knitr::opts_chunk$set(fig.width=12/2.5, fig.height=8/2.5)
+knitr::opts_chunk$set(fig.width = 12 / 2.5, fig.height = 8 / 2.5)
 ```
 
 ```{r setup, include = F}
@@ -59,8 +59,8 @@ Let's see some examples of different case uses.
 For the first example we'll use the `cars`. This dataset contains only two variables, `speed` and `dist`, so that it's natural to consider a model that explains how stopping distance is affected by speed. Let's visualize the data.
 
 ```{r, echo = F, warning = F, message = F}
-ggplot(cars, aes(x = speed, y = dist)) + 
-  geom_point(shape = 1) + 
+ggplot(cars, aes(x = speed, y = dist)) +
+  geom_point(shape = 1) +
   geom_smooth(linewidth = 0.5, method = "lm") +
   theme_few()
 ```
@@ -75,13 +75,13 @@ mod.lm <- lm(dist ~ speed, data = cars)
 
 ```{r, echo = F, warning = F, message = F}
 # cars |>
-#   mutate(residuals = scale(mod.lm$residuals), 
-#          fitted.values = mod.lm$fitted.values) |> 
-#   ggplot(aes(x = fitted.values, y = sqrt(abs(residuals)))) + 
-#   geom_point(shape = 1) + 
-#   geom_smooth(color = "red", linewidth = 0.5) + 
+#   mutate(residuals = scale(mod.lm$residuals),
+#          fitted.values = mod.lm$fitted.values) |>
+#   ggplot(aes(x = fitted.values, y = sqrt(abs(residuals)))) +
+#   geom_point(shape = 1) +
+#   geom_smooth(color = "red", linewidth = 0.5) +
 #   labs(y = expression(sqrt(abs(scaled~residuals)))) +
-#   labs(x = "fitted values") + 
+#   labs(x = "fitted values") +
 #   theme_few()
 
 plot(mod.lm, 3)
@@ -92,8 +92,10 @@ The graph seems to confirm the initial evidence with respect to the possibility 
 `mvreg()` function works just like `lm()` function. We can specify two different formulas for the mean component, which is called `formula.mu`, and for the variance component, which is called `formula.s2`.
 
 ```{r}
-mod.mvreg <- mvreg(formula.mu = dist ~ speed, 
-                   formula.s2 = ~speed, data = cars)
+mod.mvreg <- mvreg(
+  formula.mu = dist ~ speed,
+  formula.s2 = ~speed, data = cars
+)
 ```
 
 `mvreg()` returns an object of class `mvreg`, for which various generic methods are implemented.
@@ -121,7 +123,9 @@ If we do not want the formulas to be equal, it is necessary to specify both of t
 
 ```{r}
 mvreg(dist ~ speed + I(speed^2),
-      ~speed, data = cars)
+  ~speed,
+  data = cars
+)
 ```
 `formula.s2` can be both a two-side formula or a only right-side formula. `mvreg()` essentially ignores the left side of `formula.s2`, as it is needed only to build the design matrix for variance component.
 

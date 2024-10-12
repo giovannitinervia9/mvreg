@@ -103,8 +103,8 @@ d2ldb <- function(y, x, z, b, t, type = c("observed", "expected")) {
   eta.s2 <- as.vector(z %*% t)
   const <- exp(eta.s2)
 
-  for (j in 1:ncol(x)) {
-    for (l in 1:ncol(x)) {
+  for (j in seq_len(ncol(x))) {
+    for (l in seq_len(ncol(x))) {
       h[j, l] <- -sum(x[, j] * x[, l] / const)
     }
   }
@@ -192,12 +192,12 @@ d2ldt <- function(y, x, z, b, t, type = c("observed", "expected")) {
     eta.s2 <- as.vector(z %*% t)
     const <- (y - eta.mu)^2 * exp(-eta.s2)
   } else if (type == "expected") {
-      const <- 1
-    }
+    const <- 1
+  }
 
 
-  for (j in 1:ncol(z)) {
-    for (l in 1:ncol(z)) {
+  for (j in seq_len(ncol(z))) {
+    for (l in seq_len(ncol(z))) {
       h[j, l] <- -0.5 * sum(const * z[, j] * z[, l])
     }
   }
@@ -246,13 +246,12 @@ d2ldbdt <- function(y, x, z, b, t, type = c("observed", "expected")) {
     eta.s2 <- as.vector(z %*% t)
     const <- (y - eta.mu) * exp(-eta.s2)
 
-    for (j in 1:ncol(x)) {
-      for (l in 1:ncol(z)) {
+    for (j in seq_len(ncol(x))) {
+      for (l in seq_len(ncol(z))) {
         h[j, l] <- -sum(const * x[, j] * z[, l])
       }
     }
-  }
-  else if (type == "expected") {
+  } else if (type == "expected") {
     h <- matrix(0, ncol(x), ncol(z))
   }
 

@@ -35,12 +35,8 @@
 #'
 #' mvreg_fit(y, x, z, b0, t0)
 mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls", "full_nr"), vcov.type = c("expected", "observed")) {
-
   method <- match.arg(method)
   vcov.type <- match.arg(vcov.type)
-
-  p <- ncol(z)
-  k <- ncol(x)
 
   dev <- 2
   it <- 0L
@@ -48,8 +44,8 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
   if (method == "wls") {
     while (any(abs(dev) > tol) && it < maxit) {
       t1 <- as.vector(t0 - solve(d2ldt(y, x, z, b0, t0, type = "observed")) %*% dldt(y, x, z, b0, t0))
-      w <- as.vector(1/exp(z%*%t1))
-      b1 <- as.vector(solve(crossprod(x*w, x), crossprod(x*w, y)))
+      w <- as.vector(1 / exp(z %*% t1))
+      b1 <- as.vector(solve(crossprod(x * w, x), crossprod(x * w, y)))
       dev <- c(b1, t1) - c(b0, t0)
       it <- it + 1L
       t0 <- t1
@@ -73,4 +69,3 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
 
   list(theta = theta0, b = b0, t = t0, vtheta = vtheta, it = it)
 }
-
