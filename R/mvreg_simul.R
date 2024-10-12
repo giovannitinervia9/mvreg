@@ -43,6 +43,29 @@ mvreg_simul <- function(x, z, b, t,
   k <- ncol(as.matrix(x))
   p <- ncol(as.matrix(z))
 
+  if(is.null(colnames(x))){
+    if(k == 1) {colnames(x)[1] <- "mu.const"}
+    else if(k > 1) {
+      colnames(x) <- c("mu.const", paste0("mu.x", 1:(k-1)))
+    }
+  } else {
+    if(colnames(x)[1] == ""){
+      colnames(x)[1] <- "mu.const"
+    }
+  }
+
+  if(is.null(colnames(z))){
+    if(p == 1) {colnames(z)[1] <- "s2.const"}
+    else if(k > 1) {
+      colnames(z) <- c("s2.const", paste0("s2.z", 1:(p-1)))
+    }
+  } else {
+    if(colnames(z)[1] == ""){
+      colnames(z)[1] <- "s2.const"
+    }
+  }
+
+
   if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
     runif(1)
   }
@@ -85,22 +108,24 @@ mvreg_simul <- function(x, z, b, t,
   sim_it <- unlist(lapply(sim_res, function(res) res$it))
 
 
-  true_values <- c(b, t)
+  true_value <- c(b, t)
   prop_rej_h0 <- colSums(sim_p < sig.level)/nsim
-  distortion <- colMeans(sim_theta) - true_values
+  distortion <- colMeans(sim_theta) - true_value
   variance <- apply(sim_theta, 2, var)
   SE <- sqrt(variance)
   MSE <- distortion^2 + variance
   RMSE <- sqrt(MSE)
 
 
-  tab <- data.frame(true_values = true_values,
+  tab <- data.frame(true_value = true_value,
                     prop_rej_h0 = prop_rej_h0,
                     distortion = distortion,
                     variance = variance,
                     SE = SE,
                     MSE = MSE,
                     RMSE = RMSE)
+
+  rownames(tab) <- c(colnames(x), colnames(z))
 
   res <- list(tab = tab,
               theta = sim_theta,
@@ -142,8 +167,8 @@ print.simul_mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...
   cat("\nSimulation study for a mvreg model\n")
   cat(paste0("\nn = ", x$n))
   cat(paste0("\nnumber of simulations = ", x$nsim, "\n"))
-  cat(paste0("\nnumber parameters for mean component = ", x$k))
-  cat(paste0("\nnumber parameters for variance component = ", x$p, "\n"))
+  cat(paste0("\nnumber of parameters for mean component = ", x$k))
+  cat(paste0("\nnumber of parameters for variance component = ", x$p, "\n"))
   cat("\n")
 
   print(x$tab, digits = digits)

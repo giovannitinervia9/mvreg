@@ -10,7 +10,7 @@ mvreg_fit(
   z,
   b0,
   t0,
-  tol = 0.0000000001,
+  tol = 1e-10,
   maxit = 100,
   method = c("wls", "full_nr"),
   vcov.type = c("expected", "observed")
