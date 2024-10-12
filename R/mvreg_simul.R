@@ -7,6 +7,7 @@
 #' @param t True values for parameters of variance component.
 #' @param n Sample size.
 #' @param nsim Number of samples to simulate.
+#' @param sig.level Significance level for Wald tests.
 #' @param seed Seed of the simulation.
 #' @param method Method chosen for estimation of parameters of mean component.
 #' @param vcov.type A string to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates.
@@ -28,13 +29,19 @@
 #'
 #'
 mvreg_simul <- function(x, z, b, t,
-                        n = 100, nsim = 100,
+                        n = 100, nsim = 100, sig.level = 0.05,
                         seed = NULL,
                         method = c("wls", "full_nr"),
                         vcov.type = c("expected", "observed"),
                         start.s2 = c("residuals", "gamma", "zero"),
                         tol = 1e-10,
                         maxit = 100) {
+
+  method <- match.arg(method)
+  vcov.type <- match.arg(vcov.type)
+  start.s2 <- match.arg(start.s2)
+  k <- ncol(as.matrix(x))
+  p <- ncol(as.matrix(z))
 
   if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
     runif(1)
@@ -91,7 +98,7 @@ mvreg_simul <- function(x, z, b, t,
                     prop_rej_h0 = prop_rej_h0,
                     distortion = distortion,
                     variance = variance,
-                    SE = se,
+                    SE = SE,
                     MSE = MSE,
                     RMSE = RMSE)
 
@@ -115,8 +122,9 @@ mvreg_simul <- function(x, z, b, t,
 
 #' Print method for simul_mvreg
 #'
-#' @param object A simul_mvreg object.
+#' @param x A simul_mvreg object.
 #' @param digits The minimum number of significant digits to be used.
+#' @param ... Further arguments passed to or from other methods
 #'
 #' @return Prints results of simul_mvreg
 #' @export
@@ -129,16 +137,16 @@ mvreg_simul <- function(x, z, b, t,
 #' b <- rnorm(ncol(x))
 #' t <- rnorm(ncol(z))
 #' mvreg_simul(x, z, b, t, n = n, nsim = 100, seed = 43)
-print.simul_mvreg <- function(object, digits = max(3L, getOption("digits") - 3L)) {
+print.simul_mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
 
   cat("\nSimulation study for a mvreg model\n")
-  cat(paste0("\nn = ", object$n))
-  cat(paste0("\nnumber of simulations = ", object$nsim, "\n"))
-  cat(paste0("\nnumber parameters for mean component = ", object$k))
-  cat(paste0("\nnumber parameters for variance component = ", object$p, "\n"))
+  cat(paste0("\nn = ", x$n))
+  cat(paste0("\nnumber of simulations = ", x$nsim, "\n"))
+  cat(paste0("\nnumber parameters for mean component = ", x$k))
+  cat(paste0("\nnumber parameters for variance component = ", x$p, "\n"))
   cat("\n")
 
-  print(object$tab, digits = digits)
+  print(x$tab, digits = digits)
 
   }
 
