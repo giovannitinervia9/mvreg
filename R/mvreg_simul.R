@@ -49,7 +49,7 @@ mvreg_simul <- function(x, z, b, t,
       colnames(x) <- c("mu.const", paste0("mu.x", 1:(k-1)))
     }
   } else {
-    if(colnames(x)[1] == ""){
+    if(colnames(x)[1] %in% c("", "(Intercept)")){
       colnames(x)[1] <- "mu.const"
     }
   }
@@ -60,7 +60,7 @@ mvreg_simul <- function(x, z, b, t,
       colnames(z) <- c("s2.const", paste0("s2.z", 1:(p-1)))
     }
   } else {
-    if(colnames(z)[1] == ""){
+    if(colnames(z)[1] %in% c("", "(Intercept)")){
       colnames(z)[1] <- "s2.const"
     }
   }
