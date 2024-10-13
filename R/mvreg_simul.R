@@ -114,12 +114,16 @@ mvreg_simul <- function(x, z, b, t,
 
   sim_theta <- do.call(rbind, lapply(sim_res, function(res) res$theta))
 
+
   sim_vtheta <- lapply(sim_res, function(res) res$vtheta)
 
   sim_se <- do.call(rbind, lapply(sim_vtheta, function(res) sqrt(diag(res))))
   sim_t <- sim_theta/sim_se
   sim_p <- 2*(1 - pnorm(abs(sim_t)))
   sim_it <- unlist(lapply(sim_res, function(res) res$it))
+
+  sim_theta <- as.data.frame(sim_theta)
+  colnames(sim_theta) <- c(colnames(x), colnames(z))
 
 
   true_value <- c(b, t)
