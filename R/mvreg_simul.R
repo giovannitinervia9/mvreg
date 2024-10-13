@@ -131,6 +131,18 @@ mvreg_simul <- function(x, z, b, t,
   MSE <- distortion^2 + variance
   RMSE <- sqrt(MSE)
 
+  mean_vtheta <- matrix(NA, nrow = k + p, ncol = k + p)
+
+  for(i in 1:(k + p)){
+    for(j in 1:(k + p)){
+      mean_vtheta[i, j] <- mean(unlist(
+        lapply(sim_vtheta, function(x) x[i, j])))
+    }
+  }
+
+  colnames(mean_vtheta) <- rownames(mean_vtheta) <- c(colnames(x), colnames(z))
+
+
  end_time <- proc.time()
  total_time <- end_time - start_time
 
@@ -147,6 +159,7 @@ mvreg_simul <- function(x, z, b, t,
 
   res <- list(tab = tab,
               theta = sim_theta,
+              mean_vtheta = mean_vtheta,
               vtheta = sim_vtheta,
               it = sim_it,
               y = data.frame(y),
