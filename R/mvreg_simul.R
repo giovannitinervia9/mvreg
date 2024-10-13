@@ -78,6 +78,8 @@ mvreg_simul <- function(x, z, b, t,
     on.exit(assign(".Random.seed", R.seed, envir = .GlobalEnv))
   }
 
+ start_time <- proc.time()
+
   mu <- as.vector(x%*%b)
   s <- as.vector(sqrt(exp(z%*%t)))
 
@@ -93,10 +95,22 @@ mvreg_simul <- function(x, z, b, t,
   })
 
   sim_res <- mapply(function(y, start){
-    mvreg_fit(y, x, z, start[1:k], start[(k+1):length(start)],
-              tol = tol, maxit = maxit,
-              method = method, vcov.type = vcov.type)
-  }, y, start, SIMPLIFY  = F)
+    tryCatch({
+      mvreg_fit(y, x, z, start[1:k], start[(k+1):length(start)],
+                tol = tol, maxit = maxit,
+                method = method, vcov.type = vcov.type)
+    }, error = function(e) conditionMessage(e))
+  },
+    y, start, SIMPLIFY = F)
+
+  ok <- which(unlist(lapply(sim_res, class)) != "character")
+
+  converged <- length(ok)
+  non_converged <- nsim - length(ok)
+
+  if(non_converged == nsim){stop("None of the simulations converged")}
+
+  sim_res <- sim_res[ok]
 
   sim_theta <- do.call(rbind, lapply(sim_res, function(res) res$theta))
 
@@ -110,13 +124,15 @@ mvreg_simul <- function(x, z, b, t,
 
   true_value <- c(b, t)
   mean_value <- colMeans(sim_theta)
-  prop_rej_h0 <- colSums(sim_p < sig.level)/nsim
+  prop_rej_h0 <- colSums(sim_p < sig.level)/converged
   distortion <- mean_value - true_value
   variance <- apply(sim_theta, 2, var)
   SE <- sqrt(variance)
   MSE <- distortion^2 + variance
   RMSE <- sqrt(MSE)
 
+ end_time <- proc.time()
+ total_time <- end_time - start_time
 
   tab <- data.frame(true_value = true_value,
                     mean_value = mean_value,
@@ -138,7 +154,10 @@ mvreg_simul <- function(x, z, b, t,
               nsim = nsim,
               seed = RNGstate,
               k = ncol(x),
-              p = ncol(z))
+              p = ncol(z),
+              converged = converged,
+              non_converged = non_converged,
+              total_time = total_time)
   class(res) = "simul_mvreg"
 
   res
@@ -168,9 +187,9 @@ print.simul_mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...
 
   cat("\nSimulation study for a mvreg model\n")
   cat(paste0("\nn = ", x$n))
-  cat(paste0("\nnumber of simulations = ", x$nsim, "\n"))
-  cat(paste0("\nnumber of parameters for mean component = ", x$k))
-  cat(paste0("\nnumber of parameters for variance component = ", x$p, "\n"))
+  cat(paste0("\nnumber of simulations = ", x$nsim))
+  cat(paste0("\nconverged simulations = ", x$converged, " (", round((x$converged/x$nsim)*100, 3), "%)"))
+  cat(paste0("\ntime needed = ", round(x$total_time[3], 8), " seconds\n"))
   cat("\n")
 
   print(x$tab, digits = digits)
