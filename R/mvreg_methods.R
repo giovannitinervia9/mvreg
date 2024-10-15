@@ -108,7 +108,7 @@ coef.mvreg <- function(object, partition = c("all", "mu", "s2"), ...) {
 #' @return A summary.mvreg object.
 #' @export
 #'
-#' @importFrom stats vcov pnorm
+#' @importFrom stats vcov pnorm logLik
 #'
 #' @examples
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
@@ -149,6 +149,7 @@ summary.mvreg <- function(object, ...) {
     coefficients.mu = mu.tab,
     coefficients.s2 = s2.tab,
     df = df,
+    loglik = logLik(object),
     vcov = vcov(object),
     vcov.mu = vcov(object, "mu"),
     vcov.s2 = vcov(object, "s2")
@@ -219,7 +220,7 @@ print.summary.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L),
     signif.stars = signif.stars, P.values = NULL
   )
 
-  cat("\n\n")
+
 }
 
 
