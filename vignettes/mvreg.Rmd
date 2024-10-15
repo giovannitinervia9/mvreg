@@ -29,11 +29,11 @@ suppressMessages(require(ggthemes))
 
 `mvreg` is a package that allows users to fit linear models in which the assumption of homoscedasticity can be relaxed.
 
-It is well known that in the standard linear regression model one of the assumptions is that the variance of the residuals is constant for all the observation. However, in real-word applications it is not uncommon to encounter cases where this assumption does not hold.
+It is well known that in the standard linear regression model one of the assumptions is that the variance of the residuals is constant for all the observations. However, in real-word applications it is not uncommon to encounter cases where this assumption does not hold.
 
 In such cases, the Ordinary Least Squares (OLS) estimator for the parameter vector $\boldsymbol{\beta}$ remains unbiased, but the standard errors produced by `lm()` are no longer consistent.
 
-This problem can be addressed in several ways, such as using sandwich variance estimation, as provided by the `sandwich` package, or by employing Weighted Least Squares (WLS) estimation. In WLS, the $\boldsymbol{\beta}$ parameter is estimated as $\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$, where $\mathbf{W}$ is a diagonal weight matrix with diagonal elements $w_{ii} = \dfrac{1}{\sigma^2_{i}}$.
+This problem can be addressed in several ways, such as using sandwich variance estimation, as provided by the `sandwich` package, or by employing Weighted Least Squares (WLS) estimation. In WLS, the $\boldsymbol{\beta}$ parameter is estimated as $\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$, where $\mathbf{W}$ is a diagonal weight matrix with diagonal elements $w_{i} = \dfrac{1}{\sigma^2_{i}}$.
 
 # What does `mvreg` do?
 The approach that `mvreg` follows is to fit a model in which expected value and variance are jointly modeled as functions of linear predictors, which can have different structures for the two components. 
@@ -47,14 +47,14 @@ The variance is linked to the linear predictor $\mathbf{z}_i'\boldsymbol{\tau}$ 
 
 $$\log{(\sigma^2_i)} = \mathbf{z}_i'\boldsymbol{\tau}$$
 
-The model parameters are estimated using maximum likelihood method, but before delving into technical details let's see how `mvreg` works.
+The model parameters are estimated using maximum likelihood method, but before delving into technical details let's see how `mvreg()` works.
 
 ## `mvreg()`: a `lm`-like function for heteroscedastic regression.
 
 The main function that a typical `mvreg` user will interact with is the `mvreg()` function.
 This function fits a heteroscedastic linear model in which two different formulas can be specified, one for the mean component and another for the variance component.
 
-Let's consider the dataset `cars`, which contains only two variables, `speed` and `dist`, making it natural to model how stopping distance is influenced by speed. Let's visualize the data.
+Let’s consider the `cars` dataset, which contains two variables: `speed` and `dist`. It is natural to model how the stopping distance (`dist`) is influenced by `speed`. Let’s visualize the data.
 
 ```{r, echo = F, warning = F, message = F}
 ggplot(cars, aes(x = speed, y = dist)) +
@@ -63,7 +63,7 @@ ggplot(cars, aes(x = speed, y = dist)) +
   theme_few()
 ```
 
-It is clear that stopping distance increases with speed, and one might notice that for lower speeds, stopping distances tend to assume values closer to the regression line, whereas at higher speeds, the points tend to be more dispersed.
+It is clear that stopping distance increases with speed, and one might notice that, for lower speeds, stopping distances tend to assume values closer to the regression line, whereas at higher speeds, the points tend to be more dispersed.
 
 Let's fit a classic linear model and check the relationship between the square root of the absolute value of residuals and the fitted values.
 
@@ -93,15 +93,16 @@ The `mvreg()` function operates similarly to the `lm()` function. We can specify
 mod.mvreg <- mvreg(
   formula.mu = dist ~ speed,
   formula.s2 = ~speed, data = cars
-)
+
 ```
 
-`mvreg()` returns an object of class `mvreg`, for which various generic methods are available.
+`mvreg()` returns an object of class `mvreg`, for which various generic functions are available.
 Let's examine the `summary()` of the model.
 
 ```{r}
 summary(mod.mvreg)
 ```
+
 As shown, the output of `summary()` returns two main tables, one for the `mean` component and another for the `log(variance)` component. Both tables include estimates, standard errors, and Wald test results, similar to the classical `lm` output. The key difference is that Wald tests assume an asymptotic normal distribution under the null hypothesis that the coefficients are zero.
 
 The coefficient for the variance component related to `speed` is significantly different from zero and is positive, indicating a positive linear relationship between the logarithm of the variance and speed.
@@ -175,7 +176,6 @@ $\mathcal{J}(\boldsymbol{\beta}, \boldsymbol{\tau}) = -\mathcal{H}(\boldsymbol{\
 The expected Fisher information matrix is defined as $\mathcal{I}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \mathbb{E}(\mathcal{J}(\boldsymbol{\beta}, \boldsymbol{\tau}))$ and it is used in the computation of variance-covariance matrix of the estimates of parameters.
 
 We have
-
 $$\left\{\mathcal{I}_{\boldsymbol{\beta}}(\boldsymbol{\beta}, \boldsymbol{\tau})\right\}_{jl} = \sum_{i=1}^n \dfrac{x_{ij}x_{il}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}$$
 
 
@@ -187,12 +187,12 @@ $$\left\{\mathcal{I}_{\boldsymbol{\beta}\boldsymbol{\tau}}(\boldsymbol{\beta}, \
 ## Parameters estimation
 The parameters vector $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ are estimated via maximum likelihood.
 
-A closed form expression for $\hat{\boldsymbol{\beta}}$ is the weighted least squares (WLS) estimator $\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$, in which $\mathbf{W}$ is a diagonal matrix with elements $w_{ij} = \dfrac{1}{\exp\left\{\mathbf{z}_i'\hat{\boldsymbol{\tau}}\right\}} \text{ } \forall i = j$.
+A closed form expression for $\hat{\boldsymbol{\beta}}$ is the weighted least squares (WLS) estimator $\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$, in which $\mathbf{W}$ is a diagonal matrix with elements $w_{i} = \dfrac{1}{\exp\left\{\mathbf{z}_i'\hat{\boldsymbol{\tau}}\right\}}$.
 
 There is no closed-form solution for $\hat{\boldsymbol{\tau}}$, so the Newton-Raphson method is used to estimate it.
 
 ### Starting values
-Starting values for the parameters are provided by the function `mvreg_start()`, which takes as input the response vector `y`, the design matrices `x` and `z` and a method for generating the initial guess for $\hat{\boldsymbol{\tau}}_0$ via the argument `start.s2`.
+Starting values for the parameters are provided by the function `mvreg_start()`, which takes as input the response vector `y`, the design matrices `x` and `z` and a method for generating the initial guess for $\hat{\boldsymbol{\tau}}_0$ via the argument `start.s2`. The argument `start.s2` can be specified in `mvreg()` function, which passes its value to `mvreg_start()`.
 
 The initial value for $\hat{\boldsymbol{\beta}}_0$ is obtained through ordinary least squares (OLS) estimation. 
 
@@ -200,22 +200,22 @@ There are three methods available for obtaining an initial guess of $\hat{\bolds
 
 The default method is provided by `start.s2 = "residuals"`, in which $\hat{\boldsymbol{\beta}}_0$ is used to estimate empirical residuals $\hat{\varepsilon}_i = y_i - \mathbf{x}_i'\hat{\boldsymbol{\beta}}_0$. Then the log of the squares of these residuals are regressed on $\mathbf{Z}$ to find a first guess of $\hat{\boldsymbol{\tau}}_0$. 
 
-A second option is `start.s2 = "gamma"`, in which the squares of the empirical residuals are regressed on $\mathbf{Z}$ using Gamma generalized linear model.
+A second option is `start.s2 = "gamma"`, in which the squares of the empirical residuals are regressed on $\mathbf{Z}$ using a Gamma generalized linear model.
 
-The last and simpler option is `start.s2 = "zero"`, in which the first guess is simply given by $\hat{\boldsymbol{\tau}}_0 = (\log\hat{S}^2, 0, 0, \ldots, 0)_p'$.
+The last and simpler option is `start.s2 = "zero"`, in which the first guess is simply given by $\hat{\boldsymbol{\tau}}_0 = (\log\hat{S}^2_y, 0, 0, \ldots, 0)_p'$.
 
 ### Estimation algorithm
-The algorithm for fitting the parameters via maximum likelihood is contained in the `mvreg_fit()` function, which takes in input the response vector `y`, the design matrices `x` and `z` and the starting values `b0` and `t0` provided by `mvreg_start()`.
+The algorithm for fitting the parameters via maximum likelihood is contained in the `mvreg_fit()` function, which takes as input the response vector `y`, the design matrices `x` and `z` and the starting values `b0` and `t0` provided by `mvreg_start()`.
 
 At the $k$-th iteration, the algorithm takes the current estimates $\hat{\boldsymbol{\beta}}_{k-1}$ and $\hat{\boldsymbol{\tau}}_{k-1}$ to compute 
 
 $$\hat{\boldsymbol{\tau}}_k = \hat{\boldsymbol{\tau}}_{k-1} - \mathcal{H}^{-1}_\boldsymbol{\tau}(\hat{\boldsymbol{\beta}}_{k-1}, \hat{\boldsymbol{\tau}}_{k-1}) \mathcal{U}_\boldsymbol{\tau}(\hat{\boldsymbol{\beta}}_{k-1}, \hat{\boldsymbol{\tau}}_{k-1})$$
 
-Next, the weights $w_i$ are estimated via $w_i = \dfrac{1}{\exp\left\{\mathbf{z}_i'\hat{\boldsymbol{\tau}_{k}}\right\}}$ and used to to compute $$\hat{\boldsymbol{\beta}}_k = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$$
+Next, the weights $w_{i}$ are estimated via $w_{i} = \dfrac{1}{\exp\left\{\mathbf{z}_i'\hat{\boldsymbol{\tau}_{k}}\right\}}$ and used to to compute $$\hat{\boldsymbol{\beta}}_k = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$$
 
-The algorithm continues iterating until the convergence criterion $|(\hat{\boldsymbol{\beta}},\hat{\boldsymbol{\tau}})_k - (\hat{\boldsymbol{\beta}},\hat{\boldsymbol{\tau}})_{k-1}| < \boldsymbol{\varepsilon}$ is satisfied.
+The algorithm continues iterating until the convergence criterion $|(\hat{\boldsymbol{\beta}},\hat{\boldsymbol{\tau}})_k - (\hat{\boldsymbol{\beta}},\hat{\boldsymbol{\tau}})_{k-1}| < \boldsymbol{\varepsilon}$ is satisfied or the maximum number of iteration is reached (specified in the `maxit` argument). $\boldsymbol{\varepsilon}$ is a scalar positive value specified in the `tol` argument.
 
-This algorithm is the default choice for `mvreg_fit()`, but an argument `method` is available. If `method = "wls"` the algorithm described above is used. If `method = "full_nr"` the closed form expression for $\hat{\boldsymbol{\beta}}$ is not used and the Newton-Raphson method is applied to both the mean and variance components.
+This algorithm is the default choice for `mvreg_fit()`, but an argument `method` is available. If `method = "wls"` the algorithm described above is used. If `method = "full_nr"` the closed form expression for $\hat{\boldsymbol{\beta}}$ is not used and the Newton-Raphson method is applied to both the mean and variance components. The argument `method` can be specified in `mvreg()` function, which passes its value to `mvreg_fit()`.
 
 Once an `mvreg` model is fitted, parameter estimates can be accessed via the `coef()` method, which has a `partition` argument to specify whether to return all coefficients (default, `partition = "all"`), only the mean component (`partition = "mu"`), or only the variance component (`partition = "s2"`).
 ```{r}
@@ -232,10 +232,10 @@ According to asymptotic likelihood theory, we have that $$ (\hat{\boldsymbol{\be
 
 An estimate of the variance-covariance matrix is given by $\mathcal{I}^{-1}(\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\tau}})$
 
-The variance-covariance matrix is computed by `mvreg_fit()` function, that has a `vcov.type` argument. By default `vcov.type = "expected"`, meaning that the variance-covariance matrix is computed using the expected Fisher information matrix $\mathcal{I}^{-1}(\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\tau}})$. Alternatively, the user can specify to use the observed Fisher information matrix $\mathcal{J}^{-1}(\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\tau}})$.
+The variance-covariance matrix is computed by `mvreg_fit()` function, which has a `vcov.type` argument. By default `vcov.type = "expected"`, meaning that the variance-covariance matrix is computed using the expected Fisher information matrix $\mathcal{I}^{-1}(\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\tau}})$. Alternatively, the user can specify to use the observed Fisher information matrix $\mathcal{J}^{-1}(\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\tau}})$ by specifying `vcov.type = "observed"`. The argument `vcov.type` can be specified in `mvreg()` function, which passes its value to `mvreg_fit()`.
 
 Once a `mvreg` model is fitted, the variance-covariance matrix can be accessed using `vcov()` method.  
-The `vcov` method for `mvreg` objects also has a `partition` argument, which allows the user to specify which diagonal block of the full matrix should be returned. The default is `"all`", but `"mu"` (for the mean component) and `"s2"` (for the variance component) can also be selected.
+The `vcov` method for `mvreg` objects also has a `partition` argument, which allows the user to specify which diagonal block of the matrix should be returned. The default is `"all`", but `"mu"` (for the mean component) and `"s2"` (for the variance component) can also be selected.
 
 ```{r}
 vcov(mod.mvreg)
@@ -245,41 +245,43 @@ vcov(mod.mvreg, "s2")
 
 
 ## Fitted values and predictions
-Once $\hat{\boldsymbol{\beta}}$ and $\hat{\boldsymbol{\tau}}$ are estimated, one can get an estimate for the mean, the log of variance and variance components for the observed values of $\mathbf{x}_i'$ and $\mathbf{z}_i'$ 
+Once $\hat{\boldsymbol{\beta}}$ and $\hat{\boldsymbol{\tau}}$ are estimated, one can compute an estimate for the mean, the log of the variance and variance components for the observed values of $\mathbf{x}_i'$ and $\mathbf{z}_i'$ as follows 
 
 $$\hat{\mu}_i = \mathbf{x}_i'\hat{\boldsymbol{\beta}}$$ 
 
 $$\log\hat{\sigma}^2_i = \mathbf{z}_i'\hat{\boldsymbol{\tau}}$$ 
 
 $$\hat{\sigma}^2_i = \exp\left\{\mathbf{z}_i'\hat{\boldsymbol{\tau}}\right\}$$
-These can be returned by generic method `fitted()` which accepts the argument `type`. By default, `type = "all"` so all three quantities are estimated, but the user can choose to specify only `"mu"`, `"log.s2"` or `"s2"`.
+
+These values can be returned by the generic function `fitted()`, which accepts the argument `type`. By default, `type = "all"` so all three quantities are estimated, but the user can specify only `"mu"`, `"log.s2"` or `"s2"` to estimate only one of the components.
 
 ```{r}
 head(fitted(mod.mvreg))
 ```
 
-The generic `predict()` is also available. It takes as argument the `mvreg` object, and if no other parameter is specified, its output is the same of `fitted()`, but the predictions are organized in a list of three different elements for `mu`, `log.s2` and `s2`.
+The generic `predict()` is also available. It takes as argument the `mvreg` object, and if no additional parameters are specified, its output is the same as `fitted()`. However, the predictions are returned as a list with three different elements for `mu`, `log.s2` and `s2`.
 
 ```{r}
 predict(mod.mvreg)
 ```
 
-`predict()` takes a parameter `type` which works as in `fitted()`, but different components can be returned simultaneously.
+The `predict()` function also has a `type` parameter, which works the same as in `fitted()`, but allows multiple components to be returned simultaneously.
 
-
-It is possible to pass a `newdata` argument, which must be a `data.frame` containing the same variables used for fitting the `mvreg` model, both for mean and variance components
+It is possible to pass a `newdata` argument, which must be a `data.frame` containing the same variables used for fitting the `mvreg` model, both for the mean and the variance components
 
 ```{r}
 newdata <- data.frame(speed = as.vector(summary(cars$speed)))
 
 predict(mod.mvreg, newdata = newdata)
 ```
-A further argument is `se.fit`, a logical value indicating whether to output an estimate of the standard error of the predictions. The standard errors for `mu` and `log.s2` are computed via standard formulas
+
+A further argument is `se.fit`, a logical value indicating whether to return an estimate of the standard error for the predictions. The standard errors for `mu` and `log.s2` are computed using standard formulas
 
 $$\text{SE}(\hat{\mu}_i) = \sqrt{ \mathbf{x}_i\mathcal{I}^{-1}_\boldsymbol{\beta}(\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\tau}}) \mathbf{x}_i'}$$
 
 $$\text{SE}(\log \hat{\sigma}_i^2) = \sqrt{ \mathbf{z}_i\mathcal{I}^{-1}_\boldsymbol{\tau}(\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\tau}}) \mathbf{z}_i'}$$
-while an estimate of standard error for $\hat{\sigma}^2_i$ is computed using Delta method
+
+while the standard error for $\hat{\sigma}^2_i$ is estimated using Delta method
 
 $$\text{SE}( \hat{\sigma}_i^2) = \sqrt{\exp\left\{2\mathbf{z}_i'\hat{\boldsymbol{\tau}}\right\}\left(\text{SE}(\log \hat{\sigma}_i^2)\right)^2}$$
 
@@ -288,7 +290,16 @@ $$\text{SE}( \hat{\sigma}_i^2) = \sqrt{\exp\left\{2\mathbf{z}_i'\hat{\boldsymbol
 predict(mod.mvreg, newdata = newdata, se.fit = T)
 ```
 
-The argument `interval` is a logical value indicating whether to output a confidence interval for the predictions. The user can specify the significance level by the argument `sig.level`
+The argument `interval` is a logical value indicating whether to return a confidence interval for the predictions. The user can specify the significance level by the `sig.level` argument. The intervals for $\mu_i$ and $\log \sigma^2_i$ are computed using the classic Wald pivotal quantity
+
+$$ \left\{\hat{\mu}_i + z_{\frac{\alpha}{2}}\text{SE}(\hat{\mu}_i) \leq \mu_i \leq \hat{\mu}_i + z_{1 -\frac{\alpha}{2}}\text{SE}(\hat{\mu}_i)\right\}$$
+
+
+$$ \left\{\log\hat{\sigma}^2_i + z_{\frac{\alpha}{2}}\text{SE}(\log \hat{\sigma}^2_i) \leq \log \sigma^2_i \leq \log \hat{\sigma}^2_i + z_{1 -\frac{\alpha}{2}}\text{SE}(\log\hat{\sigma}^2_i)\right\}$$
+
+The interval for $\sigma^2_i$ is obtained by applying the exponential function to the interval for $\log \sigma^2_i$.
+
+
 
 ```{r}
 predict(mod.mvreg, newdata = newdata, se.fit = T, interval = T, sig.level = 0.95)

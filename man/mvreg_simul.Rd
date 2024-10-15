@@ -16,7 +16,7 @@ mvreg_simul(
   method = c("wls", "full_nr"),
   vcov.type = c("expected", "observed"),
   start.s2 = c("residuals", "gamma", "zero"),
-  tol = 1e-10,
+  tol = 0.0000000001,
   maxit = 100
 )
 }
