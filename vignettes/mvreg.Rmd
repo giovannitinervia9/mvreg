@@ -92,7 +92,7 @@ The `mvreg()` function operates similarly to the `lm()` function. We can specify
 ```{r}
 mod.mvreg <- mvreg(
   formula.mu = dist ~ speed,
-  formula.s2 = ~speed, data = cars
+  formula.s2 = ~speed, data = cars)
 
 ```
 
