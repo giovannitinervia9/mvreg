@@ -4,10 +4,12 @@
 \alias{logLik.mvreg}
 \title{logLik for mvreg}
 \usage{
-\method{logLik}{mvreg}(x)
+\method{logLik}{mvreg}(object, ...)
 }
 \arguments{
-\item{x}{A mvreg object.}
+\item{object}{A mvreg object.}
+
+\item{...}{Additional optional arguments.}
 }
 \value{
 Loglikelihood value of a fitted mvreg model.

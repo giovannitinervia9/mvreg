@@ -266,7 +266,8 @@ fitted.mvreg <- function(x, type = c("all", "mu", "log.s2", "s2")) {
 
 #' logLik for mvreg
 #'
-#' @param x A mvreg object.
+#' @param object A mvreg object.
+#' @param ... Additional optional arguments.
 #'
 #' @return Loglikelihood value of a fitted mvreg model.
 #' @export
@@ -274,11 +275,11 @@ fitted.mvreg <- function(x, type = c("all", "mu", "log.s2", "s2")) {
 #' @examples
 #' mod <- mvreg(Sepal.Length ~ Species, data = iris)
 #' logLik(mod)
-logLik.mvreg <- function(x) {
-  val <- x$logLik
-  df <- ncol(x$x) + ncol(x$z)
+logLik.mvreg <- function(object, ...) {
+  val <- object$logLik
+  df <- ncol(object$x) + ncol(object$z)
   attr(val, "df") <- df
-  attr(val, "nobs") <- x$nobs
+  attr(val, "nobs") <- object$nobs
   class(val) <- "logLik"
   val
 }
