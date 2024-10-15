@@ -1,6 +1,6 @@
 #' Convert mvreg model to lm
 #'
-#' @param object A mvreg object
+#' @param object A mvreg or a summary.mvreg object
 #'
 #' @return A lm object with same formula as the formula.mu of the initial mvreg object
 #' @export

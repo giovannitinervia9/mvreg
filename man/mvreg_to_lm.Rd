@@ -7,7 +7,7 @@
 mvreg_to_lm(object)
 }
 \arguments{
-\item{object}{A mvreg object}
+\item{object}{A mvreg or a summary.mvreg object}
 }
 \value{
 A lm object with same formula as the formula.mu of the initial mvreg object
