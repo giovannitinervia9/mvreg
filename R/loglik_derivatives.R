@@ -21,7 +21,7 @@
 #' t <- coef(mvreg_mod, "s2") # coefficients of variance component
 #'
 #' # loglikelihood
-#' ll(y, x, z, b, t)
+#' mvreg_loglik(y, x, z, b, t)
 #'
 mvreg_loglik <- function(y, x, z, b, t) {
   eta.mu <- as.vector(x %*% b)
@@ -55,8 +55,8 @@ mvreg_loglik <- function(y, x, z, b, t) {
 #' t <- coef(mvreg_mod, "s2") # coefficients of variance component
 #'
 #' # first derivatives
-#' dldb(y, x, z, b, t) # w.r.t. mean coefficients
-#' dldt(y, x, z, b, t) # w.r.t. variance coefficients
+#' mvreg_gradient_mu(y, x, z, b, t) # w.r.t. mean coefficients
+#' mvreg_gradient_s2(y, x, z, b, t) # w.r.t. variance coefficients
 #'
 mvreg_gradient_mu <- function(y, x, z, b, t) {
   eta.mu <- as.vector(x %*% b)
@@ -92,10 +92,10 @@ mvreg_gradient_mu <- function(y, x, z, b, t) {
 #' t <- coef(mvreg_mod, "s2") # coefficients of variance component
 #'
 #' # second derivatives
-#' d2ldb(y, x, z, b, t) # w.r.t. mean coefficients
-#' d2ldt(y, x, z, b, t) # w.r.t. variance coefficients
-#' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
-#' d2l(y, x, z, b, t) # full hessian
+#' mvreg_hessian_mu(y, x, z, b, t) # w.r.t. mean coefficients
+#' mvreg_hessian_s2(y, x, z, b, t) # w.r.t. variance coefficients
+#' mvreg_hessian_mus2(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
+#' mvreg_hessian(y, x, z, b, t) # full hessian
 #'
 mvreg_hessian_mu <- function(y, x, z, b, t, type = c("observed", "expected")) {
   type <- match.arg(type)
@@ -137,8 +137,8 @@ mvreg_hessian_mu <- function(y, x, z, b, t, type = c("observed", "expected")) {
 #' t <- coef(mvreg_mod, "s2") # coefficients of variance component
 #'
 #' # first derivatives
-#' dldb(y, x, z, b, t) # w.r.t. mean coefficients
-#' dldt(y, x, z, b, t) # w.r.t. variance coefficients
+#' mvreg_gradient_mu(y, x, z, b, t) # w.r.t. mean coefficients
+#' mvreg_gradient_s2(y, x, z, b, t) # w.r.t. variance coefficients
 #'
 mvreg_gradient_s2 <- function(y, x, z, b, t) {
   eta.mu <- as.vector(x %*% b)
@@ -178,10 +178,10 @@ mvreg_gradient_s2 <- function(y, x, z, b, t) {
 #' t <- coef(mvreg_mod, "s2") # coefficients of variance component
 #'
 #' # second derivatives
-#' d2ldb(y, x, z, b, t) # w.r.t. mean coefficients
-#' d2ldt(y, x, z, b, t) # w.r.t. variance coefficients
-#' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
-#' d2l(y, x, z, b, t) # full hessian
+#' mvreg_hessian_mu(y, x, z, b, t) # w.r.t. mean coefficients
+#' mvreg_hessian_s2(y, x, z, b, t) # w.r.t. variance coefficients
+#' mvreg_hessian_mus2(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
+#' mvreg_hessian(y, x, z, b, t) # full hessian
 #'
 mvreg_hessian_s2 <- function(y, x, z, b, t, type = c("observed", "expected")) {
   type <- match.arg(type)
@@ -231,10 +231,10 @@ mvreg_hessian_s2 <- function(y, x, z, b, t, type = c("observed", "expected")) {
 #' t <- coef(mvreg_mod, "s2") # coefficients of variance component
 #'
 #' # second derivatives
-#' d2ldb(y, x, z, b, t) # w.r.t. mean coefficients
-#' d2ldt(y, x, z, b, t) # w.r.t. variance coefficients
-#' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
-#' d2l(y, x, z, b, t) # full hessian
+#' mvreg_hessian_mu(y, x, z, b, t) # w.r.t. mean coefficients
+#' mvreg_hessian_s2(y, x, z, b, t) # w.r.t. variance coefficients
+#' mvreg_hessian_mus2(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
+#' mvreg_hessian(y, x, z, b, t) # full hessian
 #'
 mvreg_hessian_mus2 <- function(y, x, z, b, t, type = c("observed", "expected")) {
   type <- match.arg(type)
@@ -285,10 +285,10 @@ mvreg_hessian_mus2 <- function(y, x, z, b, t, type = c("observed", "expected")) 
 #' t <- coef(mvreg_mod, "s2") # coefficients of variance component
 #'
 #' # second derivatives
-#' d2ldb(y, x, z, b, t) # w.r.t. mean coefficients
-#' d2ldt(y, x, z, b, t) # w.r.t. variance coefficients
-#' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
-#' d2l(y, x, z, b, t) # full hessian
+#' mvreg_hessian_mu(y, x, z, b, t) # w.r.t. mean coefficients
+#' mvreg_hessian_s2(y, x, z, b, t) # w.r.t. variance coefficients
+#' mvreg_hessian_mus2(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
+#' mvreg_hessian(y, x, z, b, t) # full hessian
 #'
 mvreg_hessian <- function(y, x, z, b, t, type = c("observed", "expected")) {
   type <- match.arg(type)
