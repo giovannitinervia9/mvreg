@@ -29,34 +29,32 @@ suppressMessages(require(ggthemes))
 
 `mvreg` is a package that allows users to fit linear models in which the assumption of homoscedasticity can be relaxed.
 
-It is well known that in the standard linear regression model one of the assumptions is that the variance of the residuals is constant for all the observations, yet in real applications it is not rare to encounter cases in which this assumptions doesn't hold.
+It is well known that in the standard linear regression model one of the assumptions is that the variance of the residuals is constant for all the observation. However, in real-word applications it is not uncommon to encounter cases where this assumption does not hold.
 
-In these cases the Ordinary Least Squares estimator for parameters' vector $\boldsymbol{\beta}$ is unbiased, but the standard errors we get from `lm()` are not consistent anymore.
+In such cases, the Ordinary Least Squares (OLS) estimator for the parameter vector $\boldsymbol{\beta}$ remains unbiased, but the standard errors produced by lm() are no longer consistent.
 
-This problem can be handled in several ways, like sandwich variance estimation provided by `sandwich` package or via Weighted Least Squares estimation, in which one can estimate $\boldsymbol{\beta}$ via $\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$, providing a weights matrix $\mathbf{W}$ that should be a diagonal matrix with diagonal elements $w_{ii} = \dfrac{1}{\sigma^2_{i}}$.
+This problem can be addressed in several ways, such as using sandwich variance estimation, as provided by the `sandwich` package, or by employing Weighted Least Squares (WLS) estimation. In WLS, the $\boldsymbol{\beta}$ parameter is estimated as $\hat{\boldsymbol{\beta}} = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}$, where $\mathbf{W}$ is a diagonal weight matrix with diagonal elements $w_{ii} = \dfrac{1}{\sigma^2_{i}}$.
 
 # What does `mvreg` do?
-The approach that `mvreg` follows is to fit a model in which expected value and variance are jointly modelled as functions of linear predictors, which can have different structures for the two components. 
+The approach that `mvreg` follows is to fit a model in which expected value and variance are jointly modeled as functions of linear predictors, which can have different structures for the two components. 
 
 Formally, the model is specified as $$Y_i|\mathbf{x}_i, \mathbf{z}_i \sim \mathcal{N}\left(\mu_i = \mathbf{x}_i'\boldsymbol{\beta}, \sigma^2_i = \exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}\right)$$
 where $\mathbf{x}_i$ is the $i$-th row vector of a $n \times k$ design matrix $\mathbf{X}$ and $\boldsymbol{\beta}$ is the vector of parameters for the mean component, while $\mathbf{z}_i$ is the $i$-th row vector of a $n \times p$ design matrix $\mathbf{Z}$ and $\boldsymbol{\tau}$ is the vector of parameters for the variance component.
 
-In general, $\mathbf{X}$ and $\mathbf{Z}$ can share the same columns, can have totally different columns or the columns of $\mathbf{Z}$ can be a subset of the columns of $\mathbf{X}$ and viceversa.
+In general, $\mathbf{X}$ and $\mathbf{Z}$ can share the same columns, have totally different columns or the columns of $\mathbf{Z}$ can be a subset of the columns of $\mathbf{X}$ and vice versa.
 
 The variance is linked to the linear predictor $\mathbf{z}_i'\boldsymbol{\tau}$ via a $\log$-link, so that 
 
 $$\log{(\sigma^2_i)} = \mathbf{z}_i'\boldsymbol{\tau}$$
 
-Model parameters are estimated using the maximum likelihood method, but before delving into technical details let's see how `mvreg` works.
+The model parameters are estimated using maximum likelihood method, but before delving into technical details let's see how `mvreg` works.
 
-## `mvreg()` function, a `lm`-like function for heteroscedastic regression.
+## `mvreg()`: a `lm`-like function for heteroscedastic regression.
 
-The main function that a generic user of `mvreg` should use is the `mvreg()` function. 
-This function allows to fit a heroscedastic linear model in which two different formulas can be specified, one for mean component and the other one for variance component.
+The main function that a typical `mvreg` user will interact with is the `mvreg()` function.
+This function fits a heteroscedastic linear model in which two different formulas can be specified: one for the mean component and another for the variance component.
 
-Let's see some examples of different case uses.
-
-For the first example we'll use the `cars`. This dataset contains only two variables, `speed` and `dist`, so that it's natural to consider a model that explains how stopping distance is affected by speed. Let's visualize the data.
+Let's consider the dataset `cars`, which contains only two variables, `speed` and `dist`, making it natural to model how stopping distance is influenced by speed. Let's visualize the data.
 
 ```{r, echo = F, warning = F, message = F}
 ggplot(cars, aes(x = speed, y = dist)) +
@@ -65,7 +63,7 @@ ggplot(cars, aes(x = speed, y = dist)) +
   theme_few()
 ```
 
-It is clearly evident that stopping distance increases as speed increases, and a keen eye might notice that for low values of speed the stopping distance tends to assume values closer to the regression line, while, as speed increases, the points tend to be more dispersed.
+It is clear that stopping distance increases with speed, and one might notice that for lower speeds, stopping distances tend to assume values closer to the regression line, whereas at higher speeds, the points tend to be more dispersed.
 
 Let's fit a classic linear model and check the relationship between the square root of the absolute value of residuals and the fitted values.
 
@@ -87,9 +85,9 @@ mod.lm <- lm(dist ~ speed, data = cars)
 plot(mod.lm, 3)
 ```
 
-The graph seems to confirm the initial evidence with respect to the possibility of observing heteroscedasticity, so we could try to account for it via `mvreg`.
+The graph seems to confirm initial suspicions about heteroscedasticity, so we can attempt to account for it using `mvreg`.
 
-`mvreg()` function works just like `lm()` function. We can specify two different formulas for the mean component, which is called `formula.mu`, and for the variance component, which is called `formula.s2`.
+The `mvreg()` function operates similarly to the `lm()` function. We can specify two different formulas: one for the mean component, `formula.mu`, and another for the variance component, `formula.s2`.
 
 ```{r}
 mod.mvreg <- mvreg(
@@ -98,28 +96,28 @@ mod.mvreg <- mvreg(
 )
 ```
 
-`mvreg()` returns an object of class `mvreg`, for which various generic methods are implemented.
-Let's see the `summary()` of the model.
+`mvreg()` returns an object of class `mvreg`, for which various generic methods are available.
+Let's examine the `summary()` of the model.
 
 ```{r}
 summary(mod.mvreg)
 ```
-As it can be seen, the output of `summary()` returns two main tables. In the first table estimates, standard errors and the results of Wald tests are reported for the mean component, whereas the second table reports same information for the coefficient of the `log(variance)` component. These tables have the same structure of a classical output of `lm` objects, with the main difference that Wald tests are computed assuming asymptotic normal distribution under the null hypothesis that the coefficients are equal to zero.
+As shown, the output of `summary()` returns two main tables: one for the `mean` component and another for the `log(variance)` component. Both tables include estimates, standard errors, and Wald test results, similar to the classical `lm` output. The key difference is that Wald tests assume an asymptotic normal distribution under the null hypothesis that the coefficients are zero.
 
-It can be seen that the coefficient relative to the variance component for the variable `speed` is significantly different from zero and it's positive, suggesting a positive linear relation between the logarithm of the variance and speed.
+The coefficient for the variance component related to `speed` is significantly different from zero and is positive, indicating a positive linear relationship between the logarithm of the variance and speed.
 
 ## How to handle `formula.s2`
-The argument `formula.s2` is optional. If it is not specified it is assumed that the structure of linear predictor is the same both in mean and variance component.
+The `formula.s2` argument is optional. If not provided, it is assumed that the linear predictor structure is the same for both the mean and variance components.
 
-For example, if we write
+For example, this model:
 
 ```{r}
 mvreg(dist ~ speed, data = cars)
 ```
 
-we get the same model we fitted in the previous section.
+yields the same result as the model fitted in the previous section.
 
-If we do not want the formulas to be equal, it is necessary to specify both of them, as in 
+If we want different formulas for the mean and variance components, we must specify both, as shown here: 
 
 ```{r}
 mvreg(dist ~ speed + I(speed^2),
@@ -127,7 +125,7 @@ mvreg(dist ~ speed + I(speed^2),
   data = cars
 )
 ```
-`formula.s2` can be both a two-side formula or a only right-side formula. `mvreg()` essentially ignores the left side of `formula.s2`, as it is needed only to build the design matrix for variance component.
+The `formula.s2` can be a two-sided formula or a right-hand-side formula. `mvreg()` essentially ignores the left-hand side of `formula.s2`, as it is only needed to construct the design matrix for the variance component.
 
 
 # Methods and applications
@@ -147,7 +145,7 @@ and log-likelihood function
 
 $$ \ell(\boldsymbol{\beta},\boldsymbol{\tau}) = -\dfrac{1}{2}\sum_{i=1}^n \left\{\log(2\pi) + \mathbf{z}_i'\boldsymbol{\tau} + \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}} \right\} $$
 
-The expressions for the first and second derivatives of the log-likelihood are provided as follows:
+The expressions for the first and second derivatives of the log-likelihood are as follows:
 
 $$\dfrac{\partial \ell}{\partial \beta_j} = \sum_{i=1}^n \dfrac{y_i - \mathbf{x}_i'\boldsymbol{\beta}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}x_{ij}$$
 $$\dfrac{\partial^2 \ell}{\partial \beta_j \partial \beta_l} = -\sum_{i=1}^n \dfrac{x_{ij}x_{il}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}$$
@@ -216,6 +214,34 @@ Then weights $w_i$ are estimated via $w_i = \dfrac{1}{\exp\left\{\mathbf{z}_i'\h
 The algorithm continues until $|(\hat{\boldsymbol{\beta}},\hat{\boldsymbol{\tau}})_k - (\hat{\boldsymbol{\beta}},\hat{\boldsymbol{\tau}})_{k-1}| < \boldsymbol{\varepsilon}$
 
 This algorithm is the default choice for `mvreg_fit()`, but an argument `method` is available. If `method = "wls"` the algorithm just described is used, else if `method = "full_nr"` the closed form expression for $\hat{\boldsymbol{\beta}}$ is not used and Newton method is used for parameters of both mean and variance components.
+
+Once a `mvreg` model is fitted, one can access the estimates of parameters via `coef` method, that has a `partition` argument by which one can decide if all coefficients must be returned (default choice, `partition = "all"`) or just the coefficients of mean component (`partition = "mu"`) or variance component (`partition = "s2"`)
+```{r}
+coef(mod.mvreg)
+coef(mod.mvreg, "mu")
+coef(mod.mvreg, "s2")
+```
+
+
+
+## Variance-covariance matrix of estimators
+
+As for asymptotic likelihood theory, we have that $$ (\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\tau}})' \rightarrow \mathcal{N}\left[ (\boldsymbol{\beta}, \boldsymbol{\tau})', \mathcal{I}^{-1}(\boldsymbol{\beta}, \boldsymbol{\tau})\right] $$
+so an estimate of variance-covariance matrix is given by $\mathcal{I}^{-1}(\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\tau}})$
+
+The variance-covariance matrix is computed by `mvreg_fit()` function, that has an argument `vcov.type`. By default `vcov.type = "expected"`, so the variance-covariance matrix is computed using expected Fisher information matrix $\mathcal{I}^{-1}(\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\tau}})$, but the user can choose to use the observed Fisher information matrix $\mathcal{J}^{-1}(\hat{\boldsymbol{\beta}}, \hat{\boldsymbol{\tau}})$.
+
+Once a `mvreg` model is fitted, the variance-covariance matrix can be accessed using function `vcov` 
+```{r}
+vcov(mod.mvreg)
+```
+
+`vcov` method for `mvreg` object has an argument `partition` in which the user can specify which diagonal block of the full matrix is to be returned. The default is `"all"`, but one can also specify `partition = "mu"` or `partition = "s2"`
+
+```{r}
+vcov(mod.mvreg, "mu")
+vcov(mod.mvreg, "s2")
+```
 
 
 
