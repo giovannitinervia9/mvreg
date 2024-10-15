@@ -363,7 +363,7 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
 
     se.mu <- sqrt(rowSums((x %*% vcov.mu) * x))
     se.log.s2 <- sqrt(rowSums((z %*% vcov.log.s2) * z))
-    se.s2 <- sqrt(exp(2 * pred.log.s2) * se.log.s2) # delta method
+    se.s2 <- sqrt(exp(2 * pred.log.s2) * se.log.s2^2) # delta method
 
     dmu <- data.frame(pred.mu, se.mu)
     dlogs2 <- data.frame(pred.log.s2, se.log.s2)
@@ -376,7 +376,7 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
 
     se.mu <- sqrt(rowSums((x %*% vcov.mu) * x))
     se.log.s2 <- sqrt(rowSums((z %*% vcov.log.s2) * z))
-    se.s2 <- sqrt(exp(2 * pred.log.s2) * se.log.s2) # delta method
+    se.s2 <- sqrt(exp(2 * pred.log.s2) * se.log.s2^2) # delta method
 
     quant <- qnorm(1 - (1 - sig.level) / 2)
     confint.mu <- cbind(pred.mu - quant * se.mu, pred.mu + quant * se.mu)
@@ -396,7 +396,7 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
 
     se.mu <- sqrt(rowSums((x %*% vcov.mu) * x))
     se.log.s2 <- sqrt(rowSums((z %*% vcov.log.s2) * z))
-    se.s2 <- sqrt(exp(2 * pred.log.s2) * se.log.s2) # delta method
+    se.s2 <- sqrt(exp(2 * pred.log.s2) * se.log.s2^2) # delta method
 
     quant <- qnorm(1 - (1 - sig.level) / 2)
     confint.mu <- cbind(pred.mu - quant * se.mu, pred.mu + quant * se.mu)
