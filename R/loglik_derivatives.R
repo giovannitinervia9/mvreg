@@ -23,7 +23,7 @@
 #' # loglikelihood
 #' ll(y, x, z, b, t)
 #'
-ll <- function(y, x, z, b, t) {
+mvreg_loglik <- function(y, x, z, b, t) {
   eta.mu <- as.vector(x %*% b)
   eta.s2 <- as.vector(z %*% t)
   r <- -0.5 * sum(log(2 * pi) + eta.s2 + (y - eta.mu)^2 / exp(eta.s2))
@@ -58,7 +58,7 @@ ll <- function(y, x, z, b, t) {
 #' dldb(y, x, z, b, t) # w.r.t. mean coefficients
 #' dldt(y, x, z, b, t) # w.r.t. variance coefficients
 #'
-dldb <- function(y, x, z, b, t) {
+mvreg_gradient_mu <- function(y, x, z, b, t) {
   eta.mu <- as.vector(x %*% b)
   eta.s2 <- as.vector(z %*% t)
   const <- (y - eta.mu) / exp(eta.s2)
@@ -97,7 +97,7 @@ dldb <- function(y, x, z, b, t) {
 #' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
 #' d2l(y, x, z, b, t) # full hessian
 #'
-d2ldb <- function(y, x, z, b, t, type = c("observed", "expected")) {
+mvreg_hessian_mu <- function(y, x, z, b, t, type = c("observed", "expected")) {
   type <- match.arg(type)
   h <- matrix(NA, ncol(x), ncol(x))
   eta.s2 <- as.vector(z %*% t)
@@ -140,7 +140,7 @@ d2ldb <- function(y, x, z, b, t, type = c("observed", "expected")) {
 #' dldb(y, x, z, b, t) # w.r.t. mean coefficients
 #' dldt(y, x, z, b, t) # w.r.t. variance coefficients
 #'
-dldt <- function(y, x, z, b, t) {
+mvreg_gradient_s2 <- function(y, x, z, b, t) {
   eta.mu <- as.vector(x %*% b)
   eta.s2 <- as.vector(z %*% t)
   const <- 1 - (y - eta.mu)^2 * exp(-eta.s2)
@@ -183,7 +183,7 @@ dldt <- function(y, x, z, b, t) {
 #' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
 #' d2l(y, x, z, b, t) # full hessian
 #'
-d2ldt <- function(y, x, z, b, t, type = c("observed", "expected")) {
+mvreg_hessian_s2 <- function(y, x, z, b, t, type = c("observed", "expected")) {
   type <- match.arg(type)
   h <- matrix(NA, ncol(z), ncol(z))
 
@@ -236,7 +236,7 @@ d2ldt <- function(y, x, z, b, t, type = c("observed", "expected")) {
 #' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
 #' d2l(y, x, z, b, t) # full hessian
 #'
-d2ldbdt <- function(y, x, z, b, t, type = c("observed", "expected")) {
+mvreg_hessian_mus2 <- function(y, x, z, b, t, type = c("observed", "expected")) {
   type <- match.arg(type)
 
 
@@ -290,10 +290,10 @@ d2ldbdt <- function(y, x, z, b, t, type = c("observed", "expected")) {
 #' d2ldbdt(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
 #' d2l(y, x, z, b, t) # full hessian
 #'
-d2l <- function(y, x, z, b, t, type = c("observed", "expected")) {
+mvreg_hessian <- function(y, x, z, b, t, type = c("observed", "expected")) {
   type <- match.arg(type)
-  hbb <- d2ldb(y, x, z, b, t, type)
-  htt <- d2ldt(y, x, z, b, t, type)
-  hbt <- d2ldbdt(y, x, z, b, t, type)
+  hbb <- mvreg_hessian_mu(y, x, z, b, t, type)
+  htt <- mvreg_hessian_s2(y, x, z, b, t, type)
+  hbt <- mvreg_hessian_mus2(y, x, z, b, t, type)
   rbind(cbind(hbb, hbt), cbind(t(hbt), htt))
 }

@@ -43,7 +43,7 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
 
   if (method == "wls") {
     while (any(abs(dev) > tol) && it < maxit) {
-      t1 <- as.vector(t0 - solve(d2ldt(y, x, z, b0, t0, type = "observed")) %*% dldt(y, x, z, b0, t0))
+      t1 <- as.vector(t0 - solve(mvreg_hessian_s2(y, x, z, b0, t0, type = "observed")) %*% mvreg_gradient_s2(y, x, z, b0, t0))
       w <- as.vector(1 / exp(z %*% t1))
       b1 <- as.vector(solve(crossprod(x * w, x), crossprod(x * w, y)))
       dev <- c(b1, t1) - c(b0, t0)
@@ -53,8 +53,8 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
     }
   } else {
     while (any(abs(dev) > tol) && it < maxit) {
-      t1 <- as.vector(t0 - solve(d2ldt(y, x, z, b0, t0, type = "observed")) %*% dldt(y, x, z, b0, t0))
-      b1 <- as.vector(b0 - solve(d2ldb(y, x, z, b0, t1, type = "observed")) %*% dldb(y, x, z, b0, t1))
+      t1 <- as.vector(t0 - solve(mvreg_hessian_s2(y, x, z, b0, t0, type = "observed")) %*% mvreg_gradient_s2(y, x, z, b0, t0))
+      b1 <- as.vector(b0 - solve(mvreg_hessian_mu(y, x, z, b0, t1, type = "observed")) %*% mvreg_gradient_mu(y, x, z, b0, t1))
       dev <- c(b1, t1) - c(b0, t0)
       it <- it + 1L
       t0 <- t1
@@ -64,7 +64,7 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
 
   theta0 <- c(b0, t0)
   names(theta0) <- c(colnames(x), colnames(z))
-  vtheta <- solve(-d2l(y, x, z, b0, t0, type = vcov.type))
+  vtheta <- solve(-mvreg_hessian(y, x, z, b0, t0, type = vcov.type))
   colnames(vtheta) <- rownames(vtheta) <- names(theta0)
 
   list(theta = theta0, b = b0, t = t0, vtheta = vtheta, it = it)
