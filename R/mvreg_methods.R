@@ -149,10 +149,12 @@ summary.mvreg <- function(object, ...) {
     coefficients.mu = mu.tab,
     coefficients.s2 = s2.tab,
     df = df,
-    loglik = logLik(object),
     vcov = vcov(object),
     vcov.mu = vcov(object, "mu"),
-    vcov.s2 = vcov(object, "s2")
+    vcov.s2 = vcov(object, "s2"),
+    loglik = logLik(object),
+    AIC = AIC(object),
+    BIC = BIC(object)
   )
 
   class(res) <- "summary.mvreg"
@@ -173,7 +175,7 @@ summary.mvreg <- function(object, ...) {
 #' @return Print summary for mvreg.
 #' @export
 #'
-#' @importFrom stats printCoefmat
+#' @importFrom stats printCoefmat AIC BIC pchisq
 #' @examples
 #' mod <- mvreg(Sepal.Length ~ Species, data = iris)
 #' s <- summary(mod)
@@ -202,6 +204,12 @@ print.summary.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L),
     sep = ""
   )
 
+  cat("\n")
+
+  print(c(logLik = x$loglik, AIC = x$AIC, BIC = x$BIC))
+
+  cat("\n")
+
 
   cat("\nCoefficients for mean component:\n")
 
@@ -219,6 +227,34 @@ print.summary.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L),
     digits = digits, cs.ind = 1:2, tst.ind = 3,
     signif.stars = signif.stars, P.values = NULL
   )
+
+  cat("\n")
+
+  cat("\nLRT for comparison with a lm model\n")
+
+  mod_lm <- mvreg_to_lm(x)
+  dim_h0 <- length(coef(mod_lm)) + 1
+  dim_h1 <- nrow(x$coefficients)
+  loglik_lm <- logLik(mod_lm)
+  lrt <- as.vector(-2*(loglik_lm - x$loglik))
+  df <- dim_h1 - dim_h0
+
+  pval <- 1 - pchisq(lrt, df)
+
+  dd <- rbind(c(-2*loglik_lm, NA, NA, NA),
+              c(-2*x$loglik, df, lrt, pval))
+
+
+  colnames(dd) = c("-2logLik", "df", "LRT", "Pr(>Chi)")
+  rownames(dd) = c("mvreg", "lm")
+
+  printCoefmat(dd,
+               digits = digits, cs.ind = 1, tst.ind = 3,
+               signif.stars = signif.stars, signif.legend = F, P.values = TRUE,
+               has.Pvalue = TRUE, na.print = ""
+  )
+
+
 }
 
 
