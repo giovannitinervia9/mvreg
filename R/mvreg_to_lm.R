@@ -11,7 +11,7 @@
 #' mod.mvreg <- mvreg(dist ~ speed, data = cars)
 #' mvreg_to_lm(mod.mvreg)
 mvreg_to_lm <- function(object) {
-  if(!(class(object) %in% c("mvreg", "summary.mvreg"))){
+  if (!(class(object) %in% c("mvreg", "summary.mvreg"))) {
     stop("Object is not of class 'mvreg' or 'summary.mvreg'.")
   }
   formula.mu <- object$call$formula.mu

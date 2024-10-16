@@ -1,11 +1,9 @@
-
 #' Simulation study for mvreg models
 #'
 #' @param x Design matrix for mean component.
 #' @param z Design matrix for variance component.
 #' @param b True values for parameters of mean component.
 #' @param t True values for parameters of variance component.
-#' @param n Sample size.
 #' @param nsim Number of samples to simulate.
 #' @param sig.level Significance level for Wald tests.
 #' @param seed Seed of the simulation.
@@ -22,46 +20,56 @@
 #' @examples
 #' n <- 100
 #' x <- cbind(1, rnorm(n))
-#' z <- cbind(1, x[,2], x[,2]^2)
+#' z <- cbind(1, x[, 2], x[, 2]^2)
 #' b <- rnorm(ncol(x))
 #' t <- rnorm(ncol(z))
 #' mvreg_simul(x, z, b, t, n = n, nsim = 100, seed = 43)
 #'
-#'
-mvreg_simul <- function(x, z, b, t,
-                        n = 100, nsim = 100, sig.level = 0.05,
+mvreg_simul <- function(x, z, b, t, nsim = 100, sig.level = 0.05,
                         seed = NULL,
                         method = c("wls", "full_nr"),
                         vcov.type = c("expected", "observed"),
                         start.s2 = c("residuals", "gamma", "zero"),
                         tol = 1e-10,
                         maxit = 100) {
-
   method <- match.arg(method)
   vcov.type <- match.arg(vcov.type)
   start.s2 <- match.arg(start.s2)
   k <- ncol(as.matrix(x))
   p <- ncol(as.matrix(z))
+  n <- nrow(x)
 
-  if(is.null(colnames(x))){
-    if(k == 1) {colnames(x)[1] <- "mu.const"}
-    else if(k > 1) {
-      colnames(x) <- c("mu.const", paste0("mu.x", 1:(k-1)))
+  if (n != nrow(z)) {
+    stop("x and z must have the same number of rows")
+  }
+
+  if (is.null(colnames(x))) {
+    if (k == 1) {
+      colnames(x)[1] <- "mu.const"
+    } else if (k > 1) {
+      colnames(x) <- c("mu.const", paste0("mu.x", 1:(k - 1)))
     }
   } else {
-    if(colnames(x)[1] %in% c("", "(Intercept)")){
+    if (colnames(x)[1] %in% c("", "(Intercept)")) {
       colnames(x)[1] <- "mu.const"
+      if (k > 1) {
+        colnames(x)[-1] <- paste0("mu.", colnames(x)[-1])
+      }
     }
   }
 
-  if(is.null(colnames(z))){
-    if(p == 1) {colnames(z)[1] <- "s2.const"}
-    else if(k > 1) {
-      colnames(z) <- c("s2.const", paste0("s2.z", 1:(p-1)))
+  if (is.null(colnames(z))) {
+    if (p == 1) {
+      colnames(z)[1] <- "s2.const"
+    } else if (p > 1) {
+      colnames(z) <- c("s2.const", paste0("s2.z", 1:(p - 1)))
     }
   } else {
-    if(colnames(z)[1] %in% c("", "(Intercept)")){
+    if (colnames(z)[1] %in% c("", "(Intercept)")) {
       colnames(z)[1] <- "s2.const"
+      if (p > 1) {
+        colnames(z)[-1] <- paste0("s2.", colnames(z)[-1])
+      }
     }
   }
 
@@ -78,37 +86,48 @@ mvreg_simul <- function(x, z, b, t,
     on.exit(assign(".Random.seed", R.seed, envir = .GlobalEnv))
   }
 
- start_time <- proc.time()
+  start_time <- proc.time()
 
-  mu <- as.vector(x%*%b)
-  s <- as.vector(sqrt(exp(z%*%t)))
+  mu <- as.vector(x %*% b)
+  s <- as.vector(sqrt(exp(z %*% t)))
 
-  y <- lapply(seq_len(nsim),
-              function(i){
-                rnorm(n, mean = mu, sd = s)
-              })
+  y <- lapply(
+    seq_len(nsim),
+    function(i) {
+      rnorm(n, mean = mu, sd = s)
+    }
+  )
 
   names(y) <- paste0("sim_", seq_len(nsim))
 
-  start <- lapply(y, function(y){
+  start <- lapply(y, function(y) {
     mvreg_start(y, x, z, start.s2 = start.s2)$start
   })
 
-  sim_res <- mapply(function(y, start){
-    tryCatch({
-      mvreg_fit(y, x, z, start[1:k], start[(k+1):length(start)],
-                tol = tol, maxit = maxit,
-                method = method, vcov.type = vcov.type)
-    }, error = function(e) conditionMessage(e))
-  },
-    y, start, SIMPLIFY = F)
+  sim_res <- mapply(
+    function(y, start) {
+      tryCatch(
+        {
+          mvreg_fit(y, x, z, start[1:k], start[(k + 1):length(start)],
+            tol = tol, maxit = maxit,
+            method = method, vcov.type = vcov.type
+          )
+        },
+        error = function(e) conditionMessage(e)
+      )
+    },
+    y, start,
+    SIMPLIFY = F
+  )
 
   ok <- which(unlist(lapply(sim_res, class)) != "character")
 
   converged <- length(ok)
   non_converged <- nsim - length(ok)
 
-  if(non_converged == nsim){stop("None of the simulations converged")}
+  if (non_converged == nsim) {
+    stop("None of the simulations converged")
+  }
 
   sim_res <- sim_res[ok]
 
@@ -118,8 +137,8 @@ mvreg_simul <- function(x, z, b, t,
   sim_vtheta <- lapply(sim_res, function(res) res$vtheta)
 
   sim_se <- do.call(rbind, lapply(sim_vtheta, function(res) sqrt(diag(res))))
-  sim_t <- sim_theta/sim_se
-  sim_p <- 2*(1 - pnorm(abs(sim_t)))
+  sim_t <- sim_theta / sim_se
+  sim_p <- 2 * (1 - pnorm(abs(sim_t)))
   sim_it <- unlist(lapply(sim_res, function(res) res$it))
 
   sim_theta <- as.data.frame(sim_theta)
@@ -128,7 +147,7 @@ mvreg_simul <- function(x, z, b, t,
 
   true_value <- c(b, t)
   mean_value <- colMeans(sim_theta)
-  prop_rej_h0 <- colSums(sim_p < sig.level)/converged
+  prop_rej_h0 <- colSums(sim_p < sig.level) / converged
   distortion <- mean_value - true_value
   variance <- apply(sim_theta, 2, var)
   SE <- sqrt(variance)
@@ -137,48 +156,52 @@ mvreg_simul <- function(x, z, b, t,
 
   mean_vtheta <- matrix(NA, nrow = k + p, ncol = k + p)
 
-  for(i in 1:(k + p)){
-    for(j in 1:(k + p)){
+  for (i in 1:(k + p)) {
+    for (j in 1:(k + p)) {
       mean_vtheta[i, j] <- mean(unlist(
-        lapply(sim_vtheta, function(x) x[i, j])))
+        lapply(sim_vtheta, function(x) x[i, j])
+      ))
     }
   }
 
   colnames(mean_vtheta) <- rownames(mean_vtheta) <- c(colnames(x), colnames(z))
 
 
- end_time <- proc.time()
- total_time <- end_time - start_time
+  end_time <- proc.time()
+  total_time <- end_time - start_time
 
-  tab <- data.frame(true_value = true_value,
-                    mean_value = mean_value,
-                    distortion = distortion,
-                    variance = variance,
-                    SE = SE,
-                    MSE = MSE,
-                    RMSE = RMSE,
-                    prop_rej_h0 = prop_rej_h0)
+  tab <- data.frame(
+    true_value = true_value,
+    mean_value = mean_value,
+    distortion = distortion,
+    variance = variance,
+    SE = SE,
+    MSE = MSE,
+    RMSE = RMSE,
+    prop_rej_h0 = prop_rej_h0
+  )
 
   rownames(tab) <- c(colnames(x), colnames(z))
 
-  res <- list(tab = tab,
-              theta = sim_theta,
-              mean_vtheta = mean_vtheta,
-              vtheta = sim_vtheta,
-              it = sim_it,
-              y = data.frame(y),
-              n = n,
-              nsim = nsim,
-              seed = RNGstate,
-              k = ncol(x),
-              p = ncol(z),
-              converged = converged,
-              non_converged = non_converged,
-              total_time = total_time)
-  class(res) = "simul_mvreg"
+  res <- list(
+    tab = tab,
+    theta = sim_theta,
+    mean_vtheta = mean_vtheta,
+    vtheta = sim_vtheta,
+    it = sim_it,
+    y = data.frame(y),
+    n = n,
+    nsim = nsim,
+    seed = RNGstate,
+    k = ncol(x),
+    p = ncol(z),
+    converged = converged,
+    non_converged = non_converged,
+    total_time = total_time
+  )
+  class(res) <- "simul_mvreg"
 
   res
-
 }
 
 
@@ -196,21 +219,17 @@ mvreg_simul <- function(x, z, b, t,
 #' @examples
 #' n <- 100
 #' x <- cbind(1, rnorm(n))
-#' z <- cbind(1, x[,2], x[,2]^2)
+#' z <- cbind(1, x[, 2], x[, 2]^2)
 #' b <- rnorm(ncol(x))
 #' t <- rnorm(ncol(z))
 #' mvreg_simul(x, z, b, t, n = n, nsim = 100, seed = 43)
 print.simul_mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
-
   cat("\nSimulation study for a mvreg model\n")
   cat(paste0("\nn = ", x$n))
   cat(paste0("\nnumber of simulations = ", x$nsim))
-  cat(paste0("\nconverged simulations = ", x$converged, " (", round((x$converged/x$nsim)*100, 3), "%)"))
+  cat(paste0("\nconverged simulations = ", x$converged, " (", round((x$converged / x$nsim) * 100, 3), "%)"))
   cat(paste0("\ntime needed = ", round(x$total_time[3], 8), " seconds\n"))
   cat("\n")
 
   print(x$tab, digits = digits)
-
-  }
-
-
+}

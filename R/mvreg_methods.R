@@ -219,8 +219,6 @@ print.summary.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L),
     digits = digits, cs.ind = 1:2, tst.ind = 3,
     signif.stars = signif.stars, P.values = NULL
   )
-
-
 }
 
 
