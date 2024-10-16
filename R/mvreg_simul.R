@@ -23,7 +23,7 @@
 #' z <- cbind(1, x[, 2], x[, 2]^2)
 #' b <- rnorm(ncol(x))
 #' t <- rnorm(ncol(z))
-#' mvreg_simul(x, z, b, t, n = n, nsim = 100, seed = 43)
+#' mvreg_simul(x, z, b, t, nsim = 100, seed = 43)
 #'
 mvreg_simul <- function(x, z, b, t, nsim = 100, sig.level = 0.05,
                         seed = NULL,
