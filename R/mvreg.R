@@ -95,7 +95,7 @@ mvreg <- function(formula.mu,
       formula.s2 <- as.formula(paste0(response, " ", paste0(formula.s2, collapse = " ")))
     }
 
-    mf.s2 <- model.frame(formula.s2, data <- data)
+    mf.s2 <- model.frame(formula.s2, data)
     colz <- colnames(mf.s2)[-1]
     z <- model.matrix(attr(mf.s2, "terms"), mf.s2)
   }
