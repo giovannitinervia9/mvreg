@@ -107,6 +107,11 @@ As shown, the output of `summary()` returns two main tables, one for the `mean` 
 
 The coefficient for the variance component related to `speed` is significantly different from zero and is positive, indicating a positive linear relationship between the logarithm of the variance and speed.
 
+The `summary()` output also includes model fit statistics such as the log-likelihood (logLik), Akaike Information Criterion (AIC), and Bayesian Information Criterion (BIC).
+
+Additionally, a Likelihood Ratio Test (LRT) is performed to compare the `mvreg` model with a simpler `lm` model that assumes constant variance. In this example the test suggests that the `mvreg` model, which allows for heteroskedasticity, provides a significantly better fit than the `lm` model.
+
+
 ## How to handle `formula.s2`
 The `formula.s2` argument is optional. If not provided, it is assumed that the linear predictor structure is the same for both the mean and variance components.
 
