@@ -22,7 +22,7 @@ Print method for simul_mvreg
 \examples{
 n <- 100
 x <- cbind(1, rnorm(n))
-z <- cbind(1, x[,2], x[,2]^2)
+z <- cbind(1, x[, 2], x[, 2]^2)
 b <- rnorm(ncol(x))
 t <- rnorm(ncol(z))
 mvreg_simul(x, z, b, t, n = n, nsim = 100, seed = 43)

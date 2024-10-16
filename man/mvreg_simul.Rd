@@ -9,7 +9,6 @@ mvreg_simul(
   z,
   b,
   t,
-  n = 100,
   nsim = 100,
   sig.level = 0.05,
   seed = NULL,
@@ -28,8 +27,6 @@ mvreg_simul(
 \item{b}{True values for parameters of mean component.}
 
 \item{t}{True values for parameters of variance component.}
-
-\item{n}{Sample size.}
 
 \item{nsim}{Number of samples to simulate.}
 
@@ -56,10 +53,9 @@ Simulation study for mvreg models
 \examples{
 n <- 100
 x <- cbind(1, rnorm(n))
-z <- cbind(1, x[,2], x[,2]^2)
+z <- cbind(1, x[, 2], x[, 2]^2)
 b <- rnorm(ncol(x))
 t <- rnorm(ncol(z))
-mvreg_simul(x, z, b, t, n = n, nsim = 100, seed = 43)
-
+mvreg_simul(x, z, b, t, nsim = 100, seed = 43)
 
 }
