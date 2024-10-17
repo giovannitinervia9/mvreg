@@ -10,7 +10,7 @@
   newdata,
   se.fit = F,
   interval = F,
-  sig.level = 0.95
+  level = 0.95
 )
 }
 \arguments{
@@ -24,7 +24,7 @@
 
 \item{interval}{A logical value indicating if confidence intervals are to be returned.}
 
-\item{sig.level}{Confidence level for confidence intervals.}
+\item{level}{Confidence level for confidence intervals.}
 }
 \value{
 Predicted values for the different components of mvreg model. If specified, standard error estimates and confidence interval are returned.
@@ -40,7 +40,7 @@ predict(mvreg_mod1)
 predict(mvreg_mod1, type = "mu")
 predict(mvreg_mod1, type = "log.s2", se.fit = TRUE)
 predict(mvreg_mod1, type = "s2", interval = TRUE)
-predict(mvreg_mod1, se.fit = TRUE, interval = TRUE, sig.level = 0.99)
+predict(mvreg_mod1, se.fit = TRUE, interval = TRUE, level = 0.99)
 
 # predict with newdata
 unique(c(mvreg_mod1$colx, mvreg_mod1$colz)) # getting names of explanatory variables

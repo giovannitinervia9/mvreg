@@ -295,7 +295,7 @@ $$\text{SE}( \hat{\sigma}_i^2) = \sqrt{\exp\left\{2\mathbf{z}_i'\hat{\boldsymbol
 predict(mod.mvreg, newdata = newdata, se.fit = T)
 ```
 
-The argument `interval` is a logical value indicating whether to return a confidence interval for the predictions. The user can specify the significance level by the `sig.level` argument. The intervals for $\mu_i$ and $\log \sigma^2_i$ are computed using the classic Wald pivotal quantity
+The argument `interval` is a logical value indicating whether to return a confidence interval for the predictions. The user can specify the confidence level by the `level` argument. The intervals for $\mu_i$ and $\log \sigma^2_i$ are computed using the classic Wald pivotal quantity
 
 $$ \left\{\hat{\mu}_i + z_{\frac{\alpha}{2}}\text{SE}(\hat{\mu}_i) \leq \mu_i \leq \hat{\mu}_i + z_{1 -\frac{\alpha}{2}}\text{SE}(\hat{\mu}_i)\right\}$$
 
@@ -307,7 +307,7 @@ The interval for $\sigma^2_i$ is obtained by applying the exponential function t
 
 
 ```{r}
-predict(mod.mvreg, newdata = newdata, se.fit = T, interval = T, sig.level = 0.95)
+predict(mod.mvreg, newdata = newdata, se.fit = T, interval = T, level = 0.95)
 ```
 
 

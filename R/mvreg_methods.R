@@ -329,7 +329,7 @@ logLik.mvreg <- function(object, ...) {
 #' @param newdata An optional data frame in which to look for variables with which to predict. If omitted, the fitted values are used.
 #' @param se.fit A logical value indicating if standard errors are to be returned.
 #' @param interval A logical value indicating if confidence intervals are to be returned.
-#' @param sig.level Confidence level for confidence intervals.
+#' @param level Confidence level for confidence intervals.
 #'
 #' @return Predicted values for the different components of mvreg model. If specified, standard error estimates and confidence interval are returned.
 #' @export
@@ -344,7 +344,7 @@ logLik.mvreg <- function(object, ...) {
 #' predict(mvreg_mod1, type = "mu")
 #' predict(mvreg_mod1, type = "log.s2", se.fit = TRUE)
 #' predict(mvreg_mod1, type = "s2", interval = TRUE)
-#' predict(mvreg_mod1, se.fit = TRUE, interval = TRUE, sig.level = 0.99)
+#' predict(mvreg_mod1, se.fit = TRUE, interval = TRUE, level = 0.99)
 #'
 #' # predict with newdata
 #' unique(c(mvreg_mod1$colx, mvreg_mod1$colz)) # getting names of explanatory variables
@@ -357,7 +357,7 @@ logLik.mvreg <- function(object, ...) {
 #' newdata <- expand.grid(newdata)
 #'
 #' predict(mvreg_mod1, newdata = newdata, se.fit = TRUE, interval = TRUE)
-predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata, se.fit = F, interval = F, sig.level = 0.95) {
+predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata, se.fit = F, interval = F, level = 0.95) {
   type <- match.arg(type)
   coln <- unique(c(object$colx, object$colz))
 
@@ -412,12 +412,12 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
     se.log.s2 <- sqrt(rowSums((z %*% vcov.log.s2) * z))
     se.s2 <- sqrt(exp(2 * pred.log.s2) * se.log.s2^2) # delta method
 
-    quant <- qnorm(1 - (1 - sig.level) / 2)
+    quant <- qnorm(1 - (1 - level) / 2)
     confint.mu <- cbind(pred.mu - quant * se.mu, pred.mu + quant * se.mu)
     confint.log.s2 <- cbind(pred.log.s2 - quant * se.log.s2, pred.log.s2 + quant * se.log.s2)
     confint.s2 <- exp(confint.log.s2)
 
-    colnames(confint.mu) <- colnames(confint.log.s2) <- colnames(confint.s2) <- paste0(c("lwr", "upr"), sig.level)
+    colnames(confint.mu) <- colnames(confint.log.s2) <- colnames(confint.s2) <- paste0(c("lwr", "upr"), level)
 
     dmu <- data.frame(pred.mu, se.mu, confint.mu)
     dlogs2 <- data.frame(pred.log.s2, se.log.s2, confint.log.s2)
@@ -432,11 +432,11 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
     se.log.s2 <- sqrt(rowSums((z %*% vcov.log.s2) * z))
     se.s2 <- sqrt(exp(2 * pred.log.s2) * se.log.s2^2) # delta method
 
-    quant <- qnorm(1 - (1 - sig.level) / 2)
+    quant <- qnorm(1 - (1 - level) / 2)
     confint.mu <- cbind(pred.mu - quant * se.mu, pred.mu + quant * se.mu)
     confint.log.s2 <- cbind(pred.log.s2 - quant * se.log.s2, pred.log.s2 + quant * se.log.s2)
     confint.s2 <- exp(confint.log.s2)
-    colnames(confint.mu) <- colnames(confint.log.s2) <- colnames(confint.s2) <- paste0(c("lwr", "upr"), sig.level)
+    colnames(confint.mu) <- colnames(confint.log.s2) <- colnames(confint.s2) <- paste0(c("lwr", "upr"), level)
 
     dmu <- data.frame(pred.mu, confint.mu)
     dlogs2 <- data.frame(pred.log.s2, confint.log.s2)
