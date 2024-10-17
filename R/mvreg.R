@@ -81,24 +81,26 @@ mvreg <- function(formula.mu,
   y <- model.response(mf.mu)
   x <- model.matrix(attr(mf.mu, "terms"), mf.mu)
 
-
-
-
   if (is.null(formula.s2)) {
     formula.s2 <- formula.mu
     z <- x
     colz <- colx
   } else {
-    if (sum(grepl(response, formula.s2)) == 1) {
-      formula.s2 <- formula.s2
-    } else {
-      formula.s2 <- as.formula(paste0(response, " ", paste0(formula.s2, collapse = " ")))
+    if (length(formula.s2) == 2) {
+      if (sum(grepl(response, formula.s2)) == 1) {
+        stop("response variable cannot appear on right-hand side of the formula")
+      }
+      else {
+        formula.s2 <- as.formula(paste0(response, " ", paste0(formula.s2, collapse = " ")))
+      }
     }
-
+    else {
+      formula.s2 <- formula.s2
+    }
     mf.s2 <- model.frame(formula.s2, data)
     colz <- colnames(mf.s2)[-1]
     z <- model.matrix(attr(mf.s2, "terms"), mf.s2)
-  }
+    }
 
 
   colnames(x)[which(colnames(x) == "(Intercept)")] <- "const"
