@@ -100,7 +100,9 @@ mvreg <- function(formula.mu,
     mf.s2 <- model.frame(formula.s2, data)
     colz <- colnames(mf.s2)[-1]
     z <- model.matrix(attr(mf.s2, "terms"), mf.s2)
-    }
+  }
+
+  cl$formula.s2 <- formula.s2
 
 
   colnames(x)[which(colnames(x) == "(Intercept)")] <- "const"
