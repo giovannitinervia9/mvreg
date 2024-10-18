@@ -508,3 +508,65 @@ simulate.mvreg <- function(object, nsim = 1, seed = NULL, ...) {
 
   sim
 }
+
+
+#-------------------------------------------------------------------------------
+
+
+#' Update and Re-fit a mvreg model
+#'
+#' @param object A mvreg object.
+#' @param new.formula.mu Changes to formula.mu – see update.formula for details.
+#' @param new.formula.s2 Changes to formula.s2 – see update.formula for details.
+#' @param ... Additional arguments to the call, or arguments with changed values. Use name = NULL to remove the argument name.
+#' @param evaluate If true evaluate the new call else return the call.
+#'
+#' @return A new mvreg object with the updated formulas or the call
+#' @export
+#'
+#' @importFrom stats update getCall
+#'
+#' @examples
+#' mod <- mvreg(Sepal.Length ~ Species, data = iris)
+#'
+#' # changing formulas
+#' update(mod, new.formula.mu = . ~ . + Sepal.Width)
+#' update(mod, new.formula.mu = . ~ . + Sepal.Width, new.formula.s2 = . ~ . + Petal.Length)
+#'
+#' # changing method, vcov.type, start.s2
+#' update(mod, method = "full_nr", vcov.type = "observed", start.s2 = "gamma")
+update.mvreg <- function(object, new.formula.mu, new.formula.s2, ..., evaluate = TRUE) {
+  if (is.null(call <- getCall(object))) {
+    stop("need an object with call component")
+  }
+
+  extras <- match.call(expand.dots = FALSE)$...
+
+  if (missing(new.formula.mu)) {
+    call$formula.mu <- object$formula.mu
+  } else {
+    call$formula.mu <- update(object$formula.mu, new.formula.mu)
+  }
+
+  if (missing(new.formula.s2)) {
+    call$formula.s2 <- object$formula.s2
+  } else {
+    call$formula.s2 <- update(object$formula.s2, new.formula.s2)
+  }
+
+  if (length(extras)) {
+    existing <- !is.na(match(names(extras), names(call)))
+    for (a in names(extras)[existing]) call[[a]] <- extras[[a]]
+    if (any(!existing)) {
+      call <- c(as.list(call), extras[!existing])
+      call <- as.call(call)
+    }
+  }
+
+  if (evaluate) {
+    eval(call, parent.frame())
+  } else {
+    call
+  }
+}
+
