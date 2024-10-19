@@ -83,10 +83,11 @@ anova.mvreg <- function(object, ...){
 
     mu.tests <- lapply(new.mod.mu, function(mod) {
       c(-2*as.numeric(logLik(mod)),
-        n - df.residual(mod))})
+        n - df.residual(mod),
+        df.residual(mod))})
 
     mu.tests <- as.data.frame(do.call(rbind, mu.tests))
-    colnames(mu.tests) <- c("-2logLik", "n.param")
+    colnames(mu.tests) <- c("-2logLik", "n.param", "df.residuals")
     rownames(mu.tests) <- model.mu
     mu.tests$LRT <- NA
     mu.tests$df <- NA
@@ -106,10 +107,11 @@ anova.mvreg <- function(object, ...){
 
     s2.tests <- lapply(new.mod.s2, function(mod) {
       c(-2*as.numeric(logLik(mod)),
-        n - df.residual(mod))})
+        n - df.residual(mod),
+        df.residual(mod))})
 
     s2.tests <- as.data.frame(do.call(rbind, s2.tests))
-    colnames(s2.tests) <- c("-2logLik", "n.param")
+    colnames(s2.tests) <- c("-2logLik", "n.param", "df.residuals")
     rownames(s2.tests) <- model.s2
     s2.tests$LRT <- NA
     s2.tests$df <- NA
@@ -138,11 +140,14 @@ anova.mvreg <- function(object, ...){
 
     tests <- lapply(models, function(mod) {
       c(-2*as.numeric(logLik(mod)),
-        n - df.residual(mod))})
+        n - df.residual(mod),
+        df.residual(mod))
+      })
 
     tests <- as.data.frame(do.call(rbind, tests))
-    colnames(tests) <- c("-2logLik", "n.param")
+    colnames(tests) <- c("-2logLik", "n.param", "df.residuals")
     tests$LRT <- NA
+    tests$df <- NA
     tests$`Pr(>Chi)` <- NA
 
     reorder.ind <- order(tests$n.param, decreasing = F)
@@ -154,8 +159,10 @@ anova.mvreg <- function(object, ...){
 
     for(i in 2:nrow(tests)){
       lrt <- tests$`-2logLik`[i - 1] - tests$`-2logLik`[i]
-      pval <- 1 - pchisq(lrt, df = tests$n.param[i] - tests$n.param[i - 1])
+      df <- tests$n.param[i] - tests$n.param[i - 1]
+      pval <- 1 - pchisq(lrt, df = df)
       tests$LRT[i] <- lrt
+      tests$df[i] <- df
       tests$`Pr(>Chi)`[i] <- pval
     }
 
@@ -221,28 +228,31 @@ print.anova.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...
     print.mu <- paste0(model.mu, " = ", as.character(x$new.formula.mu))
     print.s2 <- paste0(model.s2, " = ", as.character(x$new.formula.s2))
 
-    cat("Tests on mean component (variance component taken as in the full model)\n")
+    cat("Mean Model Comparison (variance component taken as in the full model)\n")
     cat(print.mu, sep = "\n")
     cat("\n")
     printCoefmat(x$mu.tests, signif.legend = F, na.print = "",
                  cs.ind = 1, tst.ind = 3)
-    cat("\n\n")
+    cat("\n")
+    cat("---\n\n")
 
-    cat("Tests on variance component (mean component taken as in the full model):\n")
+    cat("Variance Model Comparison (mean component taken as in the full model):\n")
     cat(print.s2, sep = "\n")
     cat("\n")
     printCoefmat(x$s2.tests, signif.legend = F, na.print = "",
-                 cs.ind = 1, tst.ind = 3)
+                 cs.ind = 1, tst.ind = 4)
     cat("\n")
 
   } else {
-
-    cat(paste0("formula.mu", " model", 1:nrow(x$tests), ": ", x$formulas.mu, sep = "\n", collapse = ""))
+    cat("Model comparison: mean and variance components\n\n")
+    cat("Mean component formulas:\n")
+    cat(paste0("model", 1:nrow(x$tests), ": ", x$formulas.mu, sep = "\n", collapse = ""))
     cat("\n")
-    cat(paste0("formula.s2", " model", 1:nrow(x$tests), ": ", x$formulas.s2, sep = "\n", collapse = ""))
+    cat("Variance component formulas:\n")
+    cat(paste0("model", 1:nrow(x$tests), ": ", x$formulas.s2, sep = "\n", collapse = ""))
     cat("\n")
     printCoefmat(x$tests, signif.legend = F, na.print = "",
-                 cs.ind = 1, tst.ind = 3)
+                 cs.ind = 1, tst.ind = 4)
     cat("\n")
 
   }
