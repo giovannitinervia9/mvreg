@@ -39,9 +39,14 @@
 #' @importFrom stats df.residual
 #'
 #' @examples
+#' # Fit two models
 #' mod1 <- mvreg(Sepal.Length ~ Species + Sepal.Width, data = iris)
 #' mod2 <- mvreg(Sepal.Length ~ Species, ~1, data = iris)
 #' anova(mod1, mod2)
+#'
+#' # Fit a single model
+#' mod3 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
+#' anova(mod3)
 anova.mvreg <- function(object, ...){
 
   models <- list(object, ...)
