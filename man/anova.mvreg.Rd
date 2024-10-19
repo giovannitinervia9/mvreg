@@ -50,7 +50,12 @@ with different formulas for the mean and variance components. It calculates the 
 statistics and their associated p-values.
 }
 \examples{
+# Fit two models
 mod1 <- mvreg(Sepal.Length ~ Species + Sepal.Width, data = iris)
 mod2 <- mvreg(Sepal.Length ~ Species, ~1, data = iris)
 anova(mod1, mod2)
+
+# Fit a single model
+mod3 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
+anova(mod3)
 }
