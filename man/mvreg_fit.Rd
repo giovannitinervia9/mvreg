@@ -17,29 +17,63 @@ mvreg_fit(
 )
 }
 \arguments{
-\item{y}{Response variable vector.}
+\item{y}{A numeric vector representing the response variable.}
 
-\item{x}{Design matrix for mean component.}
+\item{x}{A numeric matrix representing the design matrix for the mean component of the model.}
 
-\item{z}{Design matrix for variance component.}
+\item{z}{A numeric matrix representing the design matrix for the variance component of the model.}
 
-\item{b0}{Starting values for parameters of mean component.}
+\item{b0}{A numeric vector of starting values for the parameters of the mean component.}
 
-\item{t0}{Starting values for parameters of variance component.}
+\item{t0}{A numeric vector of starting values for the parameters of the variance component.}
 
-\item{tol}{Positive value indicating what is the minimum difference between parameter estimates between two iterations to stop the algorithm.}
+\item{tol}{A positive numeric value indicating the minimum difference between parameter estimates
+between two iterations required to stop the algorithm. Default is \code{1e-10}.}
 
-\item{maxit}{Integer value indicating the maximum number of iteration.}
+\item{maxit}{An integer value indicating the maximum number of iterations allowed. Default is \code{100}.}
 
-\item{method}{Method chosen for estimation of parameters of mean component}
+\item{method}{A character string specifying the method for estimation of parameters of the mean component. Options include:
+\itemize{
+\item \code{"wls"}: uses weighted least squares for the mean parameters and Newton-Raphson for variance parameters.
+\item \code{"full_nr"}: uses the full Newton-Raphson method.
+}}
 
-\item{vcov.type}{A string to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates}
+\item{vcov.type}{A character string specifying whether to use the observed or expected Fisher information matrix
+to compute the variance-covariance matrix of the estimates. Options include:
+\itemize{
+\item \code{"expected"}: uses the expected Fisher information.
+\item \code{"observed"}: uses the observed Fisher information.
+}}
 }
 \value{
-Estimate of coefficients and variance-covariance matrix
+A list containing:
+\itemize{
+\item \code{theta}: A numeric vector of estimated parameters, including both mean and variance component parameters.
+\item \code{b}: A numeric vector of estimated parameters for the mean component.
+\item \code{t}: A numeric vector of estimated parameters for the variance component.
+\item \code{vtheta}: A numeric matrix representing the variance-covariance matrix of the parameter estimates.
+\item \code{it}: An integer indicating the number of iterations performed.
+}
 }
 \description{
-Fitter function for mvreg
+This function estimates the parameters of a heteroskedastic linear model using
+either weighted least squares (WLS) or a full Newton-Raphson method.
+}
+\details{
+The fitting process iteratively updates the estimates for the mean and variance parameters
+until convergence is reached, as determined by the specified tolerance (\code{tol}) or until
+the maximum number of iterations (\code{maxit}) is reached.
+
+If the \code{method} is set to \code{"wls"}, the fitting process updates the variance parameters
+using a Newton-Raphson step based on the current estimates \eqn{\hat{\boldsymbol{\tau}}_{k-1}}.
+The weights \eqn{w_{i}} are then calculated as \eqn{w_{i} = \dfrac{1}{\exp\left(\mathbf{z}_i'\hat{\boldsymbol{\tau}}_{k}\right)}},
+which are subsequently used to compute the updated mean parameter estimates:
+\deqn{\hat{\boldsymbol{\beta}}_k = (\mathbf{X}'\mathbf{W}\mathbf{X})^{-1}\mathbf{X}'\mathbf{W}\mathbf{y}}
+
+If the \code{method} is set to \code{"full_nr"}, the algorithm simultaneously updates both the mean and variance parameters.
+
+The variance-covariance matrix of the estimates can be computed using either the observed or
+expected Fisher information, depending on the \code{vcov.type} specified.
 }
 \examples{
 n <- 100
@@ -47,7 +81,7 @@ x1 <- rnorm(n)
 x2 <- factor(sample(letters[1:3], n, TRUE))
 x <- model.matrix(~ x1 + x2)
 z1 <- factor(sample(letters[1:3], n, TRUE))
-z <- model.matrix(~z1)
+z <- model.matrix(~ z1)
 
 b <- rnorm(ncol(x))
 t <- rnorm(ncol(z))
