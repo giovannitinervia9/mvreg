@@ -15,7 +15,7 @@
 #'
 #' @details
 #' The log-likelihood is computed under the assumption that the response variable follows a normal distribution with mean \eqn{\mathbf{x}_i' \boldsymbol{\beta}} and variance \eqn{\exp\left\{\mathbf{z}_i' \boldsymbol{\tau}\right\}}, where \eqn{\boldsymbol{\beta}} and \eqn{\boldsymbol{\tau}} are the parameters vectors for the mean and variance components, respectively.
-#'
+#' The log-likelihood is computed as \deqn{\ell(\boldsymbol{\beta},\boldsymbol{\tau}) = -\dfrac{1}{2}\sum_{i=1}^n \left\{\log(2\pi) + \mathbf{z}_i'\boldsymbol{\tau} + \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}} \right\}}
 #' @export
 #'
 #' @examples
@@ -31,7 +31,6 @@
 #'
 #' # Compute log-likelihood
 #' mvreg_loglik(y, x, z, b, t)
-
 mvreg_loglik <- function(y, x, z, b, t) {
   eta.mu <- as.vector(x %*% b)
   eta.s2 <- as.vector(z %*% t)

@@ -8,11 +8,13 @@
 #' @param data An optional data frame, list or environment (or object coercible by as.data.frame to a data frame) containing the variables in the model.
 #' @param tol Positive value indicating what is the minimum difference between parameter estimates between two iterations to stop the algorithm.
 #' @param maxit Integer value indicating the maximum number of iteration.
-#' @param start.s2 A character vector indicating how to select initial values for variance component parameters.
-#' @param method Method chosen for estimation of parameters of mean component
-#' @param vcov.type A string to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates
+#' @param start.s2 A character vector indicating how to select initial values for variance component parameters. See the documentation of \code{\link{mvreg_start}} for details.
+#' @param method A character vector indicating the method chosen for estimation of parameters of mean component. See the documentation of \code{\link{mvreg_fit}} for details.
+#' @param vcov.type A character vector to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates. See the documentation of \code{\link{mvreg_fit}}, \code{\link{mvreg_hessian_mu}}, \code{\link{mvreg_hessian_s2}}, \code{\link{mvreg_hessian_mus2}} and \code{\link{mvreg_hessian}} for details.
 #'
-#' @return An object of class mvreg
+#' @return An object of class `mvreg`, containing the estimated coefficients,
+#'         variance-covariance matrix, log-likelihood, fitted values, residuals,
+#'         and more.
 #' @export
 #'
 #' @importFrom stats terms model.frame model.response var as.formula

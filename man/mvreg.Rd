@@ -26,14 +26,16 @@ mvreg(
 
 \item{maxit}{Integer value indicating the maximum number of iteration.}
 
-\item{start.s2}{A character vector indicating how to select initial values for variance component parameters.}
+\item{start.s2}{A character vector indicating how to select initial values for variance component parameters. See the documentation of \code{\link{mvreg_start}} for details.}
 
-\item{method}{Method chosen for estimation of parameters of mean component}
+\item{method}{A character vector indicating the method chosen for estimation of parameters of mean component. See the documentation of \code{\link{mvreg_fit}} for details.}
 
-\item{vcov.type}{A string to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates}
+\item{vcov.type}{A character vector to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates. See the documentation of \code{\link{mvreg_fit}}, \code{\link{mvreg_hessian_mu}}, \code{\link{mvreg_hessian_s2}}, \code{\link{mvreg_hessian_mus2}} and \code{\link{mvreg_hessian}} for details.}
 }
 \value{
-An object of class mvreg
+An object of class \code{mvreg}, containing the estimated coefficients,
+variance-covariance matrix, log-likelihood, fitted values, residuals,
+and more.
 }
 \description{
 Heteroscedastic linear model with variance as a function of linear predictor.
