@@ -616,3 +616,59 @@ update.mvreg <- function(object, new.formula.mu, new.formula.s2, ..., evaluate =
   }
 }
 
+
+#-------------------------------------------------------------------------------
+
+
+#' Confidence intervals for mvreg model parameters
+#'
+#' This function computes the confidence intervals for the parameters of
+#' an `mvreg` model.
+#'
+#' @param object A `mvreg` object from which to compute the confidence intervals.
+#' @param parm A specification of which parameters to compute confidence intervals for.
+#'   This can be either a vector of indices (numbers) or a vector of parameter names (character strings).
+#'   If missing, all parameters will be included.
+#' @param level A numeric value specifying the confidence level for the intervals (default is `0.95` for 95% confidence intervals).
+#' @param ... Additional argument(s) for methods.
+#'
+#' @return A matrix with columns giving the lower and upper confidence limits for each parameter specified.
+#'
+#'
+#' @details
+#' The confidence intervals are calculated using the normal approximation
+#' based on the estimated coefficients and their standard errors. The
+#' intervals are of the form:
+#' \deqn{ \hat{\theta} \pm z_{1 - \frac{\alpha}{2}} \cdot \text{SE}(\hat{\theta}) }
+#' where \eqn{\hat{\theta}} is the estimated parameter, \eqn{\text{SE}(\hat{\theta})} is the standard error,
+#' and \eqn{z_{1 - \frac{\alpha}{2}}} is the critical value from the standard normal distribution
+#' corresponding to the specified confidence level.
+#'
+#' @export
+#'
+#' @examples
+#' mod <- mvreg(Sepal.Length ~ Species, data = iris)
+#' confint(mod)
+confint.mvreg <- function(object, parm, level = 0.95, ...){
+  cf <- coef(object)
+  ses <- sqrt(diag(vcov(object)))
+  pnames <- names(cf)
+  if (missing(parm)) {
+    parm <- pnames
+  } else if (is.numeric(parm)) {
+    parm <- pnames[parm]
+  }
+
+  a <- (1 - level)/2
+  a <- c(a, 1 - a)
+  z <- qnorm(a)
+
+  ci <- apply(as.matrix(z), 1, function(z) cf[parm] + z*ses[parm])
+
+  if(length(parm) == 1){
+    ci <- t(ci)
+    rownames(ci) <- parm}
+
+  colnames(ci) <- paste0(c("lwr", "upr"), level)
+  ci
+}

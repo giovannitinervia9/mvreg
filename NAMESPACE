@@ -2,6 +2,7 @@
 
 S3method(anova,mvreg)
 S3method(coef,mvreg)
+S3method(confint,mvreg)
 S3method(fitted,mvreg)
 S3method(logLik,mvreg)
 S3method(predict,mvreg)
