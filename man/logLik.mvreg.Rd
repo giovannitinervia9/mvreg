@@ -2,22 +2,24 @@
 % Please edit documentation in R/mvreg_methods.R
 \name{logLik.mvreg}
 \alias{logLik.mvreg}
-\title{logLik for mvreg}
+\title{logLik method for mvreg}
 \usage{
 \method{logLik}{mvreg}(object, ...)
 }
 \arguments{
-\item{object}{A mvreg object.}
+\item{object}{A \code{mvreg} object.}
 
-\item{...}{Additional optional arguments.}
+\item{...}{Additional optional arguments (not currently used).}
 }
 \value{
-Loglikelihood value of a fitted mvreg model.
+A log-likelihood value of the fitted \code{mvreg} model, with attributes:
+\item{df}{Degrees of freedom associated with the model.}
+\item{nobs}{Number of observations used in the fitting.}
 }
 \description{
-logLik for mvreg
+logLik method for mvreg
 }
 \examples{
 mod <- mvreg(Sepal.Length ~ Species, data = iris)
-logLik(mod)
+logLik(mod)  # returns the log-likelihood of the fitted model
 }

@@ -2,26 +2,31 @@
 % Please edit documentation in R/mvreg_methods.R
 \name{vcov.mvreg}
 \alias{vcov.mvreg}
-\title{Variance-Covariance matrix for mvreg}
+\title{Variance-Covariance matrix for mvreg objects}
 \usage{
 \method{vcov}{mvreg}(object, partition = c("all", "mu", "s2"), ...)
 }
 \arguments{
-\item{object}{A mvreg object.}
+\item{object}{A \code{mvreg} object.}
 
-\item{partition}{A character vector that specifies which partition of the matrix to return.}
+\item{partition}{A character vector that specifies which partition of the matrix to return.
+Options are \code{"all"}, \code{"mu"} for mean component, or \code{"s2"} for variance component.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \value{
-Specified partition of Variance-Covariance matrix of model's parameters.
+A matrix representing the specified partition of the Variance-Covariance matrix
+of the model's parameters. If \code{partition} is \code{"all"}, returns the full matrix;
+if \code{"mu"}, returns the matrix for mean parameters;
+if \code{"s2"}, returns the matrix for variance parameters.
 }
 \description{
-Variance-Covariance matrix for mvreg
+Variance-Covariance matrix for mvreg objects
 }
 \examples{
 mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
 summary(mvreg_mod)
-vcov(mvreg_mod)
-vcov(mvreg_mod, partition = "mu")
+vcov(mvreg_mod)           # Returns the full variance-covariance matrix
+vcov(mvreg_mod, partition = "mu")  # Returns the variance-covariance matrix for mean parameters
+vcov(mvreg_mod, partition = "s2")   # Returns the variance-covariance matrix for variance parameters
 }

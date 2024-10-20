@@ -2,20 +2,32 @@
 % Please edit documentation in R/mvreg_methods.R
 \name{summary.mvreg}
 \alias{summary.mvreg}
-\title{Summary method for mvreg}
+\title{Summary method for mvreg objects}
 \usage{
 \method{summary}{mvreg}(object, ...)
 }
 \arguments{
-\item{object}{A mvreg object.}
+\item{object}{A \code{mvreg} object.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \value{
-A summary.mvreg object.
+A list containing:
+\item{call}{the call used to fit the model.}
+\item{residuals}{residuals from the fitted model.}
+\item{coefficients}{a combined data frame of coefficients for both mean and variance components.}
+\item{coefficients.mu}{a data frame of coefficients for the mean component.}
+\item{coefficients.s2}{a data frame of coefficients for the variance component.}
+\item{df}{degrees of freedom.}
+\item{vcov}{variance-covariance matrix of all coefficients.}
+\item{vcov.mu}{variance-covariance matrix of mean component coefficients.}
+\item{vcov.s2}{variance-covariance matrix of variance component coefficients.}
+\item{loglik}{log-likelihood of the fitted model.}
+\item{AIC}{Akaike Information Criterion.}
+\item{BIC}{Bayesian Information Criterion.}
 }
 \description{
-Summary method for mvreg
+Summary method for mvreg objects
 }
 \examples{
 mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance

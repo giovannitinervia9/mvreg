@@ -2,7 +2,7 @@
 % Please edit documentation in R/mvreg_methods.R
 \name{print.summary.mvreg}
 \alias{print.summary.mvreg}
-\title{Print method for summary.mvreg}
+\title{Print method for summary.mvreg objects}
 \usage{
 \method{print}{summary.mvreg}(
   x,
@@ -12,19 +12,24 @@
 )
 }
 \arguments{
-\item{x}{A mvreg object.}
+\item{x}{A \code{summary.mvreg} object.}
 
-\item{digits}{Minimal number of significant digits, see print.default.}
+\item{digits}{Minimal number of significant digits, see \code{print.default}.}
 
 \item{signif.stars}{logical. If TRUE, ‘significance stars’ are printed for each coefficient.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \value{
-Print summary for mvreg.
+A printed summary of the \code{mvreg} model, including:
+\item{Call}{The call used to fit the model.}
+\item{Residuals}{Summary statistics of the residuals from the fitted model.}
+\item{Coefficients}{Coefficients for the mean and log(variance) components, including standard errors and significance.}
+\item{Model Fit Statistics}{Log-likelihood, AIC, and BIC of the fitted model.}
+\item{Likelihood Ratio Test (LRT)}{Comparison with a linear model (lm), including likelihood ratio, degrees of freedom, and p-value.}
 }
 \description{
-Print method for summary.mvreg
+Print method for summary.mvreg objects
 }
 \examples{
 mod <- mvreg(Sepal.Length ~ Species, data = iris)

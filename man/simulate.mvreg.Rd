@@ -7,22 +7,29 @@
 \method{simulate}{mvreg}(object, nsim = 1, seed = NULL, ...)
 }
 \arguments{
-\item{object}{A mvreg object.}
+\item{object}{A \code{mvreg} object.}
 
-\item{nsim}{Number of response vectors to simulate}
+\item{nsim}{Number of response vectors to simulate.}
 
 \item{seed}{NULL or an integer that will be used in a call to \code{set.seed} before simulating the response vectors. If set, the value is saved as the "seed" attribute of the returned value. The default, NULL will not change the random generator state, and return .Random.seed as the "seed" attribute.}
 
 \item{...}{Additional optional arguments.}
 }
 \value{
-A data.frame which columns are simulated response vectors.
+A \code{data.frame} where each column corresponds to a simulated response vector.
+The attribute "seed" contains the random seed used for the simulation.
 }
 \description{
 Simulate Responses from a mvreg object
 }
-\examples{
-mvreg.mod <- mvreg(Sepal.Length ~ Species, data = iris)
-simulate(mvreg.mod, nsim = 100, seed = 43)
+\details{
+The \code{simulate} method generates simulated responses based on the fitted \code{mvreg} model.
+The responses are drawn from a normal distribution with a mean specified by the fitted values of the model and a standard deviation that is derived from the estimated variance.
+The number of simulated response vectors can be specified using the \code{nsim} parameter.
 
+If a seed is provided, the random number generator will be set to this seed to ensure reproducibility of the simulation. The original random seed is restored upon completion.
+}
+\examples{
+mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris)
+simulate(mvreg_mod, nsim = 100, seed = 43)
 }

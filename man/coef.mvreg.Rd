@@ -2,26 +2,30 @@
 % Please edit documentation in R/mvreg_methods.R
 \name{coef.mvreg}
 \alias{coef.mvreg}
-\title{Extract mvreg coefficients}
+\title{Extract coefficients from mvreg objects}
 \usage{
 \method{coef}{mvreg}(object, partition = c("all", "mu", "s2"), ...)
 }
 \arguments{
-\item{object}{A mvreg object.}
+\item{object}{A \code{mvreg} object.}
 
-\item{partition}{A character vector that specifies which partition of coefficients to return.}
+\item{partition}{A character vector that specifies which partition of coefficients to return.
+Options are \code{"all"}, \code{"mu"} for mean component, or \code{"s2"} for variance component.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \value{
-Specified coefficients of mvreg model.
+A named vector of coefficients from the \code{mvreg} model. If \code{partition} is \code{"all"},
+returns all coefficients; if \code{"mu"}, returns coefficients for the mean component;
+if \code{"s2"}, returns coefficients for the variance component.
 }
 \description{
-Extract mvreg coefficients
+Extract coefficients from mvreg objects
 }
 \examples{
 mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
 summary(mvreg_mod)
-coef(mvreg_mod)
-coef(mvreg_mod, partition = "s2")
+coef(mvreg_mod)             # Returns all coefficients
+coef(mvreg_mod, partition = "mu")  # Returns coefficients for mean component
+coef(mvreg_mod, partition = "s2")  # Returns coefficients for variance component
 }

@@ -7,21 +7,28 @@
 \method{update}{mvreg}(object, new.formula.mu, new.formula.s2, ..., evaluate = TRUE)
 }
 \arguments{
-\item{object}{A mvreg object.}
+\item{object}{A \code{mvreg} object.}
 
-\item{new.formula.mu}{Changes to formula.mu – see update.formula for details.}
+\item{new.formula.mu}{Changes to \code{formula.mu} – see \code{update.formula} for details.}
 
-\item{new.formula.s2}{Changes to formula.s2 – see update.formula for details.}
+\item{new.formula.s2}{Changes to \code{formula.s2} – see \code{update.formula} for details.}
 
-\item{...}{Additional arguments to the call, or arguments with changed values. Use name = NULL to remove the argument name.}
+\item{...}{Additional arguments to the call, or arguments with changed values. Use \code{name = NULL} to remove the argument name.}
 
-\item{evaluate}{If true evaluate the new call else return the call.}
+\item{evaluate}{If TRUE, evaluate the new call; else return the call.}
 }
 \value{
-A new mvreg object with the updated formulas or the call
+A new \code{mvreg} object with the updated formulas or the updated call.
 }
 \description{
 Update and Re-fit a mvreg model
+}
+\details{
+The \code{update} method allows for modifying the existing \code{mvreg} model formulas (\code{formula.mu} and \code{formula.s2})
+by specifying new formulas. The method can also accept additional arguments to change other components of the
+model fitting process (e.g., \code{method}, \code{vcov.type}, \code{start.s2}).
+
+If \code{evaluate} is set to TRUE, the updated model is refitted and returned; otherwise, the updated call is returned.
 }
 \examples{
 mod <- mvreg(Sepal.Length ~ Species, data = iris)

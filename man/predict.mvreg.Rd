@@ -14,9 +14,9 @@
 )
 }
 \arguments{
-\item{object}{A mvreg object.}
+\item{object}{A \code{mvreg} object.}
 
-\item{type}{A character vector specifying the component for which to return predicted values.}
+\item{type}{A character vector specifying the component for which to return predicted values. Options include "all", "mu", "log.s2", or "s2".}
 
 \item{newdata}{An optional data frame in which to look for variables with which to predict. If omitted, the fitted values are used.}
 
@@ -24,10 +24,10 @@
 
 \item{interval}{A logical value indicating if confidence intervals are to be returned.}
 
-\item{level}{Confidence level for confidence intervals.}
+\item{level}{Confidence level for confidence intervals (default is \code{0.95}).}
 }
 \value{
-Predicted values for the different components of mvreg model. If specified, standard error estimates and confidence interval are returned.
+A list containing predicted values for the different components of the \code{mvreg} model. If specified, standard error estimates and confidence intervals are also returned.
 }
 \description{
 Predict method for mvreg
@@ -35,22 +35,18 @@ Predict method for mvreg
 \examples{
 mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
 
-# predict without newdata
+# Predict without newdata
 predict(mvreg_mod1)
 predict(mvreg_mod1, type = "mu")
 predict(mvreg_mod1, type = "log.s2", se.fit = TRUE)
 predict(mvreg_mod1, type = "s2", interval = TRUE)
 predict(mvreg_mod1, se.fit = TRUE, interval = TRUE, level = 0.99)
 
-# predict with newdata
-unique(c(mvreg_mod1$colx, mvreg_mod1$colz)) # getting names of explanatory variables
-
+# Predict with newdata
 newdata <- data.frame(
   Species = levels(iris$Species),
   Sepal.Width = c(min(iris$Sepal.Width), mean(iris$Sepal.Width), max(iris$Sepal.Width))
 )
-
-newdata <- expand.grid(newdata)
 
 predict(mvreg_mod1, newdata = newdata, se.fit = TRUE, interval = TRUE)
 }

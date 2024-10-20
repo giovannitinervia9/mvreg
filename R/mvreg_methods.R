@@ -1,13 +1,14 @@
 #-------------------------------------------------------------------------------
 
 
-#' Print method for mvreg
+#' Print method for mvreg objects
 #'
-#' @param x A mvreg object.
-#' @param digits Minimal number of significant digits, see print.default.
+#' @param x A `mvreg` object.
+#' @param digits Minimal number of significant digits to be printed, see `print.default`.
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return Print informations about the model.
+#' @return Invisibly returns the `mvreg` object. Prints the call, coefficients,
+#'         and any additional relevant model information to the console.
 #' @export
 #'
 #' @importFrom stats coef
@@ -37,20 +38,25 @@ print.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
 #-------------------------------------------------------------------------------
 
 
-#' Variance-Covariance matrix for mvreg
+#' Variance-Covariance matrix for mvreg objects
 #'
-#' @param object A mvreg object.
+#' @param object A `mvreg` object.
 #' @param partition A character vector that specifies which partition of the matrix to return.
+#'                  Options are `"all"`, `"mu"` for mean component, or `"s2"` for variance component.
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return Specified partition of Variance-Covariance matrix of model's parameters.
+#' @return A matrix representing the specified partition of the Variance-Covariance matrix
+#'         of the model's parameters. If `partition` is `"all"`, returns the full matrix;
+#'         if `"mu"`, returns the matrix for mean parameters;
+#'         if `"s2"`, returns the matrix for variance parameters.
 #' @export
 #'
 #' @examples
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
 #' summary(mvreg_mod)
-#' vcov(mvreg_mod)
-#' vcov(mvreg_mod, partition = "mu")
+#' vcov(mvreg_mod)           # Returns the full variance-covariance matrix
+#' vcov(mvreg_mod, partition = "mu")  # Returns the variance-covariance matrix for mean parameters
+#' vcov(mvreg_mod, partition = "s2")   # Returns the variance-covariance matrix for variance parameters
 vcov.mvreg <- function(object, partition = c("all", "mu", "s2"), ...) {
   partition <- match.arg(partition)
   if (partition == "all") {
@@ -70,20 +76,24 @@ vcov.mvreg <- function(object, partition = c("all", "mu", "s2"), ...) {
 #-------------------------------------------------------------------------------
 
 
-#' Extract mvreg coefficients
+#' Extract coefficients from mvreg objects
 #'
-#' @param object A mvreg object.
+#' @param object A `mvreg` object.
 #' @param partition A character vector that specifies which partition of coefficients to return.
+#'                  Options are `"all"`, `"mu"` for mean component, or `"s2"` for variance component.
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return Specified coefficients of mvreg model.
+#' @return A named vector of coefficients from the `mvreg` model. If `partition` is `"all"`,
+#'         returns all coefficients; if `"mu"`, returns coefficients for the mean component;
+#'         if `"s2"`, returns coefficients for the variance component.
 #' @export
 #'
 #' @examples
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
 #' summary(mvreg_mod)
-#' coef(mvreg_mod)
-#' coef(mvreg_mod, partition = "s2")
+#' coef(mvreg_mod)             # Returns all coefficients
+#' coef(mvreg_mod, partition = "mu")  # Returns coefficients for mean component
+#' coef(mvreg_mod, partition = "s2")  # Returns coefficients for variance component
 coef.mvreg <- function(object, partition = c("all", "mu", "s2"), ...) {
   partition <- match.arg(partition)
   if (partition == "all") {
@@ -100,15 +110,27 @@ coef.mvreg <- function(object, partition = c("all", "mu", "s2"), ...) {
 #-------------------------------------------------------------------------------
 
 
-#' Summary method for mvreg
+#' Summary method for mvreg objects
 #'
-#' @param object A mvreg object.
+#' @param object A `mvreg` object.
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return A summary.mvreg object.
+#' @return A list containing:
+#'         \item{call}{the call used to fit the model.}
+#'         \item{residuals}{residuals from the fitted model.}
+#'         \item{coefficients}{a combined data frame of coefficients for both mean and variance components.}
+#'         \item{coefficients.mu}{a data frame of coefficients for the mean component.}
+#'         \item{coefficients.s2}{a data frame of coefficients for the variance component.}
+#'         \item{df}{degrees of freedom.}
+#'         \item{vcov}{variance-covariance matrix of all coefficients.}
+#'         \item{vcov.mu}{variance-covariance matrix of mean component coefficients.}
+#'         \item{vcov.s2}{variance-covariance matrix of variance component coefficients.}
+#'         \item{loglik}{log-likelihood of the fitted model.}
+#'         \item{AIC}{Akaike Information Criterion.}
+#'         \item{BIC}{Bayesian Information Criterion.}
 #' @export
 #'
-#' @importFrom stats vcov pnorm logLik
+#' @importFrom stats vcov pnorm logLik AIC BIC
 #'
 #' @examples
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
@@ -165,14 +187,19 @@ summary.mvreg <- function(object, ...) {
 #-------------------------------------------------------------------------------
 
 
-#' Print method for summary.mvreg
+#' Print method for summary.mvreg objects
 #'
-#' @param x A mvreg object.
-#' @param digits Minimal number of significant digits, see print.default.
+#' @param x A `summary.mvreg` object.
+#' @param digits Minimal number of significant digits, see `print.default`.
 #' @param signif.stars logical. If TRUE, ‘significance stars’ are printed for each coefficient.
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return Print summary for mvreg.
+#' @return A printed summary of the `mvreg` model, including:
+#' \item{Call}{The call used to fit the model.}
+#' \item{Residuals}{Summary statistics of the residuals from the fitted model.}
+#' \item{Coefficients}{Coefficients for the mean and log(variance) components, including standard errors and significance.}
+#' \item{Model Fit Statistics}{Log-likelihood, AIC, and BIC of the fitted model.}
+#' \item{Likelihood Ratio Test (LRT)}{Comparison with a linear model (lm), including likelihood ratio, degrees of freedom, and p-value.}
 #' @export
 #'
 #' @importFrom stats printCoefmat AIC BIC pchisq
@@ -263,19 +290,26 @@ print.summary.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L),
 
 #' Fitted values of mvreg model
 #'
-#' @param x A mvreg object.
+#' @param x A `mvreg` object.
 #' @param type A character vector specifying the component for which to return fitted values.
+#'             Options include:
+#'             \itemize{
+#'               \item{"all"}: Returns fitted values for both mean and variance components.
+#'               \item{"mu"}: Returns fitted values for the mean component.
+#'               \item{"log.s2"}: Returns fitted values for the log of the variance component.
+#'               \item{"s2"}: Returns fitted values for the variance component.
+#'             }
 #'
-#' @return Fitted values for a given component of a mvreg model.
+#' @return A vector or data frame of fitted values for the specified component of the `mvreg` model.
 #' @export
 #'
 #' @examples
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
-#' # fitted
-#' fitted(mvreg_mod)
-#' fitted(mvreg_mod, type = "mu")
-#' fitted(mvreg_mod, type = "log.s2")
-#' fitted(mvreg_mod, type = "s2")
+#' # fitted values
+#' fitted(mvreg_mod)            # returns all fitted values
+#' fitted(mvreg_mod, type = "mu")  # returns fitted values for the mean component
+#' fitted(mvreg_mod, type = "log.s2")  # returns fitted values for the log of variance
+#' fitted(mvreg_mod, type = "s2")  # returns fitted values for the variance component
 fitted.mvreg <- function(x, type = c("all", "mu", "log.s2", "s2")) {
   type <- match.arg(type)
   if (type == "all") {
@@ -298,17 +332,19 @@ fitted.mvreg <- function(x, type = c("all", "mu", "log.s2", "s2")) {
 #-------------------------------------------------------------------------------
 
 
-#' logLik for mvreg
+#' logLik method for mvreg
 #'
-#' @param object A mvreg object.
-#' @param ... Additional optional arguments.
+#' @param object A `mvreg` object.
+#' @param ... Additional optional arguments (not currently used).
 #'
-#' @return Loglikelihood value of a fitted mvreg model.
+#' @return A log-likelihood value of the fitted `mvreg` model, with attributes:
+#'         \item{df}{Degrees of freedom associated with the model.}
+#'         \item{nobs}{Number of observations used in the fitting.}
 #' @export
 #'
 #' @examples
 #' mod <- mvreg(Sepal.Length ~ Species, data = iris)
-#' logLik(mod)
+#' logLik(mod)  # returns the log-likelihood of the fitted model
 logLik.mvreg <- function(object, ...) {
   val <- object$logLik
   df <- ncol(object$x) + ncol(object$z)
@@ -324,14 +360,14 @@ logLik.mvreg <- function(object, ...) {
 
 #' Predict method for mvreg
 #'
-#' @param object A mvreg object.
-#' @param type A character vector specifying the component for which to return predicted values.
+#' @param object A `mvreg` object.
+#' @param type A character vector specifying the component for which to return predicted values. Options include "all", "mu", "log.s2", or "s2".
 #' @param newdata An optional data frame in which to look for variables with which to predict. If omitted, the fitted values are used.
 #' @param se.fit A logical value indicating if standard errors are to be returned.
 #' @param interval A logical value indicating if confidence intervals are to be returned.
-#' @param level Confidence level for confidence intervals.
+#' @param level Confidence level for confidence intervals (default is `0.95`).
 #'
-#' @return Predicted values for the different components of mvreg model. If specified, standard error estimates and confidence interval are returned.
+#' @return A list containing predicted values for the different components of the `mvreg` model. If specified, standard error estimates and confidence intervals are also returned.
 #' @export
 #'
 #' @importFrom stats model.matrix update qnorm formula
@@ -339,22 +375,18 @@ logLik.mvreg <- function(object, ...) {
 #' @examples
 #' mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
 #'
-#' # predict without newdata
+#' # Predict without newdata
 #' predict(mvreg_mod1)
 #' predict(mvreg_mod1, type = "mu")
 #' predict(mvreg_mod1, type = "log.s2", se.fit = TRUE)
 #' predict(mvreg_mod1, type = "s2", interval = TRUE)
 #' predict(mvreg_mod1, se.fit = TRUE, interval = TRUE, level = 0.99)
 #'
-#' # predict with newdata
-#' unique(c(mvreg_mod1$colx, mvreg_mod1$colz)) # getting names of explanatory variables
-#'
+#' # Predict with newdata
 #' newdata <- data.frame(
 #'   Species = levels(iris$Species),
 #'   Sepal.Width = c(min(iris$Sepal.Width), mean(iris$Sepal.Width), max(iris$Sepal.Width))
 #' )
-#'
-#' newdata <- expand.grid(newdata)
 #'
 #' predict(mvreg_mod1, newdata = newdata, se.fit = TRUE, interval = TRUE)
 predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata, se.fit = F, interval = F, level = 0.95) {
@@ -454,20 +486,27 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
 
 #' Simulate Responses from a mvreg object
 #'
-#' @param object A mvreg object.
-#' @param nsim Number of response vectors to simulate
+#' @param object A `mvreg` object.
+#' @param nsim Number of response vectors to simulate.
 #' @param seed NULL or an integer that will be used in a call to `set.seed` before simulating the response vectors. If set, the value is saved as the "seed" attribute of the returned value. The default, NULL will not change the random generator state, and return .Random.seed as the "seed" attribute.
 #' @param ... Additional optional arguments.
 #'
-#' @return A data.frame which columns are simulated response vectors.
+#' @details
+#' The `simulate` method generates simulated responses based on the fitted `mvreg` model.
+#' The responses are drawn from a normal distribution with a mean specified by the fitted values of the model and a standard deviation that is derived from the estimated variance.
+#' The number of simulated response vectors can be specified using the `nsim` parameter.
+#'
+#' If a seed is provided, the random number generator will be set to this seed to ensure reproducibility of the simulation. The original random seed is restored upon completion.
+#'
+#' @return A `data.frame` where each column corresponds to a simulated response vector.
+#' The attribute "seed" contains the random seed used for the simulation.
 #' @export
 #'
 #' @importFrom stats rnorm runif simulate
 #'
 #' @examples
-#' mvreg.mod <- mvreg(Sepal.Length ~ Species, data = iris)
-#' simulate(mvreg.mod, nsim = 100, seed = 43)
-#'
+#' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris)
+#' simulate(mvreg_mod, nsim = 100, seed = 43)
 simulate.mvreg <- function(object, nsim = 1, seed = NULL, ...) {
   if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
     runif(1)
@@ -515,13 +554,20 @@ simulate.mvreg <- function(object, nsim = 1, seed = NULL, ...) {
 
 #' Update and Re-fit a mvreg model
 #'
-#' @param object A mvreg object.
-#' @param new.formula.mu Changes to formula.mu – see update.formula for details.
-#' @param new.formula.s2 Changes to formula.s2 – see update.formula for details.
-#' @param ... Additional arguments to the call, or arguments with changed values. Use name = NULL to remove the argument name.
-#' @param evaluate If true evaluate the new call else return the call.
+#' @param object A `mvreg` object.
+#' @param new.formula.mu Changes to `formula.mu` – see `update.formula` for details.
+#' @param new.formula.s2 Changes to `formula.s2` – see `update.formula` for details.
+#' @param ... Additional arguments to the call, or arguments with changed values. Use `name = NULL` to remove the argument name.
+#' @param evaluate If TRUE, evaluate the new call; else return the call.
 #'
-#' @return A new mvreg object with the updated formulas or the call
+#' @details
+#' The `update` method allows for modifying the existing `mvreg` model formulas (`formula.mu` and `formula.s2`)
+#' by specifying new formulas. The method can also accept additional arguments to change other components of the
+#' model fitting process (e.g., `method`, `vcov.type`, `start.s2`).
+#'
+#' If `evaluate` is set to TRUE, the updated model is refitted and returned; otherwise, the updated call is returned.
+#'
+#' @return A new `mvreg` object with the updated formulas or the updated call.
 #' @export
 #'
 #' @importFrom stats update getCall

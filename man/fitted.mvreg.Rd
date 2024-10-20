@@ -7,21 +7,28 @@
 \method{fitted}{mvreg}(x, type = c("all", "mu", "log.s2", "s2"))
 }
 \arguments{
-\item{x}{A mvreg object.}
+\item{x}{A \code{mvreg} object.}
 
-\item{type}{A character vector specifying the component for which to return fitted values.}
+\item{type}{A character vector specifying the component for which to return fitted values.
+Options include:
+\itemize{
+\item{"all"}: Returns fitted values for both mean and variance components.
+\item{"mu"}: Returns fitted values for the mean component.
+\item{"log.s2"}: Returns fitted values for the log of the variance component.
+\item{"s2"}: Returns fitted values for the variance component.
+}}
 }
 \value{
-Fitted values for a given component of a mvreg model.
+A vector or data frame of fitted values for the specified component of the \code{mvreg} model.
 }
 \description{
 Fitted values of mvreg model
 }
 \examples{
 mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
-# fitted
-fitted(mvreg_mod)
-fitted(mvreg_mod, type = "mu")
-fitted(mvreg_mod, type = "log.s2")
-fitted(mvreg_mod, type = "s2")
+# fitted values
+fitted(mvreg_mod)            # returns all fitted values
+fitted(mvreg_mod, type = "mu")  # returns fitted values for the mean component
+fitted(mvreg_mod, type = "log.s2")  # returns fitted values for the log of variance
+fitted(mvreg_mod, type = "s2")  # returns fitted values for the variance component
 }

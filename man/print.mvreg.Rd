@@ -2,22 +2,23 @@
 % Please edit documentation in R/mvreg_methods.R
 \name{print.mvreg}
 \alias{print.mvreg}
-\title{Print method for mvreg}
+\title{Print method for mvreg objects}
 \usage{
 \method{print}{mvreg}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }
 \arguments{
-\item{x}{A mvreg object.}
+\item{x}{A \code{mvreg} object.}
 
-\item{digits}{Minimal number of significant digits, see print.default.}
+\item{digits}{Minimal number of significant digits to be printed, see \code{print.default}.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
 \value{
-Print informations about the model.
+Invisibly returns the \code{mvreg} object. Prints the call, coefficients,
+and any additional relevant model information to the console.
 }
 \description{
-Print method for mvreg
+Print method for mvreg objects
 }
 \examples{
 mod <- mvreg(Sepal.Length ~ Species, data = iris)

@@ -1,30 +1,69 @@
-#' Simulation study for mvreg models
+#-------------------------------------------------------------------------------
+
+
+
+#' Simulation Study for Multivariate Regression Models
 #'
-#' @param x Design matrix for mean component.
-#' @param z Design matrix for variance component.
-#' @param b True values for parameters of mean component.
-#' @param t True values for parameters of variance component.
-#' @param nsim Number of samples to simulate.
-#' @param sig.level Significance level for Wald tests.
-#' @param seed Seed of the simulation.
-#' @param method Method chosen for estimation of parameters of mean component.
-#' @param vcov.type A string to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates.
-#' @param start.s2 A character vector indicating how to select initial values for variance component parameters.
-#' @param tol Positive value indicating what is the minimum difference between parameter estimates between two iterations to stop the algorithm.
-#' @param maxit Integer value indicating the maximum number of iteration.
+#' This function performs a simulation study to evaluate the properties of
+#' estimators for the parameters of `mvreg` models. It generates
+#' simulated response variables based on the specified design matrices for the
+#' mean and variance components and true parameter values, and then fits the
+#' model to the simulated data.
 #'
-#' @return Results of a simulation study to check properties of estimators and statistical tests.
+#' @param x A numeric matrix representing the design matrix for the mean component.
+#'          Each column corresponds to a predictor variable. The first column should be
+#'          an intercept term.
+#' @param z A numeric matrix representing the design matrix for the variance component.
+#'          Each column corresponds to a predictor variable for the variance. The first
+#'          column should also be an intercept term.
+#' @param b A numeric vector of true values for the parameters of the mean component.
+#'          Its length must match the number of columns in `x`.
+#' @param t A numeric vector of true values for the parameters of the variance component.
+#'          Its length must match the number of columns in `z`.
+#' @param nsim An integer indicating the number of samples to simulate. Default is `100`.
+#' @param sig.level A numeric value representing the significance level for Wald tests.
+#'                  Default is `0.05`.
+#' @param seed An optional integer to set the seed for random number generation. This ensures
+#'              reproducibility of the results. Default is NULL.
+#' @param method A character vector indicating the method chosen for estimation of parameters of mean component. See the documentation of \code{\link{mvreg_fit}} for details.
+#' @param vcov.type A character vector to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates. See the documentation of \code{\link{mvreg_fit}}, \code{\link{mvreg_hessian_mu}}, \code{\link{mvreg_hessian_s2}}, \code{\link{mvreg_hessian_mus2}} and \code{\link{mvreg_hessian}} for details.
+#' @param start.s2 A character vector indicating how to select initial values for variance component parameters. See the documentation of \code{\link{mvreg_start}} for details.
+#' @param tol A positive numeric value indicating the minimum difference between parameter
+#'            estimates between two iterations to stop the algorithm. Default is `1e-10`.
+#' @param maxit An integer value specifying the maximum number of iterations for the fitting
+#'               algorithm. Default is `100`.
+#'
+#' @return A list containing results of the simulation study, including:
+#' \describe{
+#'   \item{tab}{A data frame summarizing the true values, mean estimates, distortion,
+#'              variance, standard errors (SE), mean squared error (MSE), root mean squared
+#'              error (RMSE), and proportion of rejected null hypotheses.}
+#'   \item{theta}{A data frame of parameter estimates from the simulated models.}
+#'   \item{mean_vtheta}{A matrix containing the average variance-covariance matrices of the
+#'                      estimates across simulations.}
+#'   \item{vtheta}{A list of variance-covariance matrices for each simulated model.}
+#'   \item{it}{A vector of the number of iterations taken to converge for each simulation.}
+#'   \item{y}{A data frame of the simulated response variables.}
+#'   \item{n}{The number of observations used in the simulation.}
+#'   \item{nsim}{The number of simulations performed.}
+#'   \item{seed}{The seed used for random number generation.}
+#'   \item{k}{The number of predictors in the mean component.}
+#'   \item{p}{The number of predictors in the variance component.}
+#'   \item{converged}{The number of simulations that converged successfully.}
+#'   \item{non_converged}{The number of simulations that did not converge.}
+#'   \item{total_time}{The total time taken to perform the simulations.}
+#' }
+#'
 #' @export
 #' @importFrom stats rnorm pnorm
 #'
 #' @examples
 #' n <- 100
-#' x <- cbind(1, rnorm(n))
-#' z <- cbind(1, x[, 2], x[, 2]^2)
-#' b <- rnorm(ncol(x))
-#' t <- rnorm(ncol(z))
+#' x <- cbind(1, rnorm(n))   # Design matrix for mean component
+#' z <- cbind(1, x[, 2], x[, 2]^2)  # Design matrix for variance component
+#' b <- rnorm(ncol(x))      # True parameters for mean component
+#' t <- rnorm(ncol(z))      # True parameters for variance component
 #' mvreg_simul(x, z, b, t, nsim = 100, seed = 43)
-#'
 mvreg_simul <- function(x, z, b, t, nsim = 100, sig.level = 0.05,
                         seed = NULL,
                         method = c("wls", "full_nr"),
@@ -208,11 +247,16 @@ mvreg_simul <- function(x, z, b, t, nsim = 100, sig.level = 0.05,
 
 #' Print method for simul_mvreg
 #'
-#' @param x A simul_mvreg object.
-#' @param digits The minimum number of significant digits to be used.
-#' @param ... Further arguments passed to or from other methods
+#' This method prints the results of the simulation study for a `mvreg` model.
+#' It includes the number of observations, the number of simulations, the number
+#' of converged simulations, and the total time taken for the simulations.
 #'
-#' @return Prints results of simul_mvreg
+#' @param x A simul_mvreg object, containing the results of the simulation study.
+#' @param digits The minimum number of significant digits to be used. Default is
+#'               set to max(3L, getOption("digits") - 3L).
+#' @param ... Further arguments passed to or from other methods.
+#'
+#' @return Prints results of simul_mvreg.
 #' @export
 #' @exportS3Method print simul_mvreg
 #'
@@ -222,7 +266,8 @@ mvreg_simul <- function(x, z, b, t, nsim = 100, sig.level = 0.05,
 #' z <- cbind(1, x[, 2], x[, 2]^2)
 #' b <- rnorm(ncol(x))
 #' t <- rnorm(ncol(z))
-#' mvreg_simul(x, z, b, t, nsim = 100, seed = 43)
+#' result <- mvreg_simul(x, z, b, t, nsim = 100, seed = 43)
+#' print(result)
 print.simul_mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
   cat("\nSimulation study for a mvreg model\n")
   cat(paste0("\nn = ", x$n))
