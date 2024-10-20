@@ -2,36 +2,41 @@
 % Please edit documentation in R/loglik_derivatives.R
 \name{mvreg_loglik}
 \alias{mvreg_loglik}
-\title{Loglikelihood of heteroskedastic linear model}
+\title{Log-likelihood of a Heteroskedastic Linear Model}
 \usage{
 mvreg_loglik(y, x, z, b, t)
 }
 \arguments{
-\item{y}{Vector of response variable.}
+\item{y}{A numeric vector representing the response variable.}
 
-\item{x}{Matrix of explanatory variables for mean component.}
+\item{x}{A numeric matrix of explanatory variables for the mean component of the model.}
 
-\item{z}{Matrix of explanatory variables for variance component.}
+\item{z}{A numeric matrix of explanatory variables for the variance component of the model.}
 
-\item{b}{Vector of parameters for mean component.}
+\item{b}{A numeric vector of parameters for the mean component.}
 
-\item{t}{Vector of parameters for variance component.}
+\item{t}{A numeric vector of parameters for the variance component.}
 }
 \value{
-Value of loglikelihood for a given sample and parameters' values.
+A numeric value representing the log-likelihood of the model for the given sample and parameter values.
 }
 \description{
-Loglikelihood of heteroskedastic linear model
+This function computes the log-likelihood of a heteroskedastic linear model, where the variance component is modeled as a linear function of a set of explanatory variables, possibly different from those of the mean component.
+}
+\details{
+The log-likelihood is computed under the assumption that the response variable follows a normal distribution with mean \eqn{\mathbf{x}_i' \boldsymbol{\beta}} and variance \eqn{\exp\left\{\mathbf{z}_i' \boldsymbol{\tau}\right\}}, where \eqn{\boldsymbol{\beta}} and \eqn{\boldsymbol{\tau}} are the parameters vectors for the mean and variance components, respectively.
 }
 \examples{
+# Fit a heteroskedastic linear model to the iris dataset
 mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
-y <- mvreg_mod$y # response variable
-x <- mvreg_mod$x # model.matrix for mean component
-z <- mvreg_mod$z # model.matrix for variance component
-b <- coef(mvreg_mod, "mu") # coefficients of mean component
-t <- coef(mvreg_mod, "s2") # coefficients of variance component
 
-# loglikelihood
+# Extract model components
+y <- mvreg_mod$y        # Response variable
+x <- mvreg_mod$x        # Model matrix for the mean component
+z <- mvreg_mod$z        # Model matrix for the variance component
+b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
+t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
+
+# Compute log-likelihood
 mvreg_loglik(y, x, z, b, t)
-
 }

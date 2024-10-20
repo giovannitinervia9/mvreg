@@ -2,37 +2,42 @@
 % Please edit documentation in R/loglik_derivatives.R
 \name{mvreg_gradient_mu}
 \alias{mvreg_gradient_mu}
-\title{Gradient of model loglikelihood with respect to beta}
+\title{Gradient of model log-likelihood with respect to mean coefficients (beta)}
 \usage{
 mvreg_gradient_mu(y, x, z, b, t)
 }
 \arguments{
-\item{y}{Vector of response variable.}
+\item{y}{A numeric vector representing the response variable.}
 
-\item{x}{Matrix of explanatory variables for mean component.}
+\item{x}{A numeric matrix of explanatory variables for the mean component of the model.}
 
-\item{z}{Matrix of explanatory variables for variance component.}
+\item{z}{A numeric matrix of explanatory variables for the variance component of the model.}
 
-\item{b}{Vector of parameters for mean component.}
+\item{b}{A numeric vector of parameters for the mean component.}
 
-\item{t}{Vector of parameters for variance component.}
+\item{t}{A numeric vector of parameters for the variance component.}
 }
 \value{
-Gradient with respect to beta.
+A numeric vector representing the gradient of the log-likelihood with respect to the mean component coefficients \eqn{\boldsymbol{\beta}}.
 }
 \description{
-Gradient of model loglikelihood with respect to beta
+This function computes the gradient of the log-likelihood of a heteroskedastic linear model with respect to the coefficients of the mean component (denoted as \eqn{\boldsymbol{\beta}}).
+}
+\details{
+The gradient is calculated based on the partial derivatives of the log-likelihood function with respect to the mean coefficients \eqn{\boldsymbol{\beta}}.
+The \eqn{j}-th element is computed as \deqn{\dfrac{\partial \ell}{\partial \beta_j} = \sum_{i=1}^n \dfrac{y_i - \mathbf{x}_i'\boldsymbol{\beta}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}x_{ij}}
 }
 \examples{
+# Fit a heteroskedastic linear model to the iris dataset
 mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
-y <- mvreg_mod$y # response variable
-x <- mvreg_mod$x # model.matrix for mean component
-z <- mvreg_mod$z # model.matrix for variance component
-b <- coef(mvreg_mod, "mu") # coefficients of mean component
-t <- coef(mvreg_mod, "s2") # coefficients of variance component
 
-# first derivatives
-mvreg_gradient_mu(y, x, z, b, t) # w.r.t. mean coefficients
-mvreg_gradient_s2(y, x, z, b, t) # w.r.t. variance coefficients
+# Extract model components
+y <- mvreg_mod$y        # Response variable
+x <- mvreg_mod$x        # Model matrix for the mean component
+z <- mvreg_mod$z        # Model matrix for the variance component
+b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
+t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
 
+# Compute gradient with respect to the mean coefficients
+mvreg_gradient_mu(y, x, z, b, t)
 }

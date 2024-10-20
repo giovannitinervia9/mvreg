@@ -20,6 +20,7 @@ A list of class \code{anova.mvreg} containing:
 \itemize{
 \item \verb{-2logLik}: The negative two times the log-likelihood of each model.
 \item \code{n.param}: The number of parameters in each model.
+\item \code{AIC}: AIC of each model.
 \item \code{LRT}: The likelihood ratio test statistic.
 \item \code{df}: The degrees of freedom for the test.
 \item \verb{Pr(>Chi)}: The p-value associated with the likelihood ratio test.
@@ -35,6 +36,7 @@ A list of class \code{anova.mvreg} containing:
 \itemize{
 \item \verb{-2logLik}: The negative two times the log-likelihood of each model.
 \item \code{n.param}: The number of parameters in each model.
+\item \code{AIC}: AIC of each model.
 \item \code{LRT}: The likelihood ratio test statistic.
 \item \verb{Pr(>Chi)}: The p-value associated with the likelihood ratio test.
 }

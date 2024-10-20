@@ -2,41 +2,53 @@
 % Please edit documentation in R/loglik_derivatives.R
 \name{mvreg_hessian_mus2}
 \alias{mvreg_hessian_mus2}
-\title{Hessian of model loglikelihood with respect to beta and tau}
+\title{Hessian of model log-likelihood with respect to mean and variance coefficients (beta and tau)}
 \usage{
 mvreg_hessian_mus2(y, x, z, b, t, type = c("observed", "expected"))
 }
 \arguments{
-\item{y}{Vector of response variable.}
+\item{y}{A numeric vector representing the response variable.}
 
-\item{x}{Matrix of explanatory variables for mean component.}
+\item{x}{A numeric matrix of explanatory variables for the mean component of the model.}
 
-\item{z}{Matrix of explanatory variables for variance component.}
+\item{z}{A numeric matrix of explanatory variables for the variance component of the model.}
 
-\item{b}{Vector of parameters for mean component.}
+\item{b}{A numeric vector of parameters for the mean component.}
 
-\item{t}{Vector of parameters for variance component.}
+\item{t}{A numeric vector of parameters for the variance component.}
 
-\item{type}{A string to specify whether to output the observed or expected matrix}
+\item{type}{A character string specifying whether to return the observed or expected Hessian matrix.
+The default is "observed".}
 }
 \value{
-Hessian of loglikelihood with respect to beta and tau.
+A numeric matrix representing the Hessian of the log-likelihood with respect to the mean and variance component coefficients.
 }
 \description{
-Hessian of model loglikelihood with respect to beta and tau
+This function computes the Hessian matrix of the log-likelihood of a heteroskedastic linear model
+with respect to the coefficients of the mean component (denoted as \eqn{\boldsymbol{\beta}})
+and the coefficients of the variance component (denoted as \eqn{\boldsymbol{\tau}}).
+The Hessian can be calculated as either the observed or expected matrix, depending on the \code{type} argument.
+}
+\details{
+The observed Hessian is calculated as the matrix of mixed second-order partial derivatives of the log-likelihood function
+with respect to \eqn{\boldsymbol{\beta}} and \eqn{\boldsymbol{\tau}}.
+The \eqn{(j, l)}-th element of the observed Hessian is computed using the formula:
+\deqn{\dfrac{\partial^2 \ell}{\partial \beta_j \partial \tau_j} = -\sum_{i=1}^n \dfrac{y_i - \mathbf{x}_i'\boldsymbol{\beta}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}x_{ij}z_{il}}
+
+The expected Hessian is a zero matrix.
 }
 \examples{
+# Fit a heteroskedastic linear model to the iris dataset
 mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
-y <- mvreg_mod$y # response variable
-x <- mvreg_mod$x # model.matrix for mean component
-z <- mvreg_mod$z # model.matrix for variance component
-b <- coef(mvreg_mod, "mu") # coefficients of mean component
-t <- coef(mvreg_mod, "s2") # coefficients of variance component
 
-# second derivatives
-mvreg_hessian_mu(y, x, z, b, t) # w.r.t. mean coefficients
-mvreg_hessian_s2(y, x, z, b, t) # w.r.t. variance coefficients
-mvreg_hessian_mus2(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
-mvreg_hessian(y, x, z, b, t) # full hessian
+# Extract model components
+y <- mvreg_mod$y        # Response variable
+x <- mvreg_mod$x        # Model matrix for the mean component
+z <- mvreg_mod$z        # Model matrix for the variance component
+b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
+t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
 
+# Compute Hessian with respect to mean and variance coefficients
+mvreg_hessian_mus2(y, x, z, b, t, type = "observed")
+mvreg_hessian_mus2(y, x, z, b, t, type = "expected")
 }

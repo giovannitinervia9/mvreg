@@ -2,41 +2,52 @@
 % Please edit documentation in R/loglik_derivatives.R
 \name{mvreg_hessian}
 \alias{mvreg_hessian}
-\title{Full hessian of model loglikelihood}
+\title{Full hessian of model log-likelihood}
 \usage{
 mvreg_hessian(y, x, z, b, t, type = c("observed", "expected"))
 }
 \arguments{
-\item{y}{Vector of response variable.}
+\item{y}{A numeric vector representing the response variable.}
 
-\item{x}{Matrix of explanatory variables for mean component.}
+\item{x}{A numeric matrix of explanatory variables for the mean component of the model.}
 
-\item{z}{Matrix of explanatory variables for variance component.}
+\item{z}{A numeric matrix of explanatory variables for the variance component of the model.}
 
-\item{b}{Vector of parameters for mean component.}
+\item{b}{A numeric vector of parameters for the mean component.}
 
-\item{t}{Vector of parameters for variance component.}
+\item{t}{A numeric vector of parameters for the variance component.}
 
-\item{type}{A string to specify whether to output the observed or expected matrix}
+\item{type}{A character string specifying whether to return the observed or expected Hessian matrix.
+The default is "observed".}
 }
 \value{
-Full hessian of model loglikelihood.
+A numeric matrix representing the full hessian of the log-likelihood with respect to the mean and variance component coefficients.
 }
 \description{
-Full hessian of model loglikelihood
+This function computes the full hessian matrix of the log-likelihood of a heteroskedastic linear model.
+The hessian can be calculated as either the observed or expected matrix, depending on the \code{type} argument.
+}
+\details{
+The full Hessian is constructed by combining the hessians of the mean and variance components,
+as well as the mixed partial derivatives between them. The structure of the returned matrix is:
+\deqn{\mathcal{H}(\boldsymbol{\beta}, \boldsymbol{\tau}) =
+\begin{bmatrix}
+\mathcal{H}_{\boldsymbol{\beta}}(\boldsymbol{\beta}, \boldsymbol{\tau}) & \mathcal{H}_{\boldsymbol{\beta} \boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau}) \\
+\mathcal{H}_{\boldsymbol{\beta} \boldsymbol{\tau}}'(\boldsymbol{\beta}, \boldsymbol{\tau}) & \mathcal{H}_{\boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau})
+\end{bmatrix}}
 }
 \examples{
+# Fit a heteroskedastic linear model to the iris dataset
 mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
-y <- mvreg_mod$y # response variable
-x <- mvreg_mod$x # model.matrix for mean component
-z <- mvreg_mod$z # model.matrix for variance component
-b <- coef(mvreg_mod, "mu") # coefficients of mean component
-t <- coef(mvreg_mod, "s2") # coefficients of variance component
 
-# second derivatives
-mvreg_hessian_mu(y, x, z, b, t) # w.r.t. mean coefficients
-mvreg_hessian_s2(y, x, z, b, t) # w.r.t. variance coefficients
-mvreg_hessian_mus2(y, x, z, b, t) # w.r.t. mean coefficients and variance coefficients
-mvreg_hessian(y, x, z, b, t) # full hessian
+# Extract model components
+y <- mvreg_mod$y        # Response variable
+x <- mvreg_mod$x        # Model matrix for the mean component
+z <- mvreg_mod$z        # Model matrix for the variance component
+b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
+t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
 
+# Compute the full Hessian
+mvreg_hessian(y, x, z, b, t, type = "observed")
+mvreg_hessian(y, x, z, b, t, type = "expected")
 }

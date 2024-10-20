@@ -16,6 +16,7 @@
 #'     - `mu.tests`: A data frame with results of the ANOVA for the mean component, including:
 #'       - `-2logLik`: The negative two times the log-likelihood of each model.
 #'       - `n.param`: The number of parameters in each model.
+#'       - `AIC`: AIC of each model.
 #'       - `LRT`: The likelihood ratio test statistic.
 #'       - `df`: The degrees of freedom for the test.
 #'       - `Pr(>Chi)`: The p-value associated with the likelihood ratio test.
@@ -28,6 +29,7 @@
 #'     - `tests`: A data frame with results of the likelihood ratio tests, including:
 #'       - `-2logLik`: The negative two times the log-likelihood of each model.
 #'       - `n.param`: The number of parameters in each model.
+#'       - `AIC`: AIC of each model.
 #'       - `LRT`: The likelihood ratio test statistic.
 #'       - `Pr(>Chi)`: The p-value associated with the likelihood ratio test.
 #'     - `formulas.mu`: A character vector of formulas used for the mean component.
