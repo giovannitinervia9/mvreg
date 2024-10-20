@@ -84,10 +84,11 @@ anova.mvreg <- function(object, ...){
     mu.tests <- lapply(new.mod.mu, function(mod) {
       c(-2*as.numeric(logLik(mod)),
         n - df.residual(mod),
+        AIC(mod),
         df.residual(mod))})
 
     mu.tests <- as.data.frame(do.call(rbind, mu.tests))
-    colnames(mu.tests) <- c("-2logLik", "n.param", "df.residuals")
+    colnames(mu.tests) <- c("-2logLik", "n.param", "AIC", "df.residuals")
     rownames(mu.tests) <- model.mu
     mu.tests$LRT <- NA
     mu.tests$df <- NA
@@ -108,10 +109,11 @@ anova.mvreg <- function(object, ...){
     s2.tests <- lapply(new.mod.s2, function(mod) {
       c(-2*as.numeric(logLik(mod)),
         n - df.residual(mod),
+        AIC(mod),
         df.residual(mod))})
 
     s2.tests <- as.data.frame(do.call(rbind, s2.tests))
-    colnames(s2.tests) <- c("-2logLik", "n.param", "df.residuals")
+    colnames(s2.tests) <- c("-2logLik", "n.param", "AIC", "df.residuals")
     rownames(s2.tests) <- model.s2
     s2.tests$LRT <- NA
     s2.tests$df <- NA
@@ -141,11 +143,12 @@ anova.mvreg <- function(object, ...){
     tests <- lapply(models, function(mod) {
       c(-2*as.numeric(logLik(mod)),
         n - df.residual(mod),
+        AIC(mod),
         df.residual(mod))
       })
 
     tests <- as.data.frame(do.call(rbind, tests))
-    colnames(tests) <- c("-2logLik", "n.param", "df.residuals")
+    colnames(tests) <- c("-2logLik", "n.param", "AIC", "df.residuals")
     tests$LRT <- NA
     tests$df <- NA
     tests$`Pr(>Chi)` <- NA
@@ -156,15 +159,22 @@ anova.mvreg <- function(object, ...){
     models.names <- paste0("model", 1:length(models))
     rownames(tests) <- models.names
 
-
+    n.param.equal <- rep(NA, length(2:nrow(tests)))
     for(i in 2:nrow(tests)){
       lrt <- tests$`-2logLik`[i - 1] - tests$`-2logLik`[i]
       df <- tests$n.param[i] - tests$n.param[i - 1]
-      pval <- 1 - pchisq(lrt, df = df)
+
+      if(df > 0){
+        pval <- 1 - pchisq(lrt, df = df)
+        } else {pval <- NA}
+
       tests$LRT[i] <- lrt
       tests$df[i] <- df
       tests$`Pr(>Chi)`[i] <- pval
+      n.param.equal[i - 1] <- tests$n.param[i] == tests$n.param[i - 1]
     }
+
+    if(any(n.param.equal == T)){warning("LRT test with models with the same number of parameters is meaningless")}
 
     formulas.mu <- unlist(lapply(models, function(mod) deparse(mod$formula.mu)))
     formulas.s2 <- unlist(lapply(models, function(mod) deparse(mod$formula.s2)))
@@ -240,7 +250,7 @@ print.anova.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...
     cat(print.s2, sep = "\n")
     cat("\n")
     printCoefmat(x$s2.tests, signif.legend = F, na.print = "",
-                 cs.ind = 1, tst.ind = 4)
+                 cs.ind = 1, tst.ind = 5)
     cat("\n")
 
   } else {
@@ -252,7 +262,7 @@ print.anova.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...
     cat(paste0("model", 1:nrow(x$tests), ": ", x$formulas.s2, sep = "\n", collapse = ""))
     cat("\n")
     printCoefmat(x$tests, signif.legend = F, na.print = "",
-                 cs.ind = 1, tst.ind = 4)
+                 cs.ind = 1, tst.ind = 5)
     cat("\n")
 
   }
