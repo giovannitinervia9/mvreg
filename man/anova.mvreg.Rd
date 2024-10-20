@@ -2,54 +2,75 @@
 % Please edit documentation in R/mvreg_anova.R
 \name{anova.mvreg}
 \alias{anova.mvreg}
-\title{ANOVA for mvreg models}
+\title{ANOVA-like Comparison for mvreg Models}
 \usage{
 \method{anova}{mvreg}(object, ...)
 }
 \arguments{
-\item{object}{A \code{mvreg} object. If only one \code{mvreg} object is specified, the model is compared with all the reduced models obtained by sequentially dropping one term at a time from the original formula.}
+\item{object}{A \code{mvreg} object, representing the main model to compare.
+If this is the only model provided, the function compares this model with reduced versions of itself.}
 
-\item{...}{Additional \code{mvreg} objects to be compared with the first model.}
+\item{...}{Additional \code{mvreg} objects to compare with the first model.}
 }
 \value{
-A list of class \code{anova.mvreg} containing:
+A list of class \code{anova.mvreg}:
 \itemize{
-\item If one model is provided (i.e., \code{...} is empty):
+\item If only one model is provided:
 \itemize{
 \item \code{mu.tests}: A data frame with results of the ANOVA for the mean component, including:
 \itemize{
-\item \verb{-2logLik}: The negative two times the log-likelihood of each model.
-\item \code{n.param}: The number of parameters in each model.
-\item \code{AIC}: AIC of each model.
-\item \code{LRT}: The likelihood ratio test statistic.
-\item \code{df}: The degrees of freedom for the test.
-\item \verb{Pr(>Chi)}: The p-value associated with the likelihood ratio test.
+\item \verb{-2logLik}: Negative two times the log-likelihood of each model.
+\item \code{n.param}: Number of parameters in each model.
+\item \code{AIC}: Akaike Information Criterion for each model.
+\item \code{LRT}: Likelihood ratio test statistic.
+\item \code{df}: Degrees of freedom for the test.
+\item \verb{Pr(>Chi)}: P-value associated with the likelihood ratio test.
 }
 \item \code{s2.tests}: A similar data frame for the variance component.
 \item \code{new.formula.mu}: A character vector of formulas used for the mean component.
 \item \code{new.formula.s2}: A character vector of formulas used for the variance component.
-\item \code{n_models}: The number of models compared.
+\item \code{n_models}: Number of models compared.
 }
 \item If more than one model is provided:
 \itemize{
 \item \code{tests}: A data frame with results of the likelihood ratio tests, including:
 \itemize{
-\item \verb{-2logLik}: The negative two times the log-likelihood of each model.
-\item \code{n.param}: The number of parameters in each model.
-\item \code{AIC}: AIC of each model.
-\item \code{LRT}: The likelihood ratio test statistic.
-\item \verb{Pr(>Chi)}: The p-value associated with the likelihood ratio test.
+\item \verb{-2logLik}: Negative two times the log-likelihood of each model.
+\item \code{n.param}: Number of parameters in each model.
+\item \code{AIC}: Akaike Information Criterion for each model.
+\item \code{LRT}: Likelihood ratio test statistic.
+\item \verb{Pr(>Chi)}: P-value associated with the likelihood ratio test.
 }
 \item \code{formulas.mu}: A character vector of formulas used for the mean component.
 \item \code{formulas.s2}: A character vector of formulas used for the variance component.
-\item \code{n_models}: The number of models compared.
+\item \code{n_models}: Number of models compared.
 }
 }
 }
 \description{
-This function performs an ANOVA-like analysis for \code{mvreg} objects to compare models
-with different formulas for the mean and variance components. It calculates the likelihood ratio test
-statistics and their associated p-values.
+This function performs an ANOVA-like analysis for comparing one or more \code{mvreg} models,
+which involve mean and variance components. It uses likelihood ratio tests (LRT)
+to compare nested models, providing test statistics and p-values to assess the significance
+of each model in explaining the data. If only one \code{mvreg} model is provided, the function
+compares the model with reduced versions obtained by sequentially removing terms from the
+mean and variance formulas.
+}
+\details{
+The \code{anova.mvreg} function compares \code{mvreg} models using likelihood ratio tests
+(LRT). If multiple models are provided, it compares them based on their likelihoods
+and parameter counts. If only one model is provided, the function automatically generates
+reduced models by sequentially dropping terms from the mean and variance formulas.
+This allows for comparison of nested models and the identification of significant terms.
+
+The returned object contains detailed information about the comparison, including AIC values,
+degrees of freedom, likelihood ratio statistics, and their associated p-values.
+}
+\note{
+It is important to ensure that the models being compared are nested, as the
+likelihood ratio test is only valid for nested models. Additionally, models with the same
+number of parameters cannot be meaningfully compared using the LRT.
+If two models have the same number of parameters, the likelihood ratio test is meaningless,
+and the function will issue a warning.
 }
 \examples{
 # Fit two models
@@ -57,7 +78,7 @@ mod1 <- mvreg(Sepal.Length ~ Species + Sepal.Width, data = iris)
 mod2 <- mvreg(Sepal.Length ~ Species, ~1, data = iris)
 anova(mod1, mod2)
 
-# Fit a single model
+# Compare a single model with its reduced forms
 mod3 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
 anova(mod3)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mvreg_anova.R
 \name{print.anova.mvreg}
 \alias{print.anova.mvreg}
-\title{Print Method for ANOVA Results of mvreg models}
+\title{Print Method for ANOVA Results of mvreg Models}
 \usage{
 \method{print}{anova.mvreg}(x, digits = max(3L, getOption("digits") - 3L), ...)
 }
@@ -39,4 +39,5 @@ anova(mod1, mod2)
 # Fit a single model
 mod3 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
 anova(mod3)
+
 }

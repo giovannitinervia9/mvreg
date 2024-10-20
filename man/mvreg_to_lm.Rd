@@ -2,20 +2,43 @@
 % Please edit documentation in R/mvreg_to_lm.R
 \name{mvreg_to_lm}
 \alias{mvreg_to_lm}
-\title{Convert mvreg model to lm}
+\title{Convert a mvreg model to lm}
 \usage{
 mvreg_to_lm(object)
 }
 \arguments{
-\item{object}{A mvreg or a summary.mvreg object}
+\item{object}{A fitted model object of class \code{mvreg} or \code{summary.mvreg}.}
 }
 \value{
-A lm object with same formula as the formula.mu of the initial mvreg object
+A \code{lm} object corresponding to the mean component of the \code{mvreg} model.
+The output is a fitted linear model using the same formula as \code{formula.mu} from the original \code{mvreg} object.
+
+A fitted model object of class \code{lm}, which is the linear model fitted to the mean component of the original
+\code{mvreg} model.
 }
 \description{
-Convert mvreg model to lm
+This function converts an object of class \code{mvreg} into a standard linear model (\code{lm} object).
+It extracts the formula for the mean component (i.e., \code{formula.mu}) from the \code{mvreg} model and fits a linear model
+to the same data with \code{lm()} function.
+}
+\details{
+The \code{mvreg_to_lm} function extracts the formula for the mean component from the \code{mvreg} model, which
+is stored in \code{formula.mu}. It then fits an ordinary least squares regression model using this formula.
+If the \code{mvreg} model was fit with a dataset, the same dataset is used for fitting the \code{lm} model.
+This enables a direct comparison between the two models.
+}
+\note{
+This function only captures the mean component of the \code{mvreg} model.
+The variance component (which models heteroscedasticity) is not included in the resulting \code{lm} object.
 }
 \examples{
+# Fit a mvreg model to the cars dataset
 mod.mvreg <- mvreg(dist ~ speed, data = cars)
-mvreg_to_lm(mod.mvreg)
+
+# Convert the mvreg model to an lm object
+mod.lm <- mvreg_to_lm(mod.mvreg)
+}
+\seealso{
+\code{\link{mvreg}} for fitting heteroscedastic regression models
+and \code{\link[stats]{lm}} for standard linear regression.
 }

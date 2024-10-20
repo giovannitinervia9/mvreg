@@ -1,44 +1,63 @@
 #-------------------------------------------------------------------------------
 
 
-#' ANOVA for mvreg models
+#' ANOVA-like Comparison for mvreg Models
 #'
-#' This function performs an ANOVA-like analysis for `mvreg` objects to compare models
-#' with different formulas for the mean and variance components. It calculates the likelihood ratio test
-#' statistics and their associated p-values.
+#' This function performs an ANOVA-like analysis for comparing one or more `mvreg` models,
+#' which involve mean and variance components. It uses likelihood ratio tests (LRT)
+#' to compare nested models, providing test statistics and p-values to assess the significance
+#' of each model in explaining the data. If only one `mvreg` model is provided, the function
+#' compares the model with reduced versions obtained by sequentially removing terms from the
+#' mean and variance formulas.
 #'
-#' @param object A `mvreg` object. If only one `mvreg` object is specified, the model is compared with all the reduced models obtained by sequentially dropping one term at a time from the original formula.
-#' @param ... Additional `mvreg` objects to be compared with the first model.
+#' @param object A `mvreg` object, representing the main model to compare.
+#'        If this is the only model provided, the function compares this model with reduced versions of itself.
+#' @param ... Additional `mvreg` objects to compare with the first model.
 #'
-#'
-#' @return A list of class `anova.mvreg` containing:
-#'   - If one model is provided (i.e., `...` is empty):
+#' @return A list of class `anova.mvreg`:
+#'   - If only one model is provided:
 #'     - `mu.tests`: A data frame with results of the ANOVA for the mean component, including:
-#'       - `-2logLik`: The negative two times the log-likelihood of each model.
-#'       - `n.param`: The number of parameters in each model.
-#'       - `AIC`: AIC of each model.
-#'       - `LRT`: The likelihood ratio test statistic.
-#'       - `df`: The degrees of freedom for the test.
-#'       - `Pr(>Chi)`: The p-value associated with the likelihood ratio test.
+#'       - `-2logLik`: Negative two times the log-likelihood of each model.
+#'       - `n.param`: Number of parameters in each model.
+#'       - `AIC`: Akaike Information Criterion for each model.
+#'       - `LRT`: Likelihood ratio test statistic.
+#'       - `df`: Degrees of freedom for the test.
+#'       - `Pr(>Chi)`: P-value associated with the likelihood ratio test.
 #'     - `s2.tests`: A similar data frame for the variance component.
 #'     - `new.formula.mu`: A character vector of formulas used for the mean component.
 #'     - `new.formula.s2`: A character vector of formulas used for the variance component.
-#'     - `n_models`: The number of models compared.
-#'
+#'     - `n_models`: Number of models compared.
 #'   - If more than one model is provided:
 #'     - `tests`: A data frame with results of the likelihood ratio tests, including:
-#'       - `-2logLik`: The negative two times the log-likelihood of each model.
-#'       - `n.param`: The number of parameters in each model.
-#'       - `AIC`: AIC of each model.
-#'       - `LRT`: The likelihood ratio test statistic.
-#'       - `Pr(>Chi)`: The p-value associated with the likelihood ratio test.
+#'       - `-2logLik`: Negative two times the log-likelihood of each model.
+#'       - `n.param`: Number of parameters in each model.
+#'       - `AIC`: Akaike Information Criterion for each model.
+#'       - `LRT`: Likelihood ratio test statistic.
+#'       - `Pr(>Chi)`: P-value associated with the likelihood ratio test.
 #'     - `formulas.mu`: A character vector of formulas used for the mean component.
 #'     - `formulas.s2`: A character vector of formulas used for the variance component.
-#'     - `n_models`: The number of models compared.
+#'     - `n_models`: Number of models compared.
 #'
 #' @export
 #'
-#' @importFrom stats df.residual
+#' @importFrom stats df.residual logLik AIC pchisq
+#'
+#' @details
+#' The \code{anova.mvreg} function compares `mvreg` models using likelihood ratio tests
+#' (LRT). If multiple models are provided, it compares them based on their likelihoods
+#' and parameter counts. If only one model is provided, the function automatically generates
+#' reduced models by sequentially dropping terms from the mean and variance formulas.
+#' This allows for comparison of nested models and the identification of significant terms.
+#'
+#' The returned object contains detailed information about the comparison, including AIC values,
+#' degrees of freedom, likelihood ratio statistics, and their associated p-values.
+#'
+#' @note It is important to ensure that the models being compared are nested, as the
+#' likelihood ratio test is only valid for nested models. Additionally, models with the same
+#' number of parameters cannot be meaningfully compared using the LRT.
+#' If two models have the same number of parameters, the likelihood ratio test is meaningless,
+#' and the function will issue a warning.
+#'
 #'
 #' @examples
 #' # Fit two models
@@ -46,7 +65,7 @@
 #' mod2 <- mvreg(Sepal.Length ~ Species, ~1, data = iris)
 #' anova(mod1, mod2)
 #'
-#' # Fit a single model
+#' # Compare a single model with its reduced forms
 #' mod3 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
 #' anova(mod3)
 anova.mvreg <- function(object, ...){
@@ -196,7 +215,7 @@ anova.mvreg <- function(object, ...){
 #------------------------------------------------------------------------------
 
 
-#' Print Method for ANOVA Results of mvreg models
+#' Print Method for ANOVA Results of mvreg Models
 #'
 #' This function formats and prints the results of an ANOVA-like analysis
 #' for `mvreg` objects. It provides a summary of the tests conducted on
@@ -229,6 +248,7 @@ anova.mvreg <- function(object, ...){
 #' # Fit a single model
 #' mod3 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
 #' anova(mod3)
+#'
 print.anova.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...){
 
   if(x$n_models == 1) {
