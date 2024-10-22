@@ -248,6 +248,8 @@ vcov(mod.mvreg, "mu")
 vcov(mod.mvreg, "s2")
 ```
 
+## Confidence intervals
+Once a `mvreg` model is fitted it is possibile to get confidence intervals for $\hat{\boldsymbol{\beta}}$ and $\hat{\boldsymbol{\tau}}$ via the `confint()` function.
 
 ## Fitted values and predictions
 Once $\hat{\boldsymbol{\beta}}$ and $\hat{\boldsymbol{\tau}}$ are estimated, one can compute an estimate for the mean, the log of the variance and variance components for the observed values of $\mathbf{x}_i'$ and $\mathbf{z}_i'$ as follows 

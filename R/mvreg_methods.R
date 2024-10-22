@@ -302,6 +302,7 @@ print.summary.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L),
 #'
 #' @return A vector or data frame of fitted values for the specified component of the `mvreg` model.
 #' @export
+#' @exportS3Method confint mvreg
 #'
 #' @examples
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
