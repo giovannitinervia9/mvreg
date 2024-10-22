@@ -50,3 +50,41 @@ get_reduced_formulas <- function(response, formula) {
 
   return(formulas)
 }
+
+
+#-------------------------------------------------------------------------------
+
+
+#' Check if Two Models are Nested
+#'
+#' This function determines whether one model is nested within another. A model
+#' is considered nested if all of its terms are a subset of the terms in the
+#' other model.
+#'
+#' @param model1 An object of class \code{lm}, \code{glm}, or another model
+#'        type with a \code{coef} method. Represents the first model to be
+#'        compared.
+#' @param model2 An object of class \code{lm}, \code{glm}, or another model
+#'        type with a \code{coef} method. Represents the second model to be
+#'        compared.
+#'
+#' @return A logical value: \code{TRUE} if one model is nested within the other
+#'         (i.e., all the terms in one model are contained within the other),
+#'         and \code{FALSE} otherwise.
+#'
+#' @examples
+#' # Example usage with linear models
+#' model1 <- lm(mpg ~ wt, data = mtcars)
+#' model2 <- lm(mpg ~ wt + hp, data = mtcars)
+#' is_nested(model1, model2) # TRUE, model1 is nested within model2
+#'
+#' model3 <- lm(mpg ~ qsec, data = mtcars)
+#' is_nested(model1, model3) # FALSE, no nesting between model1 and model3
+#'
+#' @export
+is_nested <- function(model1, model2) {
+  terms1 <- names(coef(model1))
+  terms2 <- names(coef(model2))
+  all(terms1 %in% terms2) | all(terms2 %in% terms1)
+}
+
