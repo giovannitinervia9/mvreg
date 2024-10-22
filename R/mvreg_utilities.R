@@ -76,13 +76,13 @@ get_reduced_formulas <- function(response, formula) {
 #' # Example usage with linear models
 #' model1 <- lm(mpg ~ wt, data = mtcars)
 #' model2 <- lm(mpg ~ wt + hp, data = mtcars)
-#' is_nested(model1, model2) # TRUE, model1 is nested within model2
+#' are_models_nested(model1, model2) # TRUE, model1 is nested within model2
 #'
 #' model3 <- lm(mpg ~ qsec, data = mtcars)
-#' is_nested(model1, model3) # FALSE, no nesting between model1 and model3
+#' are_models_nested(model1, model3) # FALSE, no nesting between model1 and model3
 #'
 #' @export
-is_nested <- function(model1, model2) {
+are_models_nested <- function(model1, model2) {
   terms1 <- names(coef(model1))
   terms2 <- names(coef(model2))
   all(terms1 %in% terms2) | all(terms2 %in% terms1)
