@@ -300,10 +300,14 @@ print.anova.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...
 
     model.mu <- paste0("model", 1:nrow(x$mu.tests))
     model.s2 <- paste0("model", 1:nrow(x$s2.tests))
+    new.formula.mu <- sub(".*?(~)", "\\1", x$new.formula.mu)
+    new.formula.s2 <- sub(".*?(~)", "\\1", x$new.formula.s2)
 
-
-    print.mu <- paste0(model.mu, " = ", as.character(x$new.formula.mu))
-    print.s2 <- paste0(model.s2, " = ", as.character(x$new.formula.s2))
+    print.mu <- paste0(model.mu, " = ", as.character(new.formula.mu))
+    print.s2 <- paste0(model.s2, " = ", as.character(new.formula.s2))
+    cat("\n")
+    cat(paste0("Response: ", x$response))
+    cat("\n\n")
 
     cat("Mean Model Comparison (variance component taken as in the full model)\n")
     cat(print.mu, sep = "\n")
@@ -320,13 +324,20 @@ print.anova.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...
                  cs.ind = 1, tst.ind = 5)
     cat("\n")
 
+
   } else {
+    formulas.mu <- sub(".*?(~)", "\\1", x$formulas.mu)
+    formulas.s2 <- sub(".*?(~)", "\\1", x$formulas.s2)
+
+    cat("\n")
     cat("Model comparison: mean and variance components\n\n")
+    cat(paste0("Response: ", x$response))
+    cat("\n\n")
     cat("Mean component formulas:\n")
-    cat(paste0("model", 1:nrow(x$tests), ": ", x$formulas.mu, sep = "\n", collapse = ""))
+    cat(paste0("model", 1:nrow(x$tests), ": ", formulas.mu, sep = "\n", collapse = ""))
     cat("\n")
     cat("Variance component formulas:\n")
-    cat(paste0("model", 1:nrow(x$tests), ": ", x$formulas.s2, sep = "\n", collapse = ""))
+    cat(paste0("model", 1:nrow(x$tests), ": ", formulas.s2, sep = "\n", collapse = ""))
     cat("\n")
     printCoefmat(x$tests, signif.legend = F, na.print = "",
                  cs.ind = 1, tst.ind = 5)
