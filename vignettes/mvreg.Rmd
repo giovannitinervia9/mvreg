@@ -249,7 +249,7 @@ vcov(mod.mvreg, "s2")
 ```
 
 ## Confidence intervals
-Once a `mvreg` model is fitted, you can obtain confidence intervals for both $\hat{\boldsymbol{\beta}}$ and $\hat{\boldsymbol{\tau}}$ using the generic function `confint()`.
+Once a `mvreg` model is fitted, it is possibile to obtain confidence intervals for both $\hat{\boldsymbol{\beta}}$ and $\hat{\boldsymbol{\tau}}$ using the generic function `confint()`.
 This function takes the fitted `mvreg` model as input, along with an optional specification of the parameters (`parm`) for which the confidence intervals should be computed, and a confidence level (`level`), which defaults to 0.95.
 
 The confidence intervals returned by `confint()` are classic Wald intervals of the form $$\hat{\theta} \pm z_{1 - \frac{\alpha}{2}} \cdot \text{SE}(\hat{\theta})$$
@@ -258,7 +258,7 @@ For example, to compute a 99% confidence interval for all parameters of the `mod
 ```{r}
 confint(mod.mvreg, level = 0.99)
 ```
-If `parm` is not specified, confidence intervals for all parameters will be returned. You can also limit the output by specifying the `parm` argument, which accepts either a character vector with the parameter names or a numeric vector with the indices of the parameters. For instance:
+If `parm` is not specified, confidence intervals for all parameters will be returned. Onecan also limit the output by specifying the `parm` argument, which accepts either a character vector with the parameter names or a numeric vector with the indices of the parameters. For instance:
 
 ```{r}
 confint(mod.mvreg, parm = c(1, 3))
@@ -341,10 +341,10 @@ The `anova()` function accepts one or more models and behaves differently based 
 
 If only one model is provided, the comparison is conducted separately for the parameters of the mean component and the variance component.
 
-If two or more models are provided, they are ranked by the number of parameters in increasing order, and comparisons are made sequentially between each pair of models.
+If two or more models are provided, they can be ranked either by the number of parameters  in increasing order (`order.models = T`) or in a user-defined sequence (`order.models = F`). Comparisons are made sequentially between each pair of models. It is important to note that the function includes a check using `are_models_nested()` to verify whether the models are indeed nested; if they are not, a warning is issued indicating that the likelihood ratio test (LRT) is not meaningful.
 
 ### `anova()` with just one model
-For the mean component, the function fits all possible nested models, using the full `formula.s2` as specified in the input model. The comparison begins with the intercept-only model, incrementally adding variables one by one from left to right as they appear in the original `formula.mu`. For each comparison (indexed by $j$), the model with the first $k$ variables is compared to the model with the first $k + 1$ variables. These comparisons are performed using likelihood ratio tests of the form:
+For the mean component, the function fits all possible nested models, using the full `formula.s2` as specified in the input model. The comparison begins with the intercept-only model, incrementally adding variables one by one from left to right as they appear in the original `formula.mu`. For each comparison, the model with the first $k$ variables is compared to the model with the first $k + 1$ variables. These comparisons are performed using likelihood ratio tests of the form:
 
 $$-2\log\Lambda = -2\log\dfrac{\mathcal{L}(\hat{\boldsymbol{\beta}}_{(k)}, \hat{\boldsymbol{\tau}})}{\mathcal{L}(\hat{\boldsymbol{\beta}}_{(k+1)}, \hat{\boldsymbol{\tau}})}$$ where $\hat{\boldsymbol{\beta}}_{(k)}$ is the vector of maximum likelihood estimates of $\boldsymbol{\beta}$ given that the `formula.mu` contains the first $k$ variables and $\hat{\boldsymbol{\beta}}_{(k+1)}$ is the vector of maximum likelihood estimates given that the `formula.mu` contains the first $k + 1$ variables. $\hat{\boldsymbol{\tau}}$ is the vector of maximum likelihood estimates of the parameters for the variance component, which is held constant from the full `formula.s2`.
 According to standard asymptotic theory, the test statistic follows a chi-squared distribution $\chi^2_g$ where $g$ is the difference in the dimensionality of the parameter spaces being compared $g = \text{dim}(\hat{\boldsymbol{\beta}}_{(k+1)}) - \text{dim}(\hat{\boldsymbol{\beta}}_{(k)})$. 
@@ -371,9 +371,10 @@ The same interpretation applies to the variance model comparison, where `model2`
 
 
 ### `anova()` with two or more models
-If two or more models are passed to `anova()`, the function first ranks them in increasing order based on the number of parameters and then proceeds to sequentially test them in pairs via a likelihood ratio test.
+When two or more models are passed to the `anova()` function, they are by default ranked in increasing order based on the number of parameters. In the case of ties, models are sorted in decreasing order of `-2logLik`. The function then proceeds to conduct sequential pairwise comparisons using a likelihood ratio test. If one prefers not to have the models ordered, it is possible to set the `order.models` argument to `FALSE`.
 
 For example, if we want to compare a model in which the variance of `Sepal.Length` is modeled as a function of `Species` and `Sepal.Width` with a model in which it is only modeled as a function of `Species`, we can fit the two models and use `anova()` to compare them. We can use the `update()` function to remove `Sepal.Width` from the full model by specifying the new formula for the variance component in `new.formula.s2`.
+
 ```{r}
 mod1 <- mvreg(Sepal.Length ~ Species + Sepal.Width, data = iris)
 mod2 <- update(mod1, new.formula.s2 = ~ Species)
@@ -381,14 +382,25 @@ mod2 <- update(mod1, new.formula.s2 = ~ Species)
 anova(mod1, mod2)
 ```
 
-The output of `anova()` when two or more models are passed consists of one table where the models are listed by row, starting from the one with fewer parameters to the one with more. Minus two log-likelihood (`-2logLik`), number of parameters (`n.param`), Akaike information criterion (`AIC`), and residual degrees of freedom (`df.residual`) are printed for all models. Additionally, the likelihood ratio test statistic (`LRT`), its degrees of freedom (`df`), and p-value (`Pr(>Chi)`) are printed in the rows where a model is compared to the one preceding it.
+The output of `anova()` when two or more models are passed consists of one table where the models are listed by row. Minus two log-likelihood (`-2logLik`), number of parameters (`n.param`), Akaike information criterion (`AIC`), and residual degrees of freedom (`df.residual`) are printed for all models. Additionally, the likelihood ratio test statistic (`LRT`), its degrees of freedom (`df`), and p-value (`Pr(>Chi)`) are printed in the rows where a model is compared to the one preceding it.
 
 Information about the model formulas being compared is printed before the table.
 
 
 ### Some notes on the use of `anova()` function
 
-The comparison between models via likelihood ratio test is only possible where the models are nested. If the user passes to `anova()` function two `mvreg` models with the same number of parameters, the p-value is not printed since it is sure that the two models cannot be nested, as the degrees of freedom of the test is equal to 0. For example
+The likelihood ratio test (LRT) for comparing models is only valid for nested models. When multiple models are provided, the function checks for nesting using `are_models_nested()`. If any comparisons are made between non-nested models, a warning is issued, and the p-value is neither calculated nor printed.
+
+For example, consider the following scenario where we fit two `mvreg` models and compare them using the `anova()` function:
+
+```{r}
+mod1 <- mvreg(Sepal.Length ~ Species, ~ Species, data = iris)
+mod2 <- mvreg(Sepal.Length ~ Species, ~  Sepal.Width, data = iris)
+anova(mod1, mod2)
+```
+In this case, `mod1` and `mod2` are not nested models, which is correctly identified by the `anova()` function. As a result, the p-value is not printed and a warning is raised. The function raises a warning instead of an error because non-nested models can still be compared based on their `AIC` values.
+
+
 
 
 
