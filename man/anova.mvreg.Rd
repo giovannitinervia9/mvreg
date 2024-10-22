@@ -4,13 +4,17 @@
 \alias{anova.mvreg}
 \title{ANOVA-like Comparison for mvreg Models}
 \usage{
-\method{anova}{mvreg}(object, ...)
+\method{anova}{mvreg}(object, ..., order.models = T)
 }
 \arguments{
 \item{object}{A \code{mvreg} object, representing the main model to compare.
 If this is the only model provided, the function compares this model with reduced versions of itself.}
 
 \item{...}{Additional \code{mvreg} objects to compare with the first model.}
+
+\item{order.models}{A logical value indicating if the models should be ordered.
+If \code{TRUE} (default), models are ranked by the number of parameters in increasing order,
+with ties broken by the value of \verb{-2logLik} in decreasing order.}
 }
 \value{
 A list of class \code{anova.mvreg}:
@@ -48,29 +52,32 @@ A list of class \code{anova.mvreg}:
 }
 }
 \description{
-This function performs an ANOVA-like analysis for comparing one or more \code{mvreg} models,
-which involve mean and variance components. It uses likelihood ratio tests (LRT)
-to compare nested models, providing test statistics and p-values to assess the significance
-of each model in explaining the data. If only one \code{mvreg} model is provided, the function
+This function performs an ANOVA-like analysis for comparing one or more \code{mvreg} models. It uses likelihood ratio tests (LRT)
+to compare nested models, providing test statistics and p-values. If only one \code{mvreg} model is provided, the function
 compares the model with reduced versions obtained by sequentially removing terms from the
 mean and variance formulas.
 }
 \details{
 The \code{anova.mvreg} function compares \code{mvreg} models using likelihood ratio tests
-(LRT). If multiple models are provided, it compares them based on their likelihoods
+(LRT). If multiple models are provided, they are compared based on their likelihoods
 and parameter counts. If only one model is provided, the function automatically generates
 reduced models by sequentially dropping terms from the mean and variance formulas.
 This allows for comparison of nested models and the identification of significant terms.
+
+The function checks whether the models being compared are nested using the \code{are_models_nested()} function.
+If non-nested models are provided, a warning is issued, as the likelihood ratio test is only valid for nested models.
+Additionally, models with the same number of parameters cannot be meaningfully compared using the LRT.
+
+If \code{order.models = TRUE}, models are ranked by the number of parameters (increasing order) and further sorted by
+the \verb{-2logLik} value (decreasing order) if the number of parameters is equal. This ensures that models with the
+same number of parameters are presented in order of likelihood.
 
 The returned object contains detailed information about the comparison, including AIC values,
 degrees of freedom, likelihood ratio statistics, and their associated p-values.
 }
 \note{
-It is important to ensure that the models being compared are nested, as the
-likelihood ratio test is only valid for nested models. Additionally, models with the same
-number of parameters cannot be meaningfully compared using the LRT.
-If two models have the same number of parameters, the likelihood ratio test is meaningless,
-and the function will issue a warning.
+If two models have the same number of parameters and/or are nested, the likelihood ratio test is meaningless,
+and the function will issue a warning. Negative LRT or degrees of freedom values are also flagged as errors.
 }
 \examples{
 # Fit two models

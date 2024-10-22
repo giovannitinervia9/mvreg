@@ -3,15 +3,16 @@
 
 #' ANOVA-like Comparison for mvreg Models
 #'
-#' This function performs an ANOVA-like analysis for comparing one or more `mvreg` models,
-#' which involve mean and variance components. It uses likelihood ratio tests (LRT)
-#' to compare nested models, providing test statistics and p-values to assess the significance
-#' of each model in explaining the data. If only one `mvreg` model is provided, the function
+#' This function performs an ANOVA-like analysis for comparing one or more `mvreg` models. It uses likelihood ratio tests (LRT)
+#' to compare nested models, providing test statistics and p-values. If only one `mvreg` model is provided, the function
 #' compares the model with reduced versions obtained by sequentially removing terms from the
 #' mean and variance formulas.
 #'
 #' @param object A `mvreg` object, representing the main model to compare.
 #'        If this is the only model provided, the function compares this model with reduced versions of itself.
+#' @param order.models A logical value indicating if the models should be ordered.
+#'        If `TRUE` (default), models are ranked by the number of parameters in increasing order,
+#'        with ties broken by the value of `-2logLik` in decreasing order.
 #' @param ... Additional `mvreg` objects to compare with the first model.
 #'
 #' @return A list of class `anova.mvreg`:
@@ -40,23 +41,28 @@
 #'
 #' @export
 #'
-#' @importFrom stats df.residual logLik AIC pchisq
+#' @importFrom stats df.residual logLik pchisq na.omit
 #'
 #' @details
-#' The \code{anova.mvreg} function compares `mvreg` models using likelihood ratio tests
-#' (LRT). If multiple models are provided, it compares them based on their likelihoods
+#' The `anova.mvreg` function compares `mvreg` models using likelihood ratio tests
+#' (LRT). If multiple models are provided, they are compared based on their likelihoods
 #' and parameter counts. If only one model is provided, the function automatically generates
 #' reduced models by sequentially dropping terms from the mean and variance formulas.
 #' This allows for comparison of nested models and the identification of significant terms.
 #'
+#' The function checks whether the models being compared are nested using the `are_models_nested()` function.
+#' If non-nested models are provided, a warning is issued, as the likelihood ratio test is only valid for nested models.
+#' Additionally, models with the same number of parameters cannot be meaningfully compared using the LRT.
+#'
+#' If `order.models = TRUE`, models are ranked by the number of parameters (increasing order) and further sorted by
+#' the `-2logLik` value (decreasing order) if the number of parameters is equal. This ensures that models with the
+#' same number of parameters are presented in order of likelihood.
+#'
 #' The returned object contains detailed information about the comparison, including AIC values,
 #' degrees of freedom, likelihood ratio statistics, and their associated p-values.
 #'
-#' @note It is important to ensure that the models being compared are nested, as the
-#' likelihood ratio test is only valid for nested models. Additionally, models with the same
-#' number of parameters cannot be meaningfully compared using the LRT.
-#' If two models have the same number of parameters, the likelihood ratio test is meaningless,
-#' and the function will issue a warning.
+#' @note If two models have the same number of parameters and/or are nested, the likelihood ratio test is meaningless,
+#' and the function will issue a warning. Negative LRT or degrees of freedom values are also flagged as errors.
 #'
 #'
 #' @examples
@@ -68,7 +74,7 @@
 #' # Compare a single model with its reduced forms
 #' mod3 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
 #' anova(mod3)
-anova.mvreg <- function(object, ...){
+anova.mvreg <- function(object, ..., order.models = T){
 
   models <- list(object, ...)
 
@@ -77,12 +83,12 @@ anova.mvreg <- function(object, ...){
   }
 
   n_models <- length(models)
-  n <- models[[1]]$nobs
 
 
   if(n_models == 1) {
 
     model <- models[[1]]
+    n <- model$nobs
 
     new.formula.mu <- get_reduced_formulas(model$response, model$formula.mu)
     new.formula.mu <- new.formula.mu[length(new.formula.mu):1]
@@ -105,12 +111,13 @@ anova.mvreg <- function(object, ...){
     mu.tests <- lapply(new.mod.mu, function(mod) {
       c(-2*as.numeric(logLik(mod)),
         n - df.residual(mod),
-        AIC(mod),
+        NA,
         df.residual(mod))})
 
     mu.tests <- as.data.frame(do.call(rbind, mu.tests))
     colnames(mu.tests) <- c("-2logLik", "n.param", "AIC", "df.residuals")
     rownames(mu.tests) <- model.mu
+    mu.tests$AIC <- mu.tests$`-2logLik` + 2*mu.tests$n.param
     mu.tests$LRT <- NA
     mu.tests$df <- NA
     mu.tests$`Pr(>Chi)` <- NA
@@ -130,12 +137,13 @@ anova.mvreg <- function(object, ...){
     s2.tests <- lapply(new.mod.s2, function(mod) {
       c(-2*as.numeric(logLik(mod)),
         n - df.residual(mod),
-        AIC(mod),
+        NA,
         df.residual(mod))})
 
     s2.tests <- as.data.frame(do.call(rbind, s2.tests))
     colnames(s2.tests) <- c("-2logLik", "n.param", "AIC", "df.residuals")
     rownames(s2.tests) <- model.s2
+    s2.tests$AIC <- s2.tests$`-2logLik` + 2*s2.tests$n.param
     s2.tests$LRT <- NA
     s2.tests$df <- NA
     s2.tests$`Pr(>Chi)` <- NA
@@ -156,38 +164,64 @@ anova.mvreg <- function(object, ...){
                 s2.tests = s2.tests,
                 new.formula.mu = as.character(new.formula.mu),
                 new.formula.s2 = as.character(new.formula.s2),
-                n_models = n_models)
+                n_models = n_models,
+                response = model$response)
 
 
   } else {
 
+    response <- unique(unlist(lapply(models, function(models) models$response)))
+    if(length(response) > 1){
+      stop(paste0("Models have different response variables: ",
+                  paste(response, collapse = ", "),
+                  ". Please provide models fitted with the same response variable."))
+    }
+
+    n <- unlist(lapply(models, function(models) models$nobs))
+    if(length(unique(n)) > 1){
+      stop(paste0("Models are fitted with different numbers of observations: ",
+                  paste(unique(n), collapse = ", "),
+                  ". Please provide models fitted with the same number of observations."))
+    }
+
+
+
     tests <- lapply(models, function(mod) {
       c(-2*as.numeric(logLik(mod)),
         n - df.residual(mod),
-        AIC(mod),
+        NA,
         df.residual(mod))
-      })
+    })
 
     tests <- as.data.frame(do.call(rbind, tests))
     colnames(tests) <- c("-2logLik", "n.param", "AIC", "df.residuals")
+    tests$AIC <- tests$`-2logLik` + 2*tests$n.param
     tests$LRT <- NA
     tests$df <- NA
     tests$`Pr(>Chi)` <- NA
 
-    reorder.ind <- order(tests$n.param, decreasing = F)
+    if (order.models == T) {
+      reorder.ind <- order(tests$n.param, -tests$`-2logLik`, decreasing = F)
+    } else {
+      reorder.ind <- 1:length(models)
+    }
+
     tests <- tests[reorder.ind,]
     models <- models[reorder.ind]
     models.names <- paste0("model", 1:length(models))
     rownames(tests) <- models.names
 
     n.param.equal <- rep(NA, length(2:nrow(tests)))
+    model.nested <- n.param.equal
+
     for(i in 2:nrow(tests)){
       lrt <- tests$`-2logLik`[i - 1] - tests$`-2logLik`[i]
       df <- tests$n.param[i] - tests$n.param[i - 1]
+      model.nested[i - 1] <- are_models_nested(models[[i]], models[[i - 1]])
 
-      if(df > 0){
+      if(df > 0 & model.nested[i - 1]){
         pval <- 1 - pchisq(lrt, df = df)
-        } else {pval <- NA}
+      } else {pval <- NA}
 
       tests$LRT[i] <- lrt
       tests$df[i] <- df
@@ -195,7 +229,17 @@ anova.mvreg <- function(object, ...){
       n.param.equal[i - 1] <- tests$n.param[i] == tests$n.param[i - 1]
     }
 
-    if(any(n.param.equal == T)){warning("LRT test with models with the same number of parameters is meaningless")}
+    if (any(n.param.equal == TRUE)) {
+      warning("LRT test with models with the same number of parameters is meaningless")
+    }
+
+    if (any(model.nested == FALSE)) {
+      warning("LRT test with non nested models is meaningless")
+    }
+
+    if (any(na.omit(tests$LRT) < 0) | any(na.omit(tests$df) < 0)) {
+      warning("Negatives LRT tests and degrees of freedom are not possible, check your models to see if they are correctly ordered and nested")
+    }
 
     formulas.mu <- unlist(lapply(models, function(mod) deparse(mod$formula.mu)))
     formulas.s2 <- unlist(lapply(models, function(mod) deparse(mod$formula.s2)))
@@ -203,7 +247,8 @@ anova.mvreg <- function(object, ...){
     res <- list(tests = tests,
                 formulas.mu = formulas.mu,
                 formulas.s2 = formulas.s2,
-                n_models = n_models)
+                n_models = n_models,
+                response = response)
 
   }
   class(res) <- "anova.mvreg"
