@@ -49,7 +49,7 @@ $$\log{(\sigma^2_i)} = \mathbf{z}_i'\boldsymbol{\tau}$$
 
 The model parameters are estimated using maximum likelihood method, but before delving into technical details let's see how `mvreg()` works.
 
-## `mvreg()`: a `lm`-like function for heteroscedastic regression.
+## `mvreg()`: a function for fitting heteroscedastic linear models
 
 The main function that a typical `mvreg` user will interact with is the `mvreg()` function.
 This function fits a heteroscedastic linear model in which two different formulas can be specified, one for the mean component and another for the variance component.
@@ -343,7 +343,7 @@ If only one model is provided, the comparison is conducted separately for the pa
 
 If two or more models are provided, they can be ranked either by the number of parameters  in increasing order (`order.models = T`) or in a user-defined sequence (`order.models = F`). Comparisons are made sequentially between each pair of models. It is important to note that the function includes a check using `are_models_nested()` to verify whether the models are indeed nested; if they are not, a warning is issued indicating that the likelihood ratio test (LRT) is not meaningful.
 
-### `anova()` with just one model
+### `anova()` on a single model
 For the mean component, the function fits all possible nested models, using the full `formula.s2` as specified in the input model. The comparison begins with the intercept-only model, incrementally adding variables one by one from left to right as they appear in the original `formula.mu`. For each comparison, the model with the first $k$ variables is compared to the model with the first $k + 1$ variables. These comparisons are performed using likelihood ratio tests of the form:
 
 $$-2\log\Lambda = -2\log\dfrac{\mathcal{L}(\hat{\boldsymbol{\beta}}_{(k)}, \hat{\boldsymbol{\tau}})}{\mathcal{L}(\hat{\boldsymbol{\beta}}_{(k+1)}, \hat{\boldsymbol{\tau}})}$$ where $\hat{\boldsymbol{\beta}}_{(k)}$ is the vector of maximum likelihood estimates of $\boldsymbol{\beta}$ given that the `formula.mu` contains the first $k$ variables and $\hat{\boldsymbol{\beta}}_{(k+1)}$ is the vector of maximum likelihood estimates given that the `formula.mu` contains the first $k + 1$ variables. $\hat{\boldsymbol{\tau}}$ is the vector of maximum likelihood estimates of the parameters for the variance component, which is held constant from the full `formula.s2`.
@@ -387,7 +387,7 @@ The output of `anova()` when two or more models are passed consists of one table
 Information about the model formulas being compared is printed before the table.
 
 
-### Some notes on the use of `anova()` function
+### `anova()` with non-nested models
 
 The likelihood ratio test (LRT) for comparing models is only valid for nested models. When multiple models are provided, the function checks for nesting using `are_models_nested()`. If any comparisons are made between non-nested models, a warning is issued, and the p-value is neither calculated nor printed.
 
