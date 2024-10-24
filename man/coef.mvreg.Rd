@@ -25,7 +25,7 @@ Extract coefficients from mvreg objects
 \examples{
 mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
 summary(mvreg_mod)
-coef(mvreg_mod)             # Returns all coefficients
-coef(mvreg_mod, partition = "mu")  # Returns coefficients for mean component
-coef(mvreg_mod, partition = "s2")  # Returns coefficients for variance component
+coef(mvreg_mod) # Returns all coefficients
+coef(mvreg_mod, partition = "mu") # Returns coefficients for mean component
+coef(mvreg_mod, partition = "s2") # Returns coefficients for variance component
 }

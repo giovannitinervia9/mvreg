@@ -27,8 +27,8 @@ Fitted values of mvreg model
 \examples{
 mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
 # fitted values
-fitted(mvreg_mod)            # returns all fitted values
-fitted(mvreg_mod, type = "mu")  # returns fitted values for the mean component
-fitted(mvreg_mod, type = "log.s2")  # returns fitted values for the log of variance
-fitted(mvreg_mod, type = "s2")  # returns fitted values for the variance component
+fitted(mvreg_mod) # returns all fitted values
+fitted(mvreg_mod, type = "mu") # returns fitted values for the mean component
+fitted(mvreg_mod, type = "log.s2") # returns fitted values for the log of variance
+fitted(mvreg_mod, type = "s2") # returns fitted values for the variance component
 }

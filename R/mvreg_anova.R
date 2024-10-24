@@ -72,10 +72,9 @@
 #' anova(mod1, mod2)
 #'
 #' # Compare a single model with its reduced forms
-#' mod3 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
+#' mod3 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris)
 #' anova(mod3)
-anova.mvreg <- function(object, ..., order.models = T){
-
+anova.mvreg <- function(object, ..., order.models = T) {
   models <- list(object, ...)
 
   if (!all(sapply(models, inherits, "mvreg"))) {
@@ -85,8 +84,7 @@ anova.mvreg <- function(object, ..., order.models = T){
   n_models <- length(models)
 
 
-  if(n_models == 1) {
-
+  if (n_models == 1) {
     model <- models[[1]]
     n <- model$nobs
 
@@ -109,20 +107,23 @@ anova.mvreg <- function(object, ..., order.models = T){
     model.s2 <- paste0("model", 1:length(new.mod.s2))
 
     mu.tests <- lapply(new.mod.mu, function(mod) {
-      c(-2*as.numeric(logLik(mod)),
+      c(
+        -2 * as.numeric(logLik(mod)),
         n - df.residual(mod),
         NA,
-        df.residual(mod))})
+        df.residual(mod)
+      )
+    })
 
     mu.tests <- as.data.frame(do.call(rbind, mu.tests))
     colnames(mu.tests) <- c("-2logLik", "n.param", "AIC", "df.residuals")
     rownames(mu.tests) <- model.mu
-    mu.tests$AIC <- mu.tests$`-2logLik` + 2*mu.tests$n.param
+    mu.tests$AIC <- mu.tests$`-2logLik` + 2 * mu.tests$n.param
     mu.tests$LRT <- NA
     mu.tests$df <- NA
     mu.tests$`Pr(>Chi)` <- NA
-    if(nrow(mu.tests) > 1) {
-      for(i in 2:nrow(mu.tests)){
+    if (nrow(mu.tests) > 1) {
+      for (i in 2:nrow(mu.tests)) {
         lrt <- mu.tests$`-2logLik`[i - 1] - mu.tests$`-2logLik`[i]
         df <- mu.tests$n.param[i] - mu.tests$n.param[i - 1]
         pval <- 1 - pchisq(lrt, df = df)
@@ -135,23 +136,26 @@ anova.mvreg <- function(object, ..., order.models = T){
 
 
     s2.tests <- lapply(new.mod.s2, function(mod) {
-      c(-2*as.numeric(logLik(mod)),
+      c(
+        -2 * as.numeric(logLik(mod)),
         n - df.residual(mod),
         NA,
-        df.residual(mod))})
+        df.residual(mod)
+      )
+    })
 
     s2.tests <- as.data.frame(do.call(rbind, s2.tests))
     colnames(s2.tests) <- c("-2logLik", "n.param", "AIC", "df.residuals")
     rownames(s2.tests) <- model.s2
-    s2.tests$AIC <- s2.tests$`-2logLik` + 2*s2.tests$n.param
+    s2.tests$AIC <- s2.tests$`-2logLik` + 2 * s2.tests$n.param
     s2.tests$LRT <- NA
     s2.tests$df <- NA
     s2.tests$`Pr(>Chi)` <- NA
 
-    if(nrow(s2.tests) > 1) {
-      for(i in 2:nrow(s2.tests)){
+    if (nrow(s2.tests) > 1) {
+      for (i in 2:nrow(s2.tests)) {
         lrt <- s2.tests$`-2logLik`[i - 1] - s2.tests$`-2logLik`[i]
-        df <-s2.tests$n.param[i] - s2.tests$n.param[i - 1]
+        df <- s2.tests$n.param[i] - s2.tests$n.param[i - 1]
         pval <- 1 - pchisq(lrt, df = df)
         s2.tests$LRT[i] <- lrt
         s2.tests$df[i] <- df
@@ -160,42 +164,47 @@ anova.mvreg <- function(object, ..., order.models = T){
     }
 
 
-    res <- list(mu.tests = mu.tests,
-                s2.tests = s2.tests,
-                new.formula.mu = as.character(new.formula.mu),
-                new.formula.s2 = as.character(new.formula.s2),
-                n_models = n_models,
-                response = model$response)
-
-
+    res <- list(
+      mu.tests = mu.tests,
+      s2.tests = s2.tests,
+      new.formula.mu = as.character(new.formula.mu),
+      new.formula.s2 = as.character(new.formula.s2),
+      n_models = n_models,
+      response = model$response
+    )
   } else {
-
     response <- unique(unlist(lapply(models, function(models) models$response)))
-    if(length(response) > 1){
-      stop(paste0("Models have different response variables: ",
-                  paste(response, collapse = ", "),
-                  ". Please provide models fitted with the same response variable."))
+    if (length(response) > 1) {
+      stop(paste0(
+        "Models have different response variables: ",
+        paste(response, collapse = ", "),
+        ". Please provide models fitted with the same response variable."
+      ))
     }
 
     n <- unlist(lapply(models, function(models) models$nobs))
-    if(length(unique(n)) > 1){
-      stop(paste0("Models are fitted with different numbers of observations: ",
-                  paste(unique(n), collapse = ", "),
-                  ". Please provide models fitted with the same number of observations."))
+    if (length(unique(n)) > 1) {
+      stop(paste0(
+        "Models are fitted with different numbers of observations: ",
+        paste(unique(n), collapse = ", "),
+        ". Please provide models fitted with the same number of observations."
+      ))
     }
 
 
 
     tests <- lapply(models, function(mod) {
-      c(-2*as.numeric(logLik(mod)),
+      c(
+        -2 * as.numeric(logLik(mod)),
         n - df.residual(mod),
         NA,
-        df.residual(mod))
+        df.residual(mod)
+      )
     })
 
     tests <- as.data.frame(do.call(rbind, tests))
     colnames(tests) <- c("-2logLik", "n.param", "AIC", "df.residuals")
-    tests$AIC <- tests$`-2logLik` + 2*tests$n.param
+    tests$AIC <- tests$`-2logLik` + 2 * tests$n.param
     tests$LRT <- NA
     tests$df <- NA
     tests$`Pr(>Chi)` <- NA
@@ -206,7 +215,7 @@ anova.mvreg <- function(object, ..., order.models = T){
       reorder.ind <- 1:length(models)
     }
 
-    tests <- tests[reorder.ind,]
+    tests <- tests[reorder.ind, ]
     models <- models[reorder.ind]
     models.names <- paste0("model", 1:length(models))
     rownames(tests) <- models.names
@@ -214,14 +223,16 @@ anova.mvreg <- function(object, ..., order.models = T){
     n.param.equal <- rep(NA, length(2:nrow(tests)))
     model.nested <- n.param.equal
 
-    for(i in 2:nrow(tests)){
+    for (i in 2:nrow(tests)) {
       lrt <- tests$`-2logLik`[i - 1] - tests$`-2logLik`[i]
       df <- tests$n.param[i] - tests$n.param[i - 1]
       model.nested[i - 1] <- are_models_nested(models[[i]], models[[i - 1]])
 
-      if(df > 0 & model.nested[i - 1]){
+      if (df > 0 & model.nested[i - 1]) {
         pval <- 1 - pchisq(lrt, df = df)
-      } else {pval <- NA}
+      } else {
+        pval <- NA
+      }
 
       tests$LRT[i] <- lrt
       tests$df[i] <- df
@@ -244,16 +255,16 @@ anova.mvreg <- function(object, ..., order.models = T){
     formulas.mu <- unlist(lapply(models, function(mod) deparse(mod$formula.mu)))
     formulas.s2 <- unlist(lapply(models, function(mod) deparse(mod$formula.s2)))
 
-    res <- list(tests = tests,
-                formulas.mu = formulas.mu,
-                formulas.s2 = formulas.s2,
-                n_models = n_models,
-                response = response)
-
+    res <- list(
+      tests = tests,
+      formulas.mu = formulas.mu,
+      formulas.s2 = formulas.s2,
+      n_models = n_models,
+      response = response
+    )
   }
   class(res) <- "anova.mvreg"
   res
-
 }
 
 
@@ -291,13 +302,11 @@ anova.mvreg <- function(object, ..., order.models = T){
 #' anova(mod1, mod2)
 #'
 #' # Fit a single model
-#' mod3 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
+#' mod3 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris)
 #' anova(mod3)
 #'
-print.anova.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...){
-
-  if(x$n_models == 1) {
-
+print.anova.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
+  if (x$n_models == 1) {
     model.mu <- paste0("model", 1:nrow(x$mu.tests))
     model.s2 <- paste0("model", 1:nrow(x$s2.tests))
     new.formula.mu <- sub(".*?(~)", "\\1", x$new.formula.mu)
@@ -312,19 +321,21 @@ print.anova.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...
     cat("Mean Model Comparison (variance component taken as in the full model)\n")
     cat(print.mu, sep = "\n")
     cat("\n")
-    printCoefmat(x$mu.tests, signif.legend = F, na.print = "",
-                 cs.ind = 1, tst.ind = 3)
+    printCoefmat(x$mu.tests,
+      signif.legend = F, na.print = "",
+      cs.ind = 1, tst.ind = 3
+    )
     cat("\n")
     cat("---\n\n")
 
     cat("Variance Model Comparison (mean component taken as in the full model):\n")
     cat(print.s2, sep = "\n")
     cat("\n")
-    printCoefmat(x$s2.tests, signif.legend = F, na.print = "",
-                 cs.ind = 1, tst.ind = 5)
+    printCoefmat(x$s2.tests,
+      signif.legend = F, na.print = "",
+      cs.ind = 1, tst.ind = 5
+    )
     cat("\n")
-
-
   } else {
     formulas.mu <- sub(".*?(~)", "\\1", x$formulas.mu)
     formulas.s2 <- sub(".*?(~)", "\\1", x$formulas.s2)
@@ -339,13 +350,10 @@ print.anova.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...
     cat("Variance component formulas:\n")
     cat(paste0("model", 1:nrow(x$tests), ": ", formulas.s2, sep = "\n", collapse = ""))
     cat("\n")
-    printCoefmat(x$tests, signif.legend = F, na.print = "",
-                 cs.ind = 1, tst.ind = 5)
+    printCoefmat(x$tests,
+      signif.legend = F, na.print = "",
+      cs.ind = 1, tst.ind = 5
+    )
     cat("\n")
-
   }
-
-
 }
-
-

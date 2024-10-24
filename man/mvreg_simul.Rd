@@ -85,9 +85,9 @@ model to the simulated data.
 }
 \examples{
 n <- 100
-x <- cbind(1, rnorm(n))   # Design matrix for mean component
-z <- cbind(1, x[, 2], x[, 2]^2)  # Design matrix for variance component
-b <- rnorm(ncol(x))      # True parameters for mean component
-t <- rnorm(ncol(z))      # True parameters for variance component
+x <- cbind(1, rnorm(n)) # Design matrix for mean component
+z <- cbind(1, x[, 2], x[, 2]^2) # Design matrix for variance component
+b <- rnorm(ncol(x)) # True parameters for mean component
+t <- rnorm(ncol(z)) # True parameters for variance component
 mvreg_simul(x, z, b, t, nsim = 100, seed = 43)
 }

@@ -21,5 +21,5 @@ logLik method for mvreg
 }
 \examples{
 mod <- mvreg(Sepal.Length ~ Species, data = iris)
-logLik(mod)  # returns the log-likelihood of the fitted model
+logLik(mod) # returns the log-likelihood of the fitted model
 }

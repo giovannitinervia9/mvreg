@@ -39,7 +39,7 @@
 #' x2 <- factor(sample(letters[1:3], n, TRUE))
 #' x <- model.matrix(~ x1 + x2)
 #' z1 <- factor(sample(letters[1:3], n, TRUE))
-#' z <- model.matrix(~ z1)
+#' z <- model.matrix(~z1)
 #'
 #' b <- rnorm(ncol(x))
 #' t <- rnorm(ncol(z))

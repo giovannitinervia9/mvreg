@@ -38,11 +38,11 @@ In this case, the observed hessian and the expected hessian coincide. The argume
 mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
 
 # Extract model components
-y <- mvreg_mod$y        # Response variable
-x <- mvreg_mod$x        # Model matrix for the mean component
-z <- mvreg_mod$z        # Model matrix for the variance component
-b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
-t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
+y <- mvreg_mod$y # Response variable
+x <- mvreg_mod$x # Model matrix for the mean component
+z <- mvreg_mod$z # Model matrix for the variance component
+b <- coef(mvreg_mod, "mu") # Coefficients of the mean component
+t <- coef(mvreg_mod, "s2") # Coefficients of the variance component
 
 # Compute Hessian with respect to the mean coefficients
 mvreg_hessian_mu(y, x, z, b, t, type = "observed")

@@ -26,7 +26,7 @@ Variance-Covariance matrix for mvreg objects
 \examples{
 mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
 summary(mvreg_mod)
-vcov(mvreg_mod)           # Returns the full variance-covariance matrix
-vcov(mvreg_mod, partition = "mu")  # Returns the variance-covariance matrix for mean parameters
-vcov(mvreg_mod, partition = "s2")   # Returns the variance-covariance matrix for variance parameters
+vcov(mvreg_mod) # Returns the full variance-covariance matrix
+vcov(mvreg_mod, partition = "mu") # Returns the variance-covariance matrix for mean parameters
+vcov(mvreg_mod, partition = "s2") # Returns the variance-covariance matrix for variance parameters
 }

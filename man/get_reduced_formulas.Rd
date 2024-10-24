@@ -28,7 +28,7 @@ easy generation of nested models, which can be used for comparing different mode
 }
 \examples{
 # Example with interaction terms
-formula <- y ~ x1*x2*x3
+formula <- y ~ x1 * x2 * x3
 reduced_formulas <- get_reduced_formulas("y", formula)
 print(reduced_formulas)
 }

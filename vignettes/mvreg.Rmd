@@ -354,7 +354,7 @@ The same algorithm is used for nested model comparison within `formula.s2`, but 
 Let's fit a `mvreg` model to the `iris` dataset and use `anova()` to compare models:
 
 ```{r}
-mod.mvreg1 <- mvreg(Sepal.Length ~ Species + Sepal.Width, ~ Species, data = iris)
+mod.mvreg1 <- mvreg(Sepal.Length ~ Species + Sepal.Width, ~Species, data = iris)
 
 anova(mod.mvreg1)
 ```
@@ -377,7 +377,7 @@ For example, if we want to compare a model in which the variance of `Sepal.Lengt
 
 ```{r}
 mod1 <- mvreg(Sepal.Length ~ Species + Sepal.Width, data = iris)
-mod2 <- update(mod1, new.formula.s2 = ~ Species)
+mod2 <- update(mod1, new.formula.s2 = ~Species)
 
 anova(mod1, mod2)
 ```
@@ -394,8 +394,8 @@ The likelihood ratio test (LRT) for comparing models is only valid for nested mo
 For example, consider the following scenario where we fit two `mvreg` models and compare them using the `anova()` function:
 
 ```{r}
-mod1 <- mvreg(Sepal.Length ~ Species, ~ Species, data = iris)
-mod2 <- mvreg(Sepal.Length ~ Species, ~  Sepal.Width, data = iris)
+mod1 <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
+mod2 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris)
 anova(mod1, mod2)
 ```
 In this case, `mod1` and `mod2` are not nested models, which is correctly identified by the `anova()` function. As a result, the p-value is not printed and a warning is raised. The function raises a warning instead of an error because non-nested models can still be compared based on their `AIC` values.

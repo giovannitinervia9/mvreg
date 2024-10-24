@@ -37,7 +37,7 @@ mod2 <- mvreg(Sepal.Length ~ Species, ~1, data = iris)
 anova(mod1, mod2)
 
 # Fit a single model
-mod3 <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
+mod3 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris)
 anova(mod3)
 
 }

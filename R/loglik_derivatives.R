@@ -23,11 +23,11 @@
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
 #'
 #' # Extract model components
-#' y <- mvreg_mod$y        # Response variable
-#' x <- mvreg_mod$x        # Model matrix for the mean component
-#' z <- mvreg_mod$z        # Model matrix for the variance component
-#' b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
-#' t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
+#' y <- mvreg_mod$y # Response variable
+#' x <- mvreg_mod$x # Model matrix for the mean component
+#' z <- mvreg_mod$z # Model matrix for the variance component
+#' b <- coef(mvreg_mod, "mu") # Coefficients of the mean component
+#' t <- coef(mvreg_mod, "s2") # Coefficients of the variance component
 #'
 #' # Compute log-likelihood
 #' mvreg_loglik(y, x, z, b, t)
@@ -66,11 +66,11 @@ mvreg_loglik <- function(y, x, z, b, t) {
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
 #'
 #' # Extract model components
-#' y <- mvreg_mod$y        # Response variable
-#' x <- mvreg_mod$x        # Model matrix for the mean component
-#' z <- mvreg_mod$z        # Model matrix for the variance component
-#' b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
-#' t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
+#' y <- mvreg_mod$y # Response variable
+#' x <- mvreg_mod$x # Model matrix for the mean component
+#' z <- mvreg_mod$z # Model matrix for the variance component
+#' b <- coef(mvreg_mod, "mu") # Coefficients of the mean component
+#' t <- coef(mvreg_mod, "s2") # Coefficients of the variance component
 #'
 #' # Compute gradient with respect to the mean coefficients
 #' mvreg_gradient_mu(y, x, z, b, t)
@@ -117,11 +117,11 @@ mvreg_gradient_mu <- function(y, x, z, b, t) {
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
 #'
 #' # Extract model components
-#' y <- mvreg_mod$y        # Response variable
-#' x <- mvreg_mod$x        # Model matrix for the mean component
-#' z <- mvreg_mod$z        # Model matrix for the variance component
-#' b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
-#' t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
+#' y <- mvreg_mod$y # Response variable
+#' x <- mvreg_mod$x # Model matrix for the mean component
+#' z <- mvreg_mod$z # Model matrix for the variance component
+#' b <- coef(mvreg_mod, "mu") # Coefficients of the mean component
+#' t <- coef(mvreg_mod, "s2") # Coefficients of the variance component
 #'
 #' # Compute Hessian with respect to the mean coefficients
 #' mvreg_hessian_mu(y, x, z, b, t, type = "observed")
@@ -170,11 +170,11 @@ mvreg_hessian_mu <- function(y, x, z, b, t, type = c("observed", "expected")) {
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
 #'
 #' # Extract model components
-#' y <- mvreg_mod$y        # Response variable
-#' x <- mvreg_mod$x        # Model matrix for the mean component
-#' z <- mvreg_mod$z        # Model matrix for the variance component
-#' b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
-#' t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
+#' y <- mvreg_mod$y # Response variable
+#' x <- mvreg_mod$x # Model matrix for the mean component
+#' z <- mvreg_mod$z # Model matrix for the variance component
+#' b <- coef(mvreg_mod, "mu") # Coefficients of the mean component
+#' t <- coef(mvreg_mod, "s2") # Coefficients of the variance component
 #'
 #' # Compute gradient with respect to the variance coefficients
 #' mvreg_gradient_s2(y, x, z, b, t)
@@ -225,11 +225,11 @@ mvreg_gradient_s2 <- function(y, x, z, b, t) {
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
 #'
 #' # Extract model components
-#' y <- mvreg_mod$y        # Response variable
-#' x <- mvreg_mod$x        # Model matrix for the mean component
-#' z <- mvreg_mod$z        # Model matrix for the variance component
-#' b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
-#' t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
+#' y <- mvreg_mod$y # Response variable
+#' x <- mvreg_mod$x # Model matrix for the mean component
+#' z <- mvreg_mod$z # Model matrix for the variance component
+#' b <- coef(mvreg_mod, "mu") # Coefficients of the mean component
+#' t <- coef(mvreg_mod, "s2") # Coefficients of the variance component
 #'
 #' # Compute Hessian with respect to the variance coefficients
 #' mvreg_hessian_s2(y, x, z, b, t, type = "observed")
@@ -293,11 +293,11 @@ mvreg_hessian_s2 <- function(y, x, z, b, t, type = c("observed", "expected")) {
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
 #'
 #' # Extract model components
-#' y <- mvreg_mod$y        # Response variable
-#' x <- mvreg_mod$x        # Model matrix for the mean component
-#' z <- mvreg_mod$z        # Model matrix for the variance component
-#' b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
-#' t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
+#' y <- mvreg_mod$y # Response variable
+#' x <- mvreg_mod$x # Model matrix for the mean component
+#' z <- mvreg_mod$z # Model matrix for the variance component
+#' b <- coef(mvreg_mod, "mu") # Coefficients of the mean component
+#' t <- coef(mvreg_mod, "s2") # Coefficients of the variance component
 #'
 #' # Compute Hessian with respect to mean and variance coefficients
 #' mvreg_hessian_mus2(y, x, z, b, t, type = "observed")
@@ -361,11 +361,11 @@ mvreg_hessian_mus2 <- function(y, x, z, b, t, type = c("observed", "expected")) 
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
 #'
 #' # Extract model components
-#' y <- mvreg_mod$y        # Response variable
-#' x <- mvreg_mod$x        # Model matrix for the mean component
-#' z <- mvreg_mod$z        # Model matrix for the variance component
-#' b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
-#' t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
+#' y <- mvreg_mod$y # Response variable
+#' x <- mvreg_mod$x # Model matrix for the mean component
+#' z <- mvreg_mod$z # Model matrix for the variance component
+#' b <- coef(mvreg_mod, "mu") # Coefficients of the mean component
+#' t <- coef(mvreg_mod, "s2") # Coefficients of the variance component
 #'
 #' # Compute the full Hessian
 #' mvreg_hessian(y, x, z, b, t, type = "observed")

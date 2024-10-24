@@ -41,11 +41,11 @@ as well as the mixed partial derivatives between them. The structure of the retu
 mvreg_mod <- mvreg(Sepal.Length ~ Species, data = iris) # same formula for mean and variance
 
 # Extract model components
-y <- mvreg_mod$y        # Response variable
-x <- mvreg_mod$x        # Model matrix for the mean component
-z <- mvreg_mod$z        # Model matrix for the variance component
-b <- coef(mvreg_mod, "mu")  # Coefficients of the mean component
-t <- coef(mvreg_mod, "s2")  # Coefficients of the variance component
+y <- mvreg_mod$y # Response variable
+x <- mvreg_mod$x # Model matrix for the mean component
+z <- mvreg_mod$z # Model matrix for the variance component
+b <- coef(mvreg_mod, "mu") # Coefficients of the mean component
+t <- coef(mvreg_mod, "s2") # Coefficients of the variance component
 
 # Compute the full Hessian
 mvreg_hessian(y, x, z, b, t, type = "observed")

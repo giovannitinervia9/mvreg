@@ -54,9 +54,9 @@ print.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
 #' @examples
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
 #' summary(mvreg_mod)
-#' vcov(mvreg_mod)           # Returns the full variance-covariance matrix
-#' vcov(mvreg_mod, partition = "mu")  # Returns the variance-covariance matrix for mean parameters
-#' vcov(mvreg_mod, partition = "s2")   # Returns the variance-covariance matrix for variance parameters
+#' vcov(mvreg_mod) # Returns the full variance-covariance matrix
+#' vcov(mvreg_mod, partition = "mu") # Returns the variance-covariance matrix for mean parameters
+#' vcov(mvreg_mod, partition = "s2") # Returns the variance-covariance matrix for variance parameters
 vcov.mvreg <- function(object, partition = c("all", "mu", "s2"), ...) {
   partition <- match.arg(partition)
   if (partition == "all") {
@@ -91,9 +91,9 @@ vcov.mvreg <- function(object, partition = c("all", "mu", "s2"), ...) {
 #' @examples
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Species, data = iris)
 #' summary(mvreg_mod)
-#' coef(mvreg_mod)             # Returns all coefficients
-#' coef(mvreg_mod, partition = "mu")  # Returns coefficients for mean component
-#' coef(mvreg_mod, partition = "s2")  # Returns coefficients for variance component
+#' coef(mvreg_mod) # Returns all coefficients
+#' coef(mvreg_mod, partition = "mu") # Returns coefficients for mean component
+#' coef(mvreg_mod, partition = "s2") # Returns coefficients for variance component
 coef.mvreg <- function(object, partition = c("all", "mu", "s2"), ...) {
   partition <- match.arg(partition)
   if (partition == "all") {
@@ -263,25 +263,25 @@ print.summary.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L),
   dim_h0 <- length(coef(mod_lm)) + 1
   dim_h1 <- nrow(x$coefficients)
   loglik_lm <- logLik(mod_lm)
-  lrt <- as.vector(-2*(loglik_lm - x$loglik))
+  lrt <- as.vector(-2 * (loglik_lm - x$loglik))
   df <- dim_h1 - dim_h0
 
   pval <- 1 - pchisq(lrt, df)
 
-  dd <- rbind(c(-2*loglik_lm, NA, NA, NA),
-              c(-2*x$loglik, df, lrt, pval))
-
-
-  colnames(dd) = c("-2logLik", "df", "LRT", "Pr(>Chi)")
-  rownames(dd) = c("mvreg", "lm")
-
-  printCoefmat(dd,
-               digits = digits, cs.ind = 1, tst.ind = 3,
-               signif.stars = signif.stars, signif.legend = F, P.values = TRUE,
-               has.Pvalue = TRUE, na.print = ""
+  dd <- rbind(
+    c(-2 * loglik_lm, NA, NA, NA),
+    c(-2 * x$loglik, df, lrt, pval)
   )
 
 
+  colnames(dd) <- c("-2logLik", "df", "LRT", "Pr(>Chi)")
+  rownames(dd) <- c("mvreg", "lm")
+
+  printCoefmat(dd,
+    digits = digits, cs.ind = 1, tst.ind = 3,
+    signif.stars = signif.stars, signif.legend = F, P.values = TRUE,
+    has.Pvalue = TRUE, na.print = ""
+  )
 }
 
 
@@ -307,10 +307,10 @@ print.summary.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L),
 #' @examples
 #' mvreg_mod <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
 #' # fitted values
-#' fitted(mvreg_mod)            # returns all fitted values
-#' fitted(mvreg_mod, type = "mu")  # returns fitted values for the mean component
-#' fitted(mvreg_mod, type = "log.s2")  # returns fitted values for the log of variance
-#' fitted(mvreg_mod, type = "s2")  # returns fitted values for the variance component
+#' fitted(mvreg_mod) # returns all fitted values
+#' fitted(mvreg_mod, type = "mu") # returns fitted values for the mean component
+#' fitted(mvreg_mod, type = "log.s2") # returns fitted values for the log of variance
+#' fitted(mvreg_mod, type = "s2") # returns fitted values for the variance component
 fitted.mvreg <- function(x, type = c("all", "mu", "log.s2", "s2")) {
   type <- match.arg(type)
   if (type == "all") {
@@ -345,7 +345,7 @@ fitted.mvreg <- function(x, type = c("all", "mu", "log.s2", "s2")) {
 #'
 #' @examples
 #' mod <- mvreg(Sepal.Length ~ Species, data = iris)
-#' logLik(mod)  # returns the log-likelihood of the fitted model
+#' logLik(mod) # returns the log-likelihood of the fitted model
 logLik.mvreg <- function(object, ...) {
   val <- object$logLik
   df <- ncol(object$xd) + ncol(object$zd)
@@ -650,7 +650,7 @@ update.mvreg <- function(object, new.formula.mu, new.formula.s2, ..., evaluate =
 #' @examples
 #' mod <- mvreg(Sepal.Length ~ Species, data = iris)
 #' confint(mod)
-confint.mvreg <- function(object, parm, level = 0.95, ...){
+confint.mvreg <- function(object, parm, level = 0.95, ...) {
   cf <- coef(object)
   ses <- sqrt(diag(vcov(object)))
   pnames <- names(cf)
@@ -660,15 +660,16 @@ confint.mvreg <- function(object, parm, level = 0.95, ...){
     parm <- pnames[parm]
   }
 
-  a <- (1 - level)/2
+  a <- (1 - level) / 2
   a <- c(a, 1 - a)
   z <- qnorm(a)
 
-  ci <- apply(as.matrix(z), 1, function(z) cf[parm] + z*ses[parm])
+  ci <- apply(as.matrix(z), 1, function(z) cf[parm] + z * ses[parm])
 
-  if(length(parm) == 1){
+  if (length(parm) == 1) {
     ci <- t(ci)
-    rownames(ci) <- parm}
+    rownames(ci) <- parm
+  }
 
   colnames(ci) <- paste0(c("lwr", "upr"), level)
   ci
@@ -678,3 +679,50 @@ confint.mvreg <- function(object, parm, level = 0.95, ...){
 #-------------------------------------------------------------------------------
 
 
+#' Design matrices for mvreg models
+#'
+#' This function returns the design matrices for the mean and variance components of a `mvreg` model.
+#'
+#' @param object A `mvreg` object.
+#' @param type A string specifying which model matrix to return. Options include:
+#'   - `"all"` (default), returns a list containing both the mean and variance component matrices;
+#'   - `"mu"`, returns only the design matrix for the mean component;
+#'   - `"s2"`, returns only the design matrix for the variance component.
+#' @param ... Additional arguments (currently ignored).
+#'
+#' @return If `type = "all"`, a list containing two elements:
+#'   - `xd`: the design matrix for the mean component (as a matrix);
+#'   - `zd`: the design matrix for the variance component (as a matrix).
+#' Otherwise, a single matrix corresponding to the specified component (`"mu"` or `"s2"`).
+#'
+#' @export
+#' @exportS3Method model.matrix mvreg
+#'
+#' @examples
+#' # Fit an mvreg model to the iris dataset
+#' mod <- mvreg(Sepal.Length ~ Species + Sepal.Width, ~Species, data = iris)
+#'
+#' # Get both design matrices (mean and variance components)
+#' model.matrix(mod)
+#'
+#' # Get only the mean component design matrix
+#' model.matrix(mod, "mu")
+#'
+#' # Get only the variance component design matrix
+#' model.matrix(mod, "s2")
+#'
+#' # Access elements of the returned list when type = "all"
+#' matrices <- model.matrix(mod, "all")
+#' mean_matrix <- matrices$xd
+#' variance_matrix <- matrices$zd
+model.matrix.mvreg <- function(object, type = c("all", "mu", "s2"), ...) {
+  type <- match.arg(type)
+
+  if (type == "all") {
+    list(xd = object$xd, zd = object$zd)
+  } else if (type == "mu") {
+    object$xd
+  } else if (type == "s2") {
+    object$zd
+  }
+}

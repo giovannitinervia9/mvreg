@@ -27,11 +27,10 @@
 #'
 #' @examples
 #' # Example with interaction terms
-#' formula <- y ~ x1*x2*x3
+#' formula <- y ~ x1 * x2 * x3
 #' reduced_formulas <- get_reduced_formulas("y", formula)
 #' print(reduced_formulas)
 get_reduced_formulas <- function(response, formula) {
-
   # Extract the terms from the formula
   terms_formula <- attr(terms(formula), "term.labels")
 
@@ -87,4 +86,3 @@ are_models_nested <- function(model1, model2) {
   terms2 <- names(coef(model2))
   all(terms1 %in% terms2) | all(terms2 %in% terms1)
 }
-
