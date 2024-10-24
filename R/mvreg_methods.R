@@ -348,7 +348,7 @@ fitted.mvreg <- function(x, type = c("all", "mu", "log.s2", "s2")) {
 #' logLik(mod)  # returns the log-likelihood of the fitted model
 logLik.mvreg <- function(object, ...) {
   val <- object$logLik
-  df <- ncol(object$x) + ncol(object$z)
+  df <- ncol(object$xd) + ncol(object$zd)
   attr(val, "df") <- df
   attr(val, "nobs") <- object$nobs
   class(val) <- "logLik"
@@ -403,8 +403,8 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
   noData <- (missing(newdata) || is.null(newdata))
 
   if (noData) {
-    x <- object$x
-    z <- object$z
+    x <- object$xd
+    z <- object$zd
   } else if (setequal(coln, colnames(newdata))) {
     formula.mu <- formula(paste("~ ", deparse(object$formula.mu[[3]])))
     formula.s2 <- formula(paste("~ ", deparse(object$formula.s2[[3]])))
@@ -521,8 +521,8 @@ simulate.mvreg <- function(object, nsim = 1, seed = NULL, ...) {
     on.exit(assign(".Random.seed", R.seed, envir = .GlobalEnv))
   }
 
-  x <- object$x
-  z <- object$z
+  x <- object$xd
+  z <- object$zd
   b <- object$coefficients.mu
   t <- object$coefficients.s2
   n <- object$nobs
@@ -673,3 +673,8 @@ confint.mvreg <- function(object, parm, level = 0.95, ...){
   colnames(ci) <- paste0(c("lwr", "upr"), level)
   ci
 }
+
+
+#-------------------------------------------------------------------------------
+
+

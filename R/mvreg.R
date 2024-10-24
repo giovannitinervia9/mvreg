@@ -81,11 +81,11 @@ mvreg <- function(formula.mu,
   colx <- colnames(mf.mu)[-1]
   response <- colnames(mf.mu)[1]
   y <- model.response(mf.mu)
-  x <- model.matrix(attr(mf.mu, "terms"), mf.mu)
+  xd <- model.matrix(attr(mf.mu, "terms"), mf.mu)
 
   if (is.null(formula.s2)) {
     formula.s2 <- formula.mu
-    z <- x
+    zd <- xd
     colz <- colx
   } else {
     if (length(formula.s2) == 2) {
@@ -101,45 +101,46 @@ mvreg <- function(formula.mu,
     }
     mf.s2 <- model.frame(formula.s2, data)
     colz <- colnames(mf.s2)[-1]
-    z <- model.matrix(attr(mf.s2, "terms"), mf.s2)
+    zd <- model.matrix(attr(mf.s2, "terms"), mf.s2)
   }
 
   cl$formula.s2 <- formula.s2
 
 
-  colnames(x)[which(colnames(x) == "(Intercept)")] <- "const"
-  colnames(z)[which(colnames(z) == "(Intercept)")] <- "const"
+  colnames(xd)[which(colnames(xd) == "(Intercept)")] <- "const"
+  colnames(zd)[which(colnames(zd) == "(Intercept)")] <- "const"
 
-  colnames(x) <- paste0("mu.", colnames(x))
-  colnames(z) <- paste0("s2.", colnames(z))
+  colnames(xd) <- paste0("mu.", colnames(xd))
+  colnames(zd) <- paste0("s2.", colnames(zd))
+  coefnames <- c(colnames(xd), colnames(zd))
 
-  k <- ncol(x)
-  p <- ncol(z)
-  nobs <- nrow(x)
+  k <- ncol(xd)
+  p <- ncol(zd)
+  nobs <- nrow(xd)
 
 
-  start.list <- mvreg_start(y, x, z, start.s2 = start.s2)
+  start.list <- mvreg_start(y, xd, zd, start.s2 = start.s2)
 
   start <- start.list$start
-  names(start) <- c(colnames(x), colnames(z))
+  names(start) <- coefnames
 
   b0 <- start[1:k]
   t0 <- start[(k + 1):length(start)]
 
-  fit.list <- mvreg_fit(y, x, z, b0, t0, tol = tol, maxit = maxit, method = method, vcov.type = vcov.type)
+  fit.list <- mvreg_fit(y, xd, zd, b0, t0, tol = tol, maxit = maxit, method = method, vcov.type = vcov.type)
 
   it <- fit.list$it
 
   theta0 <- fit.list$theta
-  names(theta0) <- c(colnames(x), colnames(z))
+  names(theta0) <- coefnames
   b0 <- theta0[1L:k]
   t0 <- theta0[(k + 1L):length(theta0)]
   vtheta <- fit.list$vtheta
 
   colnames(vtheta) <- rownames(vtheta) <- names(theta0)
 
-  fit.mu <- as.vector(x %*% b0)
-  fit.log.s2 <- as.vector(z %*% t0)
+  fit.mu <- as.vector(xd %*% b0)
+  fit.log.s2 <- as.vector(zd %*% t0)
   fit.s2 <- exp(fit.log.s2)
   residuals <- as.vector(y - fit.mu)
 
@@ -151,15 +152,15 @@ mvreg <- function(formula.mu,
     vcov = vtheta,
     vcov.mu = vtheta[1L:k, 1L:k],
     vcov.s2 = vtheta[(k + 1L):nrow(vtheta), (k + 1L):ncol(vtheta)],
-    logLik = mvreg_loglik(y, x, z, b0, t0),
+    logLik = mvreg_loglik(y, xd, zd, b0, t0),
     fit.mu = fit.mu,
     fit.log.s2 = fit.log.s2,
     fit.s2 = fit.s2,
     it = it,
     start = start,
     y = y,
-    x = x,
-    z = z,
+    xd = xd,
+    zd = zd,
     nobs = nobs,
     call = cl,
     df.residual = length(y) - (p + k),
