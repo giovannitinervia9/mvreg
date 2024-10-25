@@ -6,7 +6,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-<br><br>
+## Overview
 
 The mvreg package provides tools for estimating linear regression models
 where both the mean and variance components are modeled as linear
