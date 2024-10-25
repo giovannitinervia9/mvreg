@@ -1,10 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# mvreg: Mean-Variance Regression <img src="logo.png" align="right" width="118"/>
+# mvreg <img src="logo.png" align="right" width="118"/>
 
 <!-- badges: start -->
 <!-- badges: end -->
+
+<br><br>
 
 The mvreg package provides tools for estimating linear regression models
 where both the mean and variance components are modeled as linear
