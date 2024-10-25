@@ -26,9 +26,9 @@ devtools::install_github("giovannitinervia9/mvreg")
 
 The heteroscedastic linear model is specified as
 $$Y_i|\mathbf{x}_i, \mathbf{z}_i \sim \mathcal{N}(\mu_i = \mathbf{x}_i'\boldsymbol{\beta}, \sigma^2_i = \exp\{\mathbf{z}_i'\boldsymbol{\tau}\})$$
-$\mathbf{x}_i$ and $\mathbf{z}_i$ are both row vectors of covariates,
-the former for the mean component and the latter for the variance
-component, and they need not be equal. $\boldsymbol{\beta}$ and
+where $\mathbf{x}_i$ and $\mathbf{z}_i$ are both row vectors of
+covariates, the former for the mean component and the latter for the
+variance component, and they need not be equal. $\boldsymbol{\beta}$ and
 $\boldsymbol{\tau}$ are the vectors of parameters for the mean and
 variance components, respectively.
 
