@@ -23,6 +23,13 @@ suppressMessages(require(ggthemes))
 ```
 
 
+<style>
+  img.logo {
+    background-color: transparent !important;
+  }
+</style>
+
+
 # mvreg: Mean-Variance Regression <img src="logo.png" align="right" width="120"/>
 
 
