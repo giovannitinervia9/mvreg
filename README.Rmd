@@ -15,7 +15,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-# mvreg: Mean-Variance Regression
+```{r setup, include = F}
+library(mvreg)
+suppressMessages(require(dplyr))
+suppressMessages(require(ggplot2))
+suppressMessages(require(ggthemes))
+```
+
+
+# mvreg: Mean-Variance Regression <img src="logo.png" align="right" width="120"/>
+
+
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -33,12 +43,21 @@ devtools::install_github("giovannitinervia9/mvreg")
 ```
 
 ## Model specification
-The heteroskedastic linear model is specified as $$Y_i|\mathbf{x}_i, \mathbf{z}_i \sim \mathcal{N}(\mu_i = \mathbf{x}_i'\boldsymbol{\beta}, \sigma^2_i = \exp\{\mathbf{z}_i'\boldsymbol{\tau}\})$$. $\mathbf{x}_i$ and $\mathbf{z}_i$ are both row vectors of covariates, the former for the mean component and the latter for the variance component, and they need not be equal. $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ are the vectors of parameters for the mean and variance components, respectively.
+The heteroscedastic linear model is specified as $$Y_i|\mathbf{x}_i, \mathbf{z}_i \sim \mathcal{N}(\mu_i = \mathbf{x}_i'\boldsymbol{\beta}, \sigma^2_i = \exp\{\mathbf{z}_i'\boldsymbol{\tau}\})$$ $\mathbf{x}_i$ and $\mathbf{z}_i$ are both row vectors of covariates, the former for the mean component and the latter for the variance component, and they need not be equal. $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ are the vectors of parameters for the mean and variance components, respectively.
 
 Variance component is modelled via a logarithmic link function
 
 $$\log(\sigma^2_i) = \mathbf{z}_i'\boldsymbol{\tau}$$
 
-$\hat{\boldsymbol{\beta}}$ and $\hat{\boldsymbol{\tau}}$ are estimated via maximum likelihood estimation. Newton-Raphson method is implemented to estimate the parameters.
+## How to fit a heteroscedastic linear model
 
-Initial guess $\hat{\boldsymbol{\beta}}^0$ is found by regressing $Y$ on covariates $\mathbf{X}$. The squared log of residuals $r_i = \log((y_i - \mathbf{x}_i'\hat{\beta})^2)$ are then regressed on covariates $\mathbf{Z}$ to find a first guess of $\hat{\boldsymbol{\tau}}^0$.
+To fit a heteroscedastic linear model, you can use `mvreg()` function, in which you can specify a `formula.mu` for the mean component and a `formula.s2` for the variance component.
+
+Take, for example, the dataset `iris` and let's fit a model in which `Sepal.Length` depends on `Species` for both the mean and variance components
+```{r}
+mod <- mvreg(formula.mu = Sepal.Length ~ Species,
+             formula.s2 = Sepal.Length ~ Species,
+             data = iris)
+summary(mod)
+```
+
