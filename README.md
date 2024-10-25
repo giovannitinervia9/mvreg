@@ -1,12 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# mvreg: Mean-Variance Regression <img src="logo.png" align="right" width="120"/>
+# mvreg: Mean-Variance Regression <img src="logo.png" align="right" width="118"/>
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-## Overview
+# Overview
 
 The mvreg package provides tools for estimating linear regression models
 where both the mean and variance components are modeled as linear
@@ -15,7 +15,7 @@ regression by allowing the variance of the response variable to depend
 on a set of covariates, making it useful for scenarios where
 heteroscedasticity (non-constant variance) is present.
 
-## Installation
+# Installation
 
 You can install the development version of mvreg from
 [GitHub](https://github.com/) with:
@@ -24,7 +24,7 @@ You can install the development version of mvreg from
 devtools::install_github("giovannitinervia9/mvreg")
 ```
 
-## Model specification
+# Model specification
 
 The heteroscedastic linear model is specified as
 $$Y_i|\mathbf{x}_i, \mathbf{z}_i \sim \mathcal{N}(\mu_i = \mathbf{x}_i'\boldsymbol{\beta}, \sigma^2_i = \exp\{\mathbf{z}_i'\boldsymbol{\tau}\})$$
@@ -38,7 +38,7 @@ Variance component is modelled via a logarithmic link function
 
 $$\log(\sigma^2_i) = \mathbf{z}_i'\boldsymbol{\tau}$$
 
-## How to fit a heteroscedastic linear model
+# How to fit a heteroscedastic linear model
 
 To fit a heteroscedastic linear model, you can use `mvreg()` function,
 in which you can specify a `formula.mu` for the mean component and a
