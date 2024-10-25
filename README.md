@@ -11,7 +11,7 @@ where both the mean and variance components are modeled as linear
 functions of predictors. This package extends traditional linear
 regression by allowing the variance of the response variable to depend
 on a set of covariates, making it useful for scenarios where
-heteroscedasticity (non-constant variance) is present.
+heteroscedasticity is present.
 
 ## Installation
 
