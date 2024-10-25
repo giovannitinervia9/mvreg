@@ -1,10 +1,5 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-<style>
-  img.logo {
-    background-color: transparent !important;
-  }
-</style>
 
 # mvreg: Mean-Variance Regression <img src="logo.png" align="right" width="120"/>
 

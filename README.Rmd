@@ -20,14 +20,16 @@ library(mvreg)
 suppressMessages(require(dplyr))
 suppressMessages(require(ggplot2))
 suppressMessages(require(ggthemes))
-```
 
-
-<style>
+cat('<style>
   img.logo {
     background-color: transparent !important;
   }
-</style>
+</style>')
+
+```
+
+
 
 
 # mvreg: Mean-Variance Regression <img src="logo.png" align="right" width="120"/>
