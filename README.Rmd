@@ -42,7 +42,7 @@ cat('<style>
 <!-- badges: end -->
 
 ```{r, include = F}
-cat('<br><br>')
+cat('<br><br><br><br>')
 ```
 
 ## Overview
