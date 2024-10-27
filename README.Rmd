@@ -21,12 +21,11 @@ suppressMessages(require(dplyr))
 suppressMessages(require(ggplot2))
 suppressMessages(require(ggthemes))
 
-cat('<style>
+cat("<style>
   img.logo {
     background-color: transparent !important;
   }
-</style>')
-
+</style>")
 ```
 
 
@@ -42,7 +41,7 @@ cat('<style>
 <!-- badges: end -->
 
 ```{r, include = F}
-cat('<br><br>')
+cat("<br><br>")
 ```
 
 The `mvreg` package provides tools for estimating linear regression models where both the mean and variance components are modeled as linear functions of predictors. This package extends traditional linear regression by allowing the variance of the response variable to depend on a set of covariates, making it useful for scenarios where heteroscedasticity is present.
@@ -69,9 +68,11 @@ To fit a heteroscedastic linear model, you can use `mvreg()` function, in which 
 
 Take, for example, the dataset `iris` and let's fit a model in which `Sepal.Length` depends on `Species` for both the mean and variance components
 ```{r}
-mod <- mvreg(formula.mu = Sepal.Length ~ Species,
-             formula.s2 = Sepal.Length ~ Species,
-             data = iris)
+mod <- mvreg(
+  formula.mu = Sepal.Length ~ Species,
+  formula.s2 = Sepal.Length ~ Species,
+  data = iris
+)
 summary(mod)
 ```
 
