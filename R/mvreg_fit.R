@@ -123,5 +123,5 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
   vtheta <- solve(-mvreg_hessian(y, x, z, b0, t0, type = vcov.type))
   colnames(vtheta) <- rownames(vtheta) <- names(theta0)
 
-  list(theta = theta0, b = b0, t = t0, vtheta = vtheta, it = it)
+  list(theta = theta0, b = b0, t = t0, vtheta = vtheta, it = it, maxit = maxit, tol = tol)
 }
