@@ -91,6 +91,8 @@ mvreg <- function(formula.mu,
                   start.s2 = c("residuals", "gamma", "zero"),
                   method = c("wls", "full_nr"),
                   vcov.type = c("expected", "observed")) {
+
+
   cl <- match.call()
   method <- match.arg(method)
   vcov.type <- match.arg(vcov.type)

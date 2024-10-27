@@ -68,6 +68,31 @@
 #'
 #' mvreg_fit(y, x, z, b0, t0)
 mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls", "full_nr"), vcov.type = c("expected", "observed")) {
+
+  if (!(maxit %% 1 == 0) | maxit < 0) {
+    new.maxit <- round(abs(maxit))
+    warning(paste0("maxit must be a positive integer, ", maxit, " taken as ", new.maxit))
+    maxit <- new.maxit
+  }
+  if (maxit == 0) {
+    new.maxit <- 100
+    warning("maxit cannot be 0, set to default value of 100")
+    maxit <- new.maxit
+  }
+
+  if(tol < 0) {
+    new.tol <- abs(tol)
+    warning(paste0("tol must be strictly positive, ", tol, " taken as ", new.tol))
+    tol <- new.tol
+  }
+  if (tol == 0){
+    new.tol <- 1e-10
+    warning(paste0("tol must be strictly positive, ", tol, " set to default value of ", new.tol))
+    tol <- new.tol
+  }
+
+
+
   method <- match.arg(method)
   vcov.type <- match.arg(vcov.type)
 
