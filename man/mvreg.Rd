@@ -33,7 +33,7 @@ mvreg(
 \item{vcov.type}{A character vector to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates. See the documentation of \code{\link{mvreg_fit}}, \code{\link{mvreg_hessian_mu}}, \code{\link{mvreg_hessian_s2}}, \code{\link{mvreg_hessian_mus2}} and \code{\link{mvreg_hessian}} for details.}
 }
 \value{
-An object of class \code{mvreg} containing:
+An object of class mvreg containing:
 \item{coefficients}{The estimated coefficients for both the mean and variance components.}
 \item{coefficients.mu}{The estimated coefficients for the mean component.}
 \item{coefficients.s2}{The estimated coefficients for the variance component.}

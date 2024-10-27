@@ -89,14 +89,32 @@ test_that("mvreg() works with different formulas for mean and variance component
 })
 
 
-# test_that("mvreg() handles missing values correctly", {
-#   data(iris)
-#   iris_with_na <- iris
-#   iris_with_na$Sepal.Length[1] <- NA
-#
-#   # Check if the function throws an error for missing values
-#   expect_error(mvreg(Sepal.Length ~ Species, data = iris_with_na))
-# })
+test_that("mvreg() gives errors when NAs are present in response variable", {
+  data(iris)
+  iris_with_na <- iris
+  iris_with_na$Sepal.Length[1] <- NA
+
+  # Check if the function throws an error for missing values
+  expect_error(mvreg(Sepal.Length ~ Species, Sepal.Length ~ Species, data = iris_with_na))
+})
+
+test_that("mvreg() gives errors when NAs are present in mean component", {
+  data(iris)
+  iris_with_na <- iris
+  iris_with_na$Sepal.Width[1] <- NA
+
+  # Check if the function throws an error for missing values
+  expect_error(mvreg(Sepal.Length ~ Sepal.Width, Sepal.Length ~ Species, data = iris_with_na))
+})
+
+test_that("mvreg() gives errors when NAs are present in variance component", {
+  data(iris)
+  iris_with_na <- iris
+  iris_with_na$Species[1] <- NA
+
+  # Check if the function throws an error for missing values
+  expect_error(mvreg(Sepal.Length ~ Sepal.Width, Sepal.Length ~ Species, data = iris_with_na))
+})
 
 test_that("If formula.s2 is not specified, formula.mu is used as formula.s2", {
 

@@ -12,7 +12,7 @@
 #' @param method A character vector indicating the method chosen for estimation of parameters of mean component. See the documentation of \code{\link{mvreg_fit}} for details.
 #' @param vcov.type A character vector to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates. See the documentation of \code{\link{mvreg_fit}}, \code{\link{mvreg_hessian_mu}}, \code{\link{mvreg_hessian_s2}}, \code{\link{mvreg_hessian_mus2}} and \code{\link{mvreg_hessian}} for details.
 #'
-#' @return An object of class `mvreg` containing:
+#' @return An object of class mvreg containing:
 #' \item{coefficients}{The estimated coefficients for both the mean and variance components.}
 #' \item{coefficients.mu}{The estimated coefficients for the mean component.}
 #' \item{coefficients.s2}{The estimated coefficients for the variance component.}
@@ -101,6 +101,10 @@ mvreg <- function(formula.mu,
   }
 
   mf.mu <- model.frame(formula.mu, data)
+  removed.formula.mu <- as.vector(attr(mf.mu, "na.action"))
+  if (!is.null(removed.formula.mu)) {
+    stop("mvreg() can't handle NAs")
+  }
   colx <- colnames(mf.mu)[-1]
   response <- colnames(mf.mu)[1]
   y <- model.response(mf.mu)
@@ -121,6 +125,10 @@ mvreg <- function(formula.mu,
       formula.s2 <- formula.s2
     }
     mf.s2 <- model.frame(formula.s2, data)
+    removed.formula.s2 <- as.vector(attr(mf.s2, "na.action"))
+    if (!is.null(removed.formula.s2)) {
+      stop("mvreg() can't handle NAs")
+    }
     colz <- colnames(mf.s2)[-1]
     zd <- model.matrix(attr(mf.s2, "terms"), mf.s2)
   }
