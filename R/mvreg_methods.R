@@ -660,6 +660,7 @@ confint.mvreg <- function(object, parm, level = 0.95, ...) {
     parm <- pnames[parm]
   }
 
+
   a <- (1 - level) / 2
   a <- c(a, 1 - a)
   z <- qnorm(a)
