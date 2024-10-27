@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# mvreg <img src="logo.png" align="right" width="118"/>
+# mvreg <img src="man/figures/logo_01.png" align="right" width="118"/>
 
 <!-- badges: start -->
 <!-- badges: end -->

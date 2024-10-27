@@ -32,7 +32,7 @@ cat('<style>
 
 
 
-# mvreg <img src="logo.png" align="right" width="118"/>
+# mvreg <img src="man/figures/logo_01.png" align="right" width="118"/>
 
 
 
