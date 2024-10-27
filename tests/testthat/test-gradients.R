@@ -93,4 +93,3 @@ test_that("mvreg_gradient_mu and mvreg_gradient_s2 handle zero variance cases", 
   expect_false(any(is.nan(gradient_mu)))
   expect_false(any(is.nan(gradient_s2)))
 })
-

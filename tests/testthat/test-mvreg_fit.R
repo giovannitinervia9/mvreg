@@ -6,7 +6,7 @@ x2 <- factor(sample(letters[1:3], n, TRUE))
 x <- model.matrix(~ x1 + x2)
 
 z1 <- factor(sample(letters[1:3], n, TRUE))
-z <- model.matrix(~ z1)
+z <- model.matrix(~z1)
 
 b <- rnorm(ncol(x))
 t <- rnorm(ncol(z))
@@ -27,9 +27,9 @@ test_that("mvreg_fit() with WLS method converges and returns correct structure",
   expect_named(fit, c("theta", "b", "t", "vtheta", "it", "maxit", "tol"))
 
   # Check dimensions of estimates
-  expect_length(fit$theta, ncol(x) + ncol(z))     # Full parameter vector
-  expect_length(fit$b, ncol(x))                   # Mean component parameters
-  expect_length(fit$t, ncol(z))                   # Variance component parameters
+  expect_length(fit$theta, ncol(x) + ncol(z)) # Full parameter vector
+  expect_length(fit$b, ncol(x)) # Mean component parameters
+  expect_length(fit$t, ncol(z)) # Variance component parameters
 
   # Check that the number of iterations is within the limit
   expect_true(fit$it <= 100)
@@ -47,9 +47,9 @@ test_that("mvreg_fit() with full NR method converges and returns correct structu
   expect_named(fit, c("theta", "b", "t", "vtheta", "it", "maxit", "tol"))
 
   # Check dimensions of estimates
-  expect_length(fit$theta, ncol(x) + ncol(z))     # Full parameter vector
-  expect_length(fit$b, ncol(x))                   # Mean component parameters
-  expect_length(fit$t, ncol(z))                   # Variance component parameters
+  expect_length(fit$theta, ncol(x) + ncol(z)) # Full parameter vector
+  expect_length(fit$b, ncol(x)) # Mean component parameters
+  expect_length(fit$t, ncol(z)) # Variance component parameters
 
   # Check that the number of iterations is within the limit
   expect_true(fit$it <= 100)
@@ -107,10 +107,14 @@ test_that("mvreg_fit() correctly handles tolerance and maxit parameters", {
 
 # Test handling of incorrect method and vcov.type parameters
 test_that("mvreg_fit() warns with invalid method and vcov.type", {
-  expect_error(mvreg_fit(y, x, z, b0, t0, method = "invalid_method"),
-               "should be one of")
-  expect_error(mvreg_fit(y, x, z, b0, t0, vcov.type = "invalid_vcov"),
-               "should be one of")
+  expect_error(
+    mvreg_fit(y, x, z, b0, t0, method = "invalid_method"),
+    "should be one of"
+  )
+  expect_error(
+    mvreg_fit(y, x, z, b0, t0, vcov.type = "invalid_vcov"),
+    "should be one of"
+  )
 })
 
 # Test handling of misspecification of maxit and tol
@@ -130,7 +134,5 @@ test_that("mvreg_fit() correctly corrects misspecified maxit and tol", {
 
   expect_warning(mvreg_fit(y, x, z, b0, t0, maxit = 0), "maxit cannot be 0, set to default value of 100")
   fit4 <- suppressWarnings(mvreg_fit(y, x, z, b0, t0, maxit = 0))
-  expect_equal(fit4$maxit, 100)}
-)
-
-
+  expect_equal(fit4$maxit, 100)
+})

@@ -1,6 +1,5 @@
 #### print.mvreg() ####
 test_that("print.mvreg prints the model call and coefficients", {
-
   mock_mvreg <- mvreg(Sepal.Length ~ Species, data = iris)
 
   # Capture the output of the print function
@@ -37,7 +36,7 @@ test_that("print.mvreg respects the digits argument", {
 
   # Check if coefficients are printed with the specified number of significant digits
   expect_true(any(grepl("5.0", output)))
-  expect_false(any(grepl("5.00", output)))  # Ensure not more than 1 digit after decimal
+  expect_false(any(grepl("5.00", output))) # Ensure not more than 1 digit after decimal
 })
 
 
@@ -45,14 +44,13 @@ test_that("print.mvreg respects the digits argument", {
 
 #### vcov() ####
 test_that("vcov matrix is correctly computed", {
-
   mod.obs <- mvreg(Sepal.Length ~ Species, data = iris, vcov.type = "observed")
   k <- ncol(mod.obs$xd)
   p <- ncol(mod.obs$zd)
   vtheta.obs <- -solve(mvreg_hessian(mod.obs$y, mod.obs$xd, mod.obs$zd, mod.obs$coefficients.mu, mod.obs$coefficients.s2, type = "observed"))
   expect_equal(vtheta.obs, vcov(mod.obs))
   expect_equal(vtheta.obs[1:k, 1:k], vcov(mod.obs, "mu"))
-  expect_equal(vtheta.obs[(k+1):(k+p), (k+1):(k+p)], vcov(mod.obs, "s2"))
+  expect_equal(vtheta.obs[(k + 1):(k + p), (k + 1):(k + p)], vcov(mod.obs, "s2"))
 
   mod.exp <- mvreg(Sepal.Length ~ Species, data = iris, vcov.type = "expected")
   k <- ncol(mod.exp$xd)
@@ -60,29 +58,32 @@ test_that("vcov matrix is correctly computed", {
   vtheta.obs <- -solve(mvreg_hessian(mod.exp$y, mod.exp$xd, mod.exp$zd, mod.exp$coefficients.mu, mod.exp$coefficients.s2, type = "observed"))
   expect_equal(vtheta.obs, vcov(mod.exp))
   expect_equal(vtheta.obs[1:k, 1:k], vcov(mod.exp, "mu"))
-  expect_equal(vtheta.obs[(k+1):(k+p), (k+1):(k+p)], vcov(mod.exp, "s2"))
-
+  expect_equal(vtheta.obs[(k + 1):(k + p), (k + 1):(k + p)], vcov(mod.exp, "s2"))
 })
 
 test_that("vcov.mvreg() handles invalid partition argument gracefully", {
   mod <- mvreg(Sepal.Length ~ Species, data = iris)
 
-  expect_error(vcov(mod, partition = "invalid"),
-               "should be one") # Customize the error message as needed
+  expect_error(
+    vcov(mod, partition = "invalid"),
+    "should be one"
+  ) # Customize the error message as needed
 })
 
 
 #### summary() ####
 
 
-test_that("summary.mvreg returns correct summary object",{
+test_that("summary.mvreg returns correct summary object", {
   mod <- mvreg(Sepal.Length ~ Species, data = iris)
   s <- summary(mod)
   expect_type(s, "list")
   expect_equal(class(s), "summary.mvreg")
-  expect_equal(names(s), c("call", "residuals", "coefficients", "coefficients.mu",
-                           "coefficients.s2", "df", "vcov",
-                           "vcov.mu", "vcov.s2", "loglik", "AIC", "BIC"))
+  expect_equal(names(s), c(
+    "call", "residuals", "coefficients", "coefficients.mu",
+    "coefficients.s2", "df", "vcov",
+    "vcov.mu", "vcov.s2", "loglik", "AIC", "BIC"
+  ))
   expect_equal(nrow(s$coefficients), length(mod$coefficients))
   expect_equal(nrow(s$coefficients.mu), length(mod$coefficients.mu))
   expect_equal(nrow(s$coefficients.s2), length(mod$coefficients.s2))
@@ -98,7 +99,7 @@ test_that("summary.mvreg returns correct summary object",{
   expect_type(s$loglik, "double")
   expect_type(s$AIC, "double")
   expect_type(s$BIC, "double")
-  })
+})
 
 
 #### print.summary.mvreg() ####
@@ -126,7 +127,7 @@ test_that("print.summary.mvreg prints coefficients for mean component", {
   # Check for coefficients of the mean component
   expect_true(any(grepl("Coefficients for mean component:", output)))
   expect_true(any(grepl("mu.const", output)))
-  expect_true(any(grepl("5.0", output)))  # Check the intercept value
+  expect_true(any(grepl("5.0", output))) # Check the intercept value
   expect_true(any(grepl("Speciesversicolor", output)))
   expect_true(any(grepl("Speciesvirginica", output)))
 })
@@ -154,7 +155,8 @@ test_that("print.summary.mvreg prints model fit statistics", {
   # Check for model fit statistics
   expect_true(any(grepl("logLik", output)))
   expect_true(any(grepl("AIC", output)))
-  expect_true(any(grepl("BIC", output)))})
+  expect_true(any(grepl("BIC", output)))
+})
 
 test_that("print.summary.mvreg prints likelihood ratio test results", {
   mod <- mvreg(Sepal.Length ~ Species, data = iris)
@@ -176,7 +178,7 @@ test_that("print.summary.mvreg respects the signif.stars argument", {
 
   # Check if significance stars are printed (depends on coefficients being statistically significant)
   # For mock purposes, let's assume they are significant and we expect to see stars next to coefficients
-  expect_true(any(grepl("\\*", output)))  # This assumes that some coefficients are significant
+  expect_true(any(grepl("\\*", output))) # This assumes that some coefficients are significant
 })
 
 
@@ -203,14 +205,15 @@ test_that("fitted.mvreg returns correct fitted values", {
 
   expect_type(fit.s2, "double")
   expect_length(fit.s2, 150)
-
-  })
+})
 
 test_that("fitted.mvreg handles invalid type argument gracefully", {
   mod <- mvreg(Sepal.Length ~ Species, data = iris)
 
-  expect_error(fitted(mod, type = "invalid"),
-               "should be one") # Customize the error message as needed
+  expect_error(
+    fitted(mod, type = "invalid"),
+    "should be one"
+  ) # Customize the error message as needed
 })
 
 
@@ -288,10 +291,14 @@ test_that("predict.mvreg returns correct predictions for different components an
   expect_named(pred_interval_99$s2, c("pred.s2", "lwr0.99", "upr0.99"))
 
   # Test: Prediction with newdata
-  newdata <- data.frame(Species = levels(iris$Species),
-                        Sepal.Width = c(min(iris$Sepal.Width),
-                                        mean(iris$Sepal.Width),
-                                        max(iris$Sepal.Width)))
+  newdata <- data.frame(
+    Species = levels(iris$Species),
+    Sepal.Width = c(
+      min(iris$Sepal.Width),
+      mean(iris$Sepal.Width),
+      max(iris$Sepal.Width)
+    )
+  )
   pred_newdata <- predict(mvreg_mod, newdata = newdata)
   expect_type(pred_newdata, "list")
   expect_length(pred_newdata$mu, nrow(newdata))
@@ -300,9 +307,11 @@ test_that("predict.mvreg returns correct predictions for different components an
 
   # Test error handling for incorrect newdata
   incorrect_data <- data.frame(OtherColumn = 1:3)
-  expect_error(suppressMessages(predict(mvreg_mod, newdata = incorrect_data)),
-               "newdata must be a data.frame whose column names must be the
-         same as the names of the variables in the model")
+  expect_error(
+    suppressMessages(predict(mvreg_mod, newdata = incorrect_data)),
+    "newdata must be a data.frame whose column names must be the
+         same as the names of the variables in the model"
+  )
 })
 
 
@@ -450,7 +459,7 @@ test_that("update.mvreg raise an error if the object doesn't have a call compone
 
 test_that("confint.mvreg computes confidence intervals for all parameters", {
   # Fit initial model
-  mod <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
+  mod <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris)
 
   # Compute confidence intervals
   ci <- confint(mod)
@@ -469,7 +478,7 @@ test_that("confint.mvreg computes confidence intervals for all parameters", {
 
 test_that("confint.mvreg computes confidence intervals for specified parameters by name", {
   # Fit initial model
-  mod <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
+  mod <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris)
 
   # Compute confidence intervals for a specific parameter by name
   ci <- confint(mod, parm = "mu.Speciesversicolor")
@@ -488,7 +497,7 @@ test_that("confint.mvreg computes confidence intervals for specified parameters 
 
 test_that("confint.mvreg computes confidence intervals for specified parameters by index", {
   # Fit initial model
-  mod <- mvreg(Sepal.Length ~ Species, ~ Sepal.Width, data = iris)
+  mod <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris)
 
   # Compute confidence intervals for a specific parameter by index
   ci <- confint(mod, parm = 2)
@@ -595,10 +604,3 @@ test_that("model.matrix.mvreg defaults to type 'all' if no type specified", {
   expect_true(is.matrix(matrices$xd))
   expect_true(is.matrix(matrices$zd))
 })
-
-
-
-
-
-
-

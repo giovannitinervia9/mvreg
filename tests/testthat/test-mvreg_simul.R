@@ -18,9 +18,11 @@ test_that("mvreg_simul runs without errors for valid inputs", {
 test_that("mvreg_simul returns the expected components", {
   result <- mvreg_simul(x, z, b, t, nsim = 100, seed = 42)
 
-  expect_true(all(c("tab", "theta", "mean_vtheta", "vtheta", "it", "y",
-                    "n", "nsim", "seed", "k", "p", "converged",
-                    "non_converged", "total_time") %in% names(result)))
+  expect_true(all(c(
+    "tab", "theta", "mean_vtheta", "vtheta", "it", "y",
+    "n", "nsim", "seed", "k", "p", "converged",
+    "non_converged", "total_time"
+  ) %in% names(result)))
 
   expect_equal(nrow(result$tab), ncol(x) + ncol(z)) # Should match number of parameters
   expect_equal(ncol(result$theta), ncol(x) + ncol(z)) # Should match number of parameters
@@ -86,7 +88,7 @@ test_that("mvreg_simul calls first columns of x and z mu.const and s2.const", {
 })
 
 test_that("mvreg_simul use a random seed if it is not present in the environment", {
-  rm(.Random.seed, envir=globalenv())
+  rm(.Random.seed, envir = globalenv())
   result <- mvreg_simul(x, z, b, t, nsim = 100)
   expect_type(result$seed, "integer")
 })
@@ -99,7 +101,7 @@ test_that("mvreg_simul gives error if no simulation converges", {
   b <- rnorm(ncol(x)) # True parameters for mean component
   t <- rnorm(ncol(z)) # True parameters for variance component
   expect_error(mvreg_simul(x, z, b, t, nsim = 50), "None of the simulations converged")
-  })
+})
 
 
 
@@ -134,5 +136,3 @@ test_that("print.simul_mvreg respects digits argument", {
   # Check if the estimates are printed with the expected number of significant digits
   expect_true(any(grepl("1.20097", output)))
 })
-
-

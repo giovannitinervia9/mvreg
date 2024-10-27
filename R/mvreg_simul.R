@@ -80,7 +80,7 @@ mvreg_simul <- function(x, z, b, t, nsim = 100, sig.level = 0.05,
   p <- ncol(z)
   n <- nrow(x)
 
-  if(nsim < 0 | nsim%%1 != 0) {
+  if (nsim < 0 | nsim %% 1 != 0) {
     stop("nsim must be a positive integer")
   }
 
@@ -88,11 +88,11 @@ mvreg_simul <- function(x, z, b, t, nsim = 100, sig.level = 0.05,
     stop("x and z must have the same number of rows")
   }
 
-  if(k != length(b)) {
+  if (k != length(b)) {
     stop("b must have length equal to the number of columns in x")
   }
 
-  if(p != length(t)) {
+  if (p != length(t)) {
     stop("t must have length equal to the number of columns in z")
   }
 

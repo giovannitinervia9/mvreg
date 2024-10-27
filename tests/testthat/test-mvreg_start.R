@@ -4,7 +4,7 @@ x1 <- rnorm(n)
 x2 <- factor(sample(letters[1:3], n, TRUE))
 x <- model.matrix(~ x1 + x2)
 z1 <- factor(sample(letters[1:3], n, TRUE))
-z <- model.matrix(~ z1)
+z <- model.matrix(~z1)
 b <- rnorm(ncol(x))
 t <- rnorm(ncol(z))
 y <- rnorm(n, mean = x %*% b, sd = sqrt(exp(z %*% t)))
@@ -37,7 +37,7 @@ test_that("mvreg_start with start.s2 = 'zero' returns correct starting values", 
   result <- mvreg_start(y, x, z, start.s2 = "zero")
   expect_true(is.numeric(result$start))
   expect_equal(c(result$start[ncol(x) + 1], use.names = F), log(var(y)))
-  expect_true(all(c(result$start[-(1:(ncol(x)+1))], use.names = F) == 0))
+  expect_true(all(c(result$start[-(1:(ncol(x) + 1))], use.names = F) == 0))
 })
 
 # # Test for invalid input types
@@ -53,12 +53,14 @@ test_that("mvreg_start handles different start.s2 methods", {
   result_gamma <- mvreg_start(y, x, z, start.s2 = "gamma")
   result_zero <- mvreg_start(y, x, z, start.s2 = "zero")
   expect_true(length(result_resid$start) == length(result_gamma$start) &&
-                length(result_gamma$start) == length(result_zero$start))
+    length(result_gamma$start) == length(result_zero$start))
 })
 
 
 # Test handling of incorrect start.s2 parameter
 test_that("mvreg_start() warns with invalid start.s2", {
-  expect_error(mvreg_start(y, x, z, start.s2 = "invalid_start.s2"),
-               "should be one of")
+  expect_error(
+    mvreg_start(y, x, z, start.s2 = "invalid_start.s2"),
+    "should be one of"
+  )
 })

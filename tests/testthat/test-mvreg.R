@@ -90,7 +90,6 @@ test_that("mvreg() works with different formulas for mean and variance component
 
 
 test_that("mvreg() gives errors when NAs are present in response variable", {
-  data(iris)
   iris_with_na <- iris
   iris_with_na$Sepal.Length[1] <- NA
 
@@ -117,17 +116,13 @@ test_that("mvreg() gives errors when NAs are present in variance component", {
 })
 
 test_that("If formula.s2 is not specified, formula.mu is used as formula.s2", {
-
   result <- mvreg(Sepal.Length ~ Species, data = iris)
   expect_equal(result$formula.mu, result$formula.s2)
-
 })
 
 test_that("If in formula.s2 the left-hand-side is not specified than it is taken from formula.mu", {
-
   result <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris)
   expect_equal(result$formula.s2[[2]], result$formula.mu[[2]])
-
 })
 
 
@@ -137,8 +132,10 @@ test_that("If in formula.s2 the left-hand-side and it is the same as in formula.
 })
 
 test_that("mvreg() stops if response variable appears in the left-hand-side of formula,s2", {
-  expect_error(mvreg(Sepal.Length ~ Species, ~Sepal.Length, data = iris),
-               "response variable cannot appear on right-hand side of the formula")
+  expect_error(
+    mvreg(Sepal.Length ~ Species, ~Sepal.Length, data = iris),
+    "response variable cannot appear on right-hand side of the formula"
+  )
 })
 
 
@@ -153,7 +150,6 @@ test_that("mvreg() convergence criteria and iteration count", {
 
 
 test_that("mvreg() produces consistent output with different estimation methods", {
-
   # Test with method "wls"
   result_wls <- mvreg(Sepal.Length ~ Species, data = iris, method = "wls")
 
@@ -171,7 +167,6 @@ test_that("mvreg() produces consistent output with different estimation methods"
 
 
 test_that("mvreg() handles different initial values for variance component", {
-
   # Using different initial values for the variance component
   result_residuals <- mvreg(Sepal.Length ~ Species, data = iris, start.s2 = "residuals")
   result_gamma <- mvreg(Sepal.Length ~ Species, data = iris, start.s2 = "gamma")
@@ -223,5 +218,3 @@ test_that("If data is passed, then call contains data specification", {
   expect_true(("data" %in% names(result$call)))
   expect_equal(as.character(result$call$data), "iris")
 })
-
-

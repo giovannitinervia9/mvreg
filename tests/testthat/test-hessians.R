@@ -1,11 +1,11 @@
 # Sample data for testing
 set.seed(123)
 n <- 30
-x <- cbind(1, matrix(rnorm(n * 2), n, 2))  # 2 explanatory variables
-z <- cbind(1, matrix(rnorm(n), n, 1))       # 1 explanatory variable for variance
-y <- rnorm(n)                      # Response variable
-b <- c(0.5, -0.2, 0.2)                  # Coefficients for mean
-t <- c(0.3, 0.2)                        # Coefficients for variance
+x <- cbind(1, matrix(rnorm(n * 2), n, 2)) # 2 explanatory variables
+z <- cbind(1, matrix(rnorm(n), n, 1)) # 1 explanatory variable for variance
+y <- rnorm(n) # Response variable
+b <- c(0.5, -0.2, 0.2) # Coefficients for mean
+t <- c(0.3, 0.2) # Coefficients for variance
 
 test_that("Hessian dimensions match the number of mean predictors", {
   hessian_obs <- mvreg_hessian_mu(y, x, z, b, t, type = "observed")
@@ -98,6 +98,3 @@ test_that("mvreg_hessian computes full expected Hessian correctly", {
   hessian_result <- mvreg_hessian(y, x, z, b, t, type = "expected")
   expect_equal(hessian_result, expected_hessian, tolerance = 1e-6)
 })
-
-
-

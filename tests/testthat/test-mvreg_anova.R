@@ -82,7 +82,7 @@ test_that("anova doesn't accept models with different number of observation", {
 
 test_that("anova raises a warning when non nested models are passed", {
   mod1 <- mvreg(Sepal.Length ~ Species + Sepal.Width, data = iris)
-  mod2 <- mvreg(Sepal.Length ~ Species, ~ Petal.Width, data = iris)
+  mod2 <- mvreg(Sepal.Length ~ Species, ~Petal.Width, data = iris)
   expect_warning(anova.mvreg(mod1, mod2), "LRT test with non nested models is meaningless")
 })
 
@@ -90,7 +90,7 @@ test_that("anova raises a warning when non nested models are passed", {
 
 #### print.anova() ####
 # Set up testing data
-data("iris")  # Use iris dataset for test models
+data("iris") # Use iris dataset for test models
 
 # Fit example models
 mod1 <- mvreg(Sepal.Length ~ Species + Sepal.Width, data = iris)
@@ -146,4 +146,3 @@ test_that("print.anova.mvreg accepts additional arguments", {
   anova_result <- anova(mod3)
   expect_no_warning(print(anova_result, digits = 3, another_unused_arg = "test"))
 })
-
