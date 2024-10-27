@@ -79,6 +79,8 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
     maxit <- new.maxit
   }
 
+  maxit <- as.integer(maxit)
+
   if (tol < 0) {
     new.tol <- abs(tol)
     warning(paste0("tol must be strictly positive, ", tol, " taken as ", new.tol))
