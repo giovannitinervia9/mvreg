@@ -4,10 +4,6 @@
 # mvreg <img src="man/figures/logo_01.png" align="right" width="118"/>
 
 <!-- badges: start -->
-
-[![R-CMD-check](https://github.com/giovannitinervia9/mvreg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/giovannitinervia9/mvreg/actions/workflows/R-CMD-check.yaml)
-[![Codecov test
-coverage](https://codecov.io/gh/giovannitinervia9/mvreg/graph/badge.svg)](https://app.codecov.io/gh/giovannitinervia9/mvreg)
 <!-- badges: end -->
 
 The `mvreg` package provides tools for estimating linear regression
