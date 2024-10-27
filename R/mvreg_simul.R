@@ -74,8 +74,10 @@ mvreg_simul <- function(x, z, b, t, nsim = 100, sig.level = 0.05,
   method <- match.arg(method)
   vcov.type <- match.arg(vcov.type)
   start.s2 <- match.arg(start.s2)
-  k <- ncol(as.matrix(x))
-  p <- ncol(as.matrix(z))
+  x <- as.matrix(x)
+  z <- as.matrix(z)
+  k <- ncol(x)
+  p <- ncol(z)
   n <- nrow(x)
 
   if(nsim < 0 | nsim%%1 != 0) {

@@ -1,3 +1,48 @@
+#### print.mvreg() ####
+test_that("print.mvreg prints the model call and coefficients", {
+
+  mock_mvreg <- mvreg(Sepal.Length ~ Species, data = iris)
+
+  # Capture the output of the print function
+  output <- capture.output(print(mock_mvreg))
+
+  # Check if the output contains the expected call
+  expect_true(any(grepl("Call:", output)))
+
+  # Check if the output contains the coefficients
+  expect_true(any(grepl("Coefficients:", output)))
+  expect_true(any(grepl("const", output)))
+  expect_true(any(grepl("Speciesversicolor", output)))
+  expect_true(any(grepl("Speciesvirginica", output)))
+})
+
+
+test_that("print.mvreg handles no coefficients correctly", {
+  # Create a mock mvreg object with no coefficients
+  mock_mvreg_no_coef <- list(call = quote(mvreg(Sepal.Length ~ Species, data = iris)), coefficients = numeric(0))
+  class(mock_mvreg_no_coef) <- "mvreg"
+
+  # Capture the output of the print function
+  output <- capture.output(print(mock_mvreg_no_coef))
+
+  # Check if the output indicates no coefficients
+  expect_true(any(grepl("No coefficients", output)))
+})
+
+test_that("print.mvreg respects the digits argument", {
+  mock_mvreg <- mvreg(Sepal.Length ~ Species, data = iris)
+
+  # Capture the output of the print function with specific digits
+  output <- capture.output(print(mock_mvreg, digits = 1))
+
+  # Check if coefficients are printed with the specified number of significant digits
+  expect_true(any(grepl("5.0", output)))
+  expect_false(any(grepl("5.00", output)))  # Ensure not more than 1 digit after decimal
+})
+
+
+
+
 #### vcov() ####
 test_that("vcov matrix is correctly computed", {
 
@@ -55,6 +100,84 @@ test_that("summary.mvreg returns correct summary object",{
   expect_type(s$BIC, "double")
   })
 
+
+#### print.summary.mvreg() ####
+test_that("print.summary.mvreg prints the model call and residuals summary", {
+  mod <- mvreg(Sepal.Length ~ Species, data = iris)
+  mock_summary_mvreg <- summary(mod)
+
+  # Capture the output of the print function
+  output <- capture.output(print(mock_summary_mvreg))
+
+  # Check if the output contains the expected call
+  expect_true(any(grepl("Call:", output)))
+
+  # Check if the output contains the residuals summary
+  expect_true(any(grepl("Residuals:", output)))
+})
+
+test_that("print.summary.mvreg prints coefficients for mean component", {
+  mod <- mvreg(Sepal.Length ~ Species, data = iris)
+  mock_summary_mvreg <- summary(mod)
+
+  # Capture the output of the print function
+  output <- capture.output(print(mock_summary_mvreg))
+
+  # Check for coefficients of the mean component
+  expect_true(any(grepl("Coefficients for mean component:", output)))
+  expect_true(any(grepl("mu.const", output)))
+  expect_true(any(grepl("5.0", output)))  # Check the intercept value
+  expect_true(any(grepl("Speciesversicolor", output)))
+  expect_true(any(grepl("Speciesvirginica", output)))
+})
+
+test_that("print.summary.mvreg prints coefficients for log(variance) component", {
+  mod <- mvreg(Sepal.Length ~ Species, data = iris)
+  mock_summary_mvreg <- summary(mod)
+
+  # Capture the output of the print function
+  output <- capture.output(print(mock_summary_mvreg))
+
+  # Check for coefficients of log(variance) component
+  expect_true(any(grepl("s2.const", output)))
+  expect_true(any(grepl("s2.Speciesversicolor", output)))
+  expect_true(any(grepl("s2.Speciesvirginica", output)))
+})
+
+test_that("print.summary.mvreg prints model fit statistics", {
+  mod <- mvreg(Sepal.Length ~ Species, data = iris)
+  mock_summary_mvreg <- summary(mod)
+
+  # Capture the output of the print function
+  output <- capture.output(print(mock_summary_mvreg))
+
+  # Check for model fit statistics
+  expect_true(any(grepl("logLik", output)))
+  expect_true(any(grepl("AIC", output)))
+  expect_true(any(grepl("BIC", output)))})
+
+test_that("print.summary.mvreg prints likelihood ratio test results", {
+  mod <- mvreg(Sepal.Length ~ Species, data = iris)
+  mock_summary_mvreg <- summary(mod)
+
+  # Capture the output of the print function
+  output <- capture.output(print(mock_summary_mvreg))
+
+  # Check for likelihood ratio test results
+  expect_true(any(grepl("LRT for comparison with a lm model", output)))
+})
+
+test_that("print.summary.mvreg respects the signif.stars argument", {
+  mod <- mvreg(Sepal.Length ~ Species, data = iris)
+  mock_summary_mvreg <- summary(mod)
+
+  # Capture the output of the print function with signif.stars = TRUE
+  output <- capture.output(print(mock_summary_mvreg, signif.stars = TRUE))
+
+  # Check if significance stars are printed (depends on coefficients being statistically significant)
+  # For mock purposes, let's assume they are significant and we expect to see stars next to coefficients
+  expect_true(any(grepl("\\*", output)))  # This assumes that some coefficients are significant
+})
 
 
 
@@ -314,6 +437,12 @@ test_that("update.mvreg maintains consistency of object structure after update",
   # Check that the updated model is a mvreg object with all required components
   expect_s3_class(updated_mod, "mvreg")
   expect_true(all(names(mod) == names(updated_mod)))
+})
+
+test_that("update.mvreg raise an error if the object doesn't have a call component", {
+  mod <- mvreg(Sepal.Length ~ Species, data = iris)
+  mod$call <- NULL
+  expect_error(update(mod, new.formula.mu = . ~ . + Sepal.Width), "need an object with call component")
 })
 
 
