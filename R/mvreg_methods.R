@@ -275,7 +275,7 @@ print.summary.mvreg <- function(x, digits = max(3L, getOption("digits") - 3L),
 
 
   colnames(dd) <- c("-2logLik", "df", "LRT", "Pr(>Chi)")
-  rownames(dd) <- c("mvreg", "lm")
+  rownames(dd) <- c("lm", "mvreg")
 
   printCoefmat(dd,
     digits = digits, cs.ind = 1, tst.ind = 3,

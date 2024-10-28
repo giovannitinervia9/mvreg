@@ -86,6 +86,6 @@ summary(mod)
 #> 
 #> LRT for comparison with a lm model
 #>       -2logLik df   LRT Pr(>Chi)    
-#> mvreg    223.5                      
-#> lm       207.0  2 16.48 0.000264 ***
+#> lm       223.5                      
+#> mvreg    207.0  2 16.48 0.000264 ***
 ```
