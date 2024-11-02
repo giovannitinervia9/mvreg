@@ -8,7 +8,7 @@ mvreg(
   formula.mu,
   formula.s2 = NULL,
   data = NULL,
-  tol = 1e-10,
+  tol = 0.0000000001,
   maxit = 100L,
   start.s2 = c("residuals", "gamma", "zero"),
   method = c("wls", "full_nr"),

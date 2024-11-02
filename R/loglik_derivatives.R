@@ -128,13 +128,14 @@ mvreg_gradient_mu <- function(y, x, z, b, t) {
 #' mvreg_hessian_mu(y, x, z, b, t, type = "expected")
 mvreg_hessian_mu <- function(y, x, z, b, t, type = c("observed", "expected")) {
   type <- match.arg(type)
-  h <- matrix(NA, ncol(x), ncol(x))
+  k <- ncol(x)
+  h <- matrix(NA, k, k)
   eta.s2 <- as.vector(z %*% t)
   const <- exp(eta.s2)
 
-  for (j in seq_len(ncol(x))) {
-    for (l in seq_len(ncol(x))) {
-      h[j, l] <- -sum(x[, j] * x[, l] / const)
+  for (j in seq_len(k)) {
+    for (l in j:k) {
+      h[j, l] <- h[l, j] <- -sum(x[, j] * x[, l] / const)
     }
   }
 
@@ -236,7 +237,8 @@ mvreg_gradient_s2 <- function(y, x, z, b, t) {
 #' mvreg_hessian_s2(y, x, z, b, t, type = "expected")
 mvreg_hessian_s2 <- function(y, x, z, b, t, type = c("observed", "expected")) {
   type <- match.arg(type)
-  h <- matrix(NA, ncol(z), ncol(z))
+  p <- ncol(z)
+  h <- matrix(NA, p, p)
 
   if (type == "observed") {
     eta.mu <- as.vector(x %*% b)
@@ -247,9 +249,9 @@ mvreg_hessian_s2 <- function(y, x, z, b, t, type = c("observed", "expected")) {
   }
 
 
-  for (j in seq_len(ncol(z))) {
-    for (l in seq_len(ncol(z))) {
-      h[j, l] <- -0.5 * sum(const * z[, j] * z[, l])
+  for (j in seq_len(p)) {
+    for (l in j:p) {
+      h[j, l] <- h[l, j] <- -0.5 * sum(const * z[, j] * z[, l])
     }
   }
 
