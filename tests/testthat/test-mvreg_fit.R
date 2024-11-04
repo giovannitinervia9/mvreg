@@ -136,3 +136,6 @@ test_that("mvreg_fit() correctly corrects misspecified maxit and tol", {
   fit4 <- suppressWarnings(mvreg_fit(y, x, z, b0, t0, maxit = 0))
   expect_equal(fit4$maxit, 100)
 })
+
+rm(list = c("b", "b0", "n", "start.list", "t", "t0",
+            "x", "x1", "x2", "y", "z", "z1"))

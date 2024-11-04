@@ -9,6 +9,8 @@ b <- rnorm(ncol(x))
 t <- rnorm(ncol(z))
 y <- rnorm(n, mean = x %*% b, sd = sqrt(exp(z %*% t)))
 
+
+
 test_that("mvreg_start returns a list with correct structure", {
   result <- mvreg_start(y, x, z, start.s2 = "residuals")
   expect_type(result, "list")
@@ -64,3 +66,6 @@ test_that("mvreg_start() warns with invalid start.s2", {
     "should be one of"
   )
 })
+
+
+rm(list = c("n", "x1", "x2", "x", "z1", "z", "b", "t", "y"))

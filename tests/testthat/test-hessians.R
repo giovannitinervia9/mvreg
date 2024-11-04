@@ -98,3 +98,6 @@ test_that("mvreg_hessian computes full expected Hessian correctly", {
   hessian_result <- mvreg_hessian(y, x, z, b, t, type = "expected")
   expect_equal(hessian_result, expected_hessian, tolerance = 1e-6)
 })
+
+
+rm(list = c("b", "n", "t", "x", "y", "z"))

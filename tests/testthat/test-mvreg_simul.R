@@ -108,7 +108,7 @@ test_that("mvreg_simul gives error if no simulation converges", {
 #### print() ####
 
 mock_simul_mvreg <- mvreg_simul(x, z, b, t, nsim = 100)
-mock_simul_mvreg
+
 # Test printing functionality
 test_that("print.simul_mvreg prints expected output", {
   # Capture the output of the print function
@@ -136,3 +136,6 @@ test_that("print.simul_mvreg respects digits argument", {
   # Check if the estimates are printed with the expected number of significant digits
   expect_true(any(grepl("1.20097", output)))
 })
+
+
+rm(list = c("n", "x", "z", "b", "t", "mock_simul_mvreg"))
