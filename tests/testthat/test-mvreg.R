@@ -98,7 +98,6 @@ test_that("mvreg() gives errors when NAs are present in response variable", {
 })
 
 test_that("mvreg() gives errors when NAs are present in mean component", {
-  data(iris)
   iris_with_na <- iris
   iris_with_na$Sepal.Width[1] <- NA
 
@@ -107,7 +106,6 @@ test_that("mvreg() gives errors when NAs are present in mean component", {
 })
 
 test_that("mvreg() gives errors when NAs are present in variance component", {
-  data(iris)
   iris_with_na <- iris
   iris_with_na$Species[1] <- NA
 
@@ -140,7 +138,7 @@ test_that("mvreg() stops if response variable appears in the left-hand-side of f
 
 
 test_that("mvreg() convergence criteria and iteration count", {
-  data(iris)
+
   result <- mvreg(Sepal.Length ~ Species, data = iris, tol = 1e-8, maxit = 5)
 
   # Check if the iteration count is returned correctly
@@ -218,3 +216,5 @@ test_that("If data is passed, then call contains data specification", {
   expect_true(("data" %in% names(result$call)))
   expect_equal(as.character(result$call$data), "iris")
 })
+
+

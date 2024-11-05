@@ -89,10 +89,6 @@ test_that("anova raises a warning when non nested models are passed", {
 
 
 #### print.anova() ####
-# Set up testing data
-data("iris") # Use iris dataset for test models
-
-# Fit example models
 mod1 <- mvreg(Sepal.Length ~ Species + Sepal.Width, data = iris)
 mod2 <- mvreg(Sepal.Length ~ Species, ~1, data = iris)
 mod3 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris)
@@ -147,4 +143,4 @@ test_that("print.anova accepts additional arguments", {
   expect_no_warning(print(anova_result, digits = 3, another_unused_arg = "test"))
 })
 
-rm(list = c("iris", "mod1", "mod2", "mod3", "non_mvreg", "x", "y"))
+rm(list = c("mod1", "mod2", "mod3"))

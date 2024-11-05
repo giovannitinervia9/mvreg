@@ -49,3 +49,5 @@ test_that("mvreg_to_lm works without data in mvreg object", {
   # Test that the coefficients of the lm model are equivalent to those of the mvreg model
   expect_equal(length(mod.lm$coefficients), length(mod.mvreg$coefficients.mu))
 })
+rm(list = ls())
+

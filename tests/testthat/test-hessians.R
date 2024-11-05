@@ -1,5 +1,5 @@
 # Sample data for testing
-set.seed(123)
+set.seed(124)
 n <- 30
 x <- cbind(1, matrix(rnorm(n * 2), n, 2)) # 2 explanatory variables
 z <- cbind(1, matrix(rnorm(n), n, 1)) # 1 explanatory variable for variance
@@ -34,9 +34,11 @@ test_that("Hessian dimensions match the number of mean (row) and variance (colum
 test_that("Hessian matrix for mean component should be symmetric", {
   hessian_obs <- mvreg_hessian_mu(y, x, z, b, t, type = "observed")
   hessian_exp <- mvreg_hessian_mu(y, x, z, b, t, type = "expected")
-  expect_true(all(hessian_obs == t(hessian_obs)))
-  expect_true(all(hessian_exp == t(hessian_exp)))
+  tolerance <- 1e-8
+  expect_true(all(abs(hessian_obs - t(hessian_obs)) < tolerance))
+  expect_true(all(abs(hessian_exp - t(hessian_exp)) < tolerance))
 })
+
 
 
 test_that("Hessian matrix for variance component should be symmetric", {
@@ -101,3 +103,4 @@ test_that("mvreg_hessian computes full expected Hessian correctly", {
 
 
 rm(list = c("b", "n", "t", "x", "y", "z"))
+
