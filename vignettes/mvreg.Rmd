@@ -151,16 +151,34 @@ and log-likelihood function
 
 $$ \ell(\boldsymbol{\beta},\boldsymbol{\tau}) = -\dfrac{1}{2}\sum_{i=1}^n \left\{\log(2\pi) + \mathbf{z}_i'\boldsymbol{\tau} + \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}} \right\} $$
 
-The expressions for the first and second derivatives of the log-likelihood are
+The expressions for the first and second derivatives of the log-likelihood with respect to the parameters of the mean component are
 
 $$\dfrac{\partial \ell}{\partial \beta_j} = \sum_{i=1}^n \dfrac{y_i - \mathbf{x}_i'\boldsymbol{\beta}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}x_{ij}$$
+
+
 $$\dfrac{\partial^2 \ell}{\partial \beta_j \partial \beta_l} = -\sum_{i=1}^n \dfrac{x_{ij}x_{il}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}$$
+
+$$\dfrac{\partial^2 \ell}{\partial \boldsymbol{\beta}  \partial \boldsymbol{\beta}'} = -\mathbf{X}' \mathbf{W}_{\boldsymbol{\beta}}\mathbf{X}$$
+
+
+with $\mathbf{W}_{\boldsymbol{\beta}} = \text{diag}\left( \dfrac{1}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}\right)$
+
+The expressions for the first and second derivatives of the log-likelihood with respect to the parameters of the variance component are
 
 $$\dfrac{\partial \ell}{\partial \tau_j} = -\dfrac{1}{2}\sum_{i=1}^n\left\{ 1 - \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}z_{ij}\right\} $$
 
-$$\dfrac{\partial^2 \ell}{\partial \tau_j \partial \tau_l} = -\dfrac{1}{2}\sum_{i=1}^n \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}z_{ij}z_{il} $$
+$$\dfrac{\partial^2 \ell}{\partial \tau_j \partial \tau_l} = -\dfrac{1}{2}\sum_{i=1}^n \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}z_{ij}z_{il}$$
+$$\dfrac{\partial^2 \ell}{\partial \boldsymbol{\tau} \partial \boldsymbol{\tau}'}  = -\dfrac{1}{2}\mathbf{Z}' \mathbf{W}_{\boldsymbol{\tau}} \mathbf{Z}$$
+
+
+with $\mathbf{W}_{\boldsymbol{\tau}} = \text{diag}\left( \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}\right)$
+
+The expression for the cross derivatives of the log-likelihood with respect to the parameters of the mean and variance component is
 
 $$\dfrac{\partial^2 \ell}{\partial \beta_j \partial \tau_j} = -\sum_{i=1}^n \dfrac{y_i - \mathbf{x}_i'\boldsymbol{\beta}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}x_{ij}z_{il}$$
+$$\dfrac{\partial^2 \ell}{\partial \boldsymbol{\beta} \partial \boldsymbol{\tau}'} = - \mathbf{X}'\mathbf{W}_{\boldsymbol{\beta \tau}}\mathbf{Z}$$
+
+with $\mathbf{W}_{\boldsymbol{\beta \tau}} = \text{diag}\left( \dfrac{y_i - \mathbf{x}_i'\boldsymbol{\beta}2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}\right)$
 
 With $\mathcal{U}_\boldsymbol{\beta}(\boldsymbol{\beta}, \boldsymbol{\tau})$ and $\mathcal{U}_\boldsymbol{\tau}(\boldsymbol{\beta}, \boldsymbol{\tau})$ we represent the gradient column vectors with respect to $\boldsymbol{\beta}$ and $\boldsymbol{\tau}$ respectively.
 
@@ -181,12 +199,12 @@ $\mathcal{J}(\boldsymbol{\beta}, \boldsymbol{\tau}) = -\mathcal{H}(\boldsymbol{\
 The expected Fisher information matrix is defined as $\mathcal{I}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \mathbb{E}(\mathcal{J}(\boldsymbol{\beta}, \boldsymbol{\tau}))$ and it is used in the computation of variance-covariance matrix of the estimates of parameters.
 
 We have
-$$\left\{\mathcal{I}_{\boldsymbol{\beta}}(\boldsymbol{\beta}, \boldsymbol{\tau})\right\}_{jl} = \sum_{i=1}^n \dfrac{x_{ij}x_{il}}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}$$
+$$\mathcal{I}_{\boldsymbol{\beta}}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \mathbf{X}' \mathbf{W}_{\boldsymbol{\beta}}\mathbf{X}$$
 
 
 
-$$\left\{\mathcal{I}_{\boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau})\right\}_{jl} = \dfrac{1}{2}\sum_{i=1}^n z_{ij}z_{il}$$
-$$\left\{\mathcal{I}_{\boldsymbol{\beta}\boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau})\right\}_{jl} = 0$$
+$$\mathcal{I}_{\boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \dfrac{1}{2}\mathbf{Z}'\mathbf{Z}$$
+$$\mathcal{I}_{\boldsymbol{\beta}\boldsymbol{\tau}}(\boldsymbol{\beta}, \boldsymbol{\tau}) = \mathbf{0}$$
 
 
 ## Parameters estimation
