@@ -37,6 +37,8 @@
 #' \item{colz}{The column names of the explanatory variables for the variance component.}
 #' \item{formula.mu}{The formula used for the mean component.}
 #' \item{formula.s2}{The formula used for the variance component.}
+#' \item{terms.mu}{Terms attribute of model.frame() of mean component}
+#' \item{terms.s2}{Terms attribute of model.frame() of variance component}
 #'
 #' @export
 #'

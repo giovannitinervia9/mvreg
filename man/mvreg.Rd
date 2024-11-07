@@ -58,6 +58,8 @@ An object of class mvreg containing:
 \item{colz}{The column names of the explanatory variables for the variance component.}
 \item{formula.mu}{The formula used for the mean component.}
 \item{formula.s2}{The formula used for the variance component.}
+\item{terms.mu}{Terms attribute of model.frame() of mean component}
+\item{terms.s2}{Terms attribute of model.frame() of variance component}
 }
 \description{
 Heteroscedastic linear model with variance as a function of linear predictor.
