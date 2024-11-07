@@ -4,33 +4,41 @@ test_that("mvreg() returns a mvreg class object", {
 
 
 test_that("mvreg() returns correct structure and elements", {
-  result <- mvreg(Sepal.Length ~ Species, data = iris)
+  result <- list(mvreg(Sepal.Length ~ Species, data = iris),
+   mvreg(Sepal.Length ~ Species, ~ Species, data = iris),
+   mvreg(Sepal.Length ~ Species, Sepal.Length ~ Species, data = iris))
 
   # Check that result contains all expected elements
-  expect_type(result$coefficients, "double")
-  expect_type(result$coefficients.mu, "double")
-  expect_type(result$coefficients.s2, "double")
-  expect_type(result$vcov, "double")
-  expect_type(result$vcov.mu, "double")
-  expect_type(result$vcov.s2, "double")
-  expect_type(result$logLik, "double")
-  expect_type(result$fit.mu, "double")
-  expect_type(result$fit.log.s2, "double")
-  expect_type(result$fit.s2, "double")
-  expect_type(result$residuals, "double")
-  expect_type(result$it, "integer")
-  expect_type(result$start, "double")
-  expect_type(result$y, "double")
-  expect_type(result$xd, "double")
-  expect_type(result$zd, "double")
-  expect_type(result$nobs, "integer")
-  expect_type(result$df.residual, "integer")
-  expect_type(result$call, "language")
-  expect_type(result$response, "character")
-  expect_type(result$colx, "character")
-  expect_type(result$colz, "character")
-  expect_type(result$formula.mu, "language")
-  expect_type(result$formula.s2, "language")
+  lapply(result, function(result){
+    expect_type(result$coefficients, "double")
+    expect_type(result$coefficients.mu, "double")
+    expect_type(result$coefficients.s2, "double")
+    expect_type(result$vcov, "double")
+    expect_type(result$vcov.mu, "double")
+    expect_type(result$vcov.s2, "double")
+    expect_type(result$logLik, "double")
+    expect_type(result$fit.mu, "double")
+    expect_type(result$fit.log.s2, "double")
+    expect_type(result$fit.s2, "double")
+    expect_type(result$residuals, "double")
+    expect_type(result$it, "integer")
+    expect_type(result$start, "double")
+    expect_type(result$y, "double")
+    expect_type(result$xd, "double")
+    expect_type(result$zd, "double")
+    expect_type(result$nobs, "integer")
+    expect_type(result$df.residual, "integer")
+    expect_type(result$call, "language")
+    expect_type(result$response, "character")
+    expect_type(result$colx, "character")
+    expect_type(result$colz, "character")
+    expect_type(result$formula.mu, "language")
+    expect_type(result$formula.s2, "language")
+    expect_type(result$terms.mu, "language")
+    expect_type(result$terms.s2, "language")
+
+  })
+
 })
 
 

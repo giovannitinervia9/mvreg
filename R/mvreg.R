@@ -101,6 +101,7 @@ mvreg <- function(formula.mu,
   }
 
   mf.mu <- model.frame(formula.mu, data)
+  terms.mu <- attr(mf.mu, "terms")
   removed.formula.mu <- as.vector(attr(mf.mu, "na.action"))
   if (!is.null(removed.formula.mu)) {
     stop("mvreg() can't handle NAs")
@@ -112,8 +113,6 @@ mvreg <- function(formula.mu,
 
   if (is.null(formula.s2)) {
     formula.s2 <- formula.mu
-    zd <- xd
-    colz <- colx
   } else {
     if (length(formula.s2) == 2) {
       if (sum(grepl(response, formula.s2)) == 1) {
@@ -124,14 +123,18 @@ mvreg <- function(formula.mu,
     } else {
       formula.s2 <- formula.s2
     }
-    mf.s2 <- model.frame(formula.s2, data)
-    removed.formula.s2 <- as.vector(attr(mf.s2, "na.action"))
-    if (!is.null(removed.formula.s2)) {
-      stop("mvreg() can't handle NAs")
-    }
-    colz <- colnames(mf.s2)[-1]
-    zd <- model.matrix(attr(mf.s2, "terms"), mf.s2)
+
   }
+
+  mf.s2 <- model.frame(formula.s2, data)
+  terms.s2 <- attr(mf.s2, "terms")
+  removed.formula.s2 <- as.vector(attr(mf.s2, "na.action"))
+  if (!is.null(removed.formula.s2)) {
+    stop("mvreg() can't handle NAs")
+  }
+  colz <- colnames(mf.s2)[-1]
+  zd <- model.matrix(attr(mf.s2, "terms"), mf.s2)
+
 
   cl$formula.s2 <- formula.s2
 
@@ -198,7 +201,9 @@ mvreg <- function(formula.mu,
     colx = colx,
     colz = colz,
     formula.mu = formula.mu,
-    formula.s2 = formula.s2
+    formula.s2 = formula.s2,
+    terms.mu = terms.mu,
+    terms.s2 = terms.s2
   )
 
   class(results) <- "mvreg"
