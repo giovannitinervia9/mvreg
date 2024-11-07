@@ -371,7 +371,7 @@ logLik.mvreg <- function(object, ...) {
 #' @return A list containing predicted values for the different components of the `mvreg` model. If specified, standard error estimates and confidence intervals are also returned.
 #' @export
 #'
-#' @importFrom stats model.matrix update qnorm formula
+#' @importFrom stats model.matrix update qnorm formula delete.response
 #'
 #' @examples
 #' mvreg_mod1 <- mvreg(Sepal.Length ~ Species, ~Sepal.Width, data = iris) # different formulas
@@ -392,7 +392,6 @@ logLik.mvreg <- function(object, ...) {
 #' predict(mvreg_mod1, newdata = newdata, se.fit = TRUE, interval = TRUE)
 predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata, se.fit = F, interval = F, level = 0.95) {
   type <- match.arg(type)
-  coln <- unique(c(object$colx, object$colz))
 
   if (type == "all") {
     select <- c("mu", "log.s2", "s2")
@@ -402,17 +401,21 @@ predict.mvreg <- function(object, type = c("all", "mu", "log.s2", "s2"), newdata
 
   noData <- (missing(newdata) || is.null(newdata))
 
+
   if (noData) {
     x <- object$xd
     z <- object$zd
-  } else if (setequal(coln, colnames(newdata))) {
-    formula.mu <- formula(paste("~ ", deparse(object$formula.mu[[3]])))
-    formula.s2 <- formula(paste("~ ", deparse(object$formula.s2[[3]])))
-    x <- model.matrix(formula.mu, newdata)
-    z <- model.matrix(formula.s2, newdata)
   } else {
-    stop("newdata must be a data.frame whose column names must be the
-         same as the names of the variables in the model")
+    tt.mu <- object$terms.mu
+    tt.s2 <- object$terms.s2
+    terms.mu <- delete.response(tt.mu)
+    terms.s2 <- delete.response(tt.s2)
+
+    mx <- model.frame(terms.mu, newdata)
+    x <- model.matrix(terms.mu, mx)
+
+    mz <- model.frame(terms.s2, newdata)
+    z <- model.matrix(terms.s2, mz)
   }
 
   b <- object$coefficients.mu

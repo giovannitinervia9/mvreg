@@ -309,8 +309,7 @@ test_that("predict.mvreg returns correct predictions for different components an
   incorrect_data <- data.frame(OtherColumn = 1:3)
   expect_error(
     suppressMessages(predict(mvreg_mod, newdata = incorrect_data)),
-    "newdata must be a data.frame whose column names must be the
-         same as the names of the variables in the model"
+    "object 'Species' not found"
   )
 })
 
