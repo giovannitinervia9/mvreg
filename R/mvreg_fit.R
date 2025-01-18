@@ -22,7 +22,8 @@
 #'                  to compute the variance-covariance matrix of the estimates. Options include:
 #' - `"expected"`: uses the expected Fisher information.
 #' - `"observed"`: uses the observed Fisher information.
-#' #' @param vcov.fit A character string specifying whether to use the observed or expected Fisher information matrix
+#'
+#' @param vcov.fit A character string specifying whether to use the observed or expected Fisher information matrix
 #'                  in the fitting process. Options include:
 #' - `"expected"`: uses the expected Fisher information.
 #' - `"observed"`: uses the observed Fisher information.

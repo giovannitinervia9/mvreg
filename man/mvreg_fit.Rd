@@ -44,8 +44,11 @@ to compute the variance-covariance matrix of the estimates. Options include:
 \itemize{
 \item \code{"expected"}: uses the expected Fisher information.
 \item \code{"observed"}: uses the observed Fisher information.
-#' @param vcov.fit A character string specifying whether to use the observed or expected Fisher information matrix
+}}
+
+\item{vcov.fit}{A character string specifying whether to use the observed or expected Fisher information matrix
 in the fitting process. Options include:
+\itemize{
 \item \code{"expected"}: uses the expected Fisher information.
 \item \code{"observed"}: uses the observed Fisher information.
 }}
