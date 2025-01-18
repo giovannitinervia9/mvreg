@@ -22,6 +22,10 @@
 #'                  to compute the variance-covariance matrix of the estimates. Options include:
 #' - `"expected"`: uses the expected Fisher information.
 #' - `"observed"`: uses the observed Fisher information.
+#' #' @param vcov.fit A character string specifying whether to use the observed or expected Fisher information matrix
+#'                  in the fitting process. Options include:
+#' - `"expected"`: uses the expected Fisher information.
+#' - `"observed"`: uses the observed Fisher information.
 
 #'
 #' @return A list containing:
@@ -67,7 +71,8 @@
 #' t0 <- start.list$t0
 #'
 #' mvreg_fit(y, x, z, b0, t0)
-mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls", "full_nr"), vcov.type = c("expected", "observed")) {
+mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls", "full_nr"), vcov.type = c("expected", "observed"),
+                      vcov.fit = c("expected", "observed")) {
   if (!(maxit %% 1 == 0) | maxit < 0) {
     new.maxit <- round(abs(maxit))
     warning(paste0("maxit must be a positive integer, ", maxit, " taken as ", new.maxit))
@@ -95,13 +100,14 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
 
   method <- match.arg(method)
   vcov.type <- match.arg(vcov.type)
+  vcov.fit <- match.arg(vcov.fit)
 
   dev <- 2
   it <- 0L
 
   if (method == "wls") {
     while (any(abs(dev) > tol) && it < maxit) {
-      t1 <- as.vector(t0 - solve(mvreg_hessian_s2(y, x, z, b0, t0, type = "observed")) %*% mvreg_gradient_s2(y, x, z, b0, t0))
+      t1 <- as.vector(t0 - solve(mvreg_hessian_s2(y, x, z, b0, t0, type = vcov.fit)) %*% mvreg_gradient_s2(y, x, z, b0, t0))
       w <- as.vector(1 / exp(z %*% t1))
       b1 <- as.vector(solve(crossprod(x * w, x), crossprod(x * w, y)))
       dev <- c(b1, t1) - c(b0, t0)
@@ -111,8 +117,8 @@ mvreg_fit <- function(y, x, z, b0, t0, tol = 1e-10, maxit = 100, method = c("wls
     }
   } else {
     while (any(abs(dev) > tol) && it < maxit) {
-      t1 <- as.vector(t0 - solve(mvreg_hessian_s2(y, x, z, b0, t0, type = "observed")) %*% mvreg_gradient_s2(y, x, z, b0, t0))
-      b1 <- as.vector(b0 - solve(mvreg_hessian_mu(y, x, z, b0, t1, type = "observed")) %*% mvreg_gradient_mu(y, x, z, b0, t1))
+      t1 <- as.vector(t0 - solve(mvreg_hessian_s2(y, x, z, b0, t0, type = vcov.fit)) %*% mvreg_gradient_s2(y, x, z, b0, t0))
+      b1 <- as.vector(b0 - solve(mvreg_hessian_mu(y, x, z, b0, t1, type = vcov.fit)) %*% mvreg_gradient_mu(y, x, z, b0, t1))
       dev <- c(b1, t1) - c(b0, t0)
       it <- it + 1L
       t0 <- t1

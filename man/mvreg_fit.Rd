@@ -13,7 +13,8 @@ mvreg_fit(
   tol = 1e-10,
   maxit = 100,
   method = c("wls", "full_nr"),
-  vcov.type = c("expected", "observed")
+  vcov.type = c("expected", "observed"),
+  vcov.fit = c("expected", "observed")
 )
 }
 \arguments{
@@ -41,6 +42,10 @@ between two iterations required to stop the algorithm. Default is \code{1e-10}.}
 \item{vcov.type}{A character string specifying whether to use the observed or expected Fisher information matrix
 to compute the variance-covariance matrix of the estimates. Options include:
 \itemize{
+\item \code{"expected"}: uses the expected Fisher information.
+\item \code{"observed"}: uses the observed Fisher information.
+#' @param vcov.fit A character string specifying whether to use the observed or expected Fisher information matrix
+in the fitting process. Options include:
 \item \code{"expected"}: uses the expected Fisher information.
 \item \code{"observed"}: uses the observed Fisher information.
 }}

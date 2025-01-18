@@ -11,7 +11,8 @@
 #' @param start.s2 A character vector indicating how to select initial values for variance component parameters. See the documentation of \code{\link{mvreg_start}} for details.
 #' @param method A character vector indicating the method chosen for estimation of parameters of mean component. See the documentation of \code{\link{mvreg_fit}} for details.
 #' @param vcov.type A character vector to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates. See the documentation of \code{\link{mvreg_fit}}, \code{\link{mvreg_hessian_mu}}, \code{\link{mvreg_hessian_s2}}, \code{\link{mvreg_hessian_mus2}} and \code{\link{mvreg_hessian}} for details.
-#'
+#' @param vcov.fit A character vector to specify whether to use observed or expected Fisher information matrix in the fitting proces. See the documentation of \code{\link{mvreg_fit}}, \code{\link{mvreg_hessian_mu}}, \code{\link{mvreg_hessian_s2}}, \code{\link{mvreg_hessian_mus2}} and \code{\link{mvreg_hessian}} for details.
+
 #' @return An object of class mvreg containing:
 #' \item{coefficients}{The estimated coefficients for both the mean and variance components.}
 #' \item{coefficients.mu}{The estimated coefficients for the mean component.}
@@ -92,10 +93,12 @@ mvreg <- function(formula.mu,
                   maxit = 100L,
                   start.s2 = c("residuals", "gamma", "zero"),
                   method = c("wls", "full_nr"),
-                  vcov.type = c("expected", "observed")) {
+                  vcov.type = c("expected", "observed"),
+                  vcov.fit = c("expected", "observed")) {
   cl <- match.call()
   method <- match.arg(method)
   vcov.type <- match.arg(vcov.type)
+  vcov.fit <- match.arg(vcov.fit)
   start.s2 <- match.arg(start.s2)
 
   if (is.null(data)) {
@@ -161,7 +164,10 @@ mvreg <- function(formula.mu,
   b0 <- start[1:k]
   t0 <- start[(k + 1):length(start)]
 
-  fit.list <- mvreg_fit(y, xd, zd, b0, t0, tol = tol, maxit = maxit, method = method, vcov.type = vcov.type)
+  fit.list <- mvreg_fit(y, xd, zd, b0, t0,
+                        tol = tol, maxit = maxit,
+                        method = method, vcov.type = vcov.type,
+                        vcov.fit = vcov.fit)
 
   it <- fit.list$it
 

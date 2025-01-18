@@ -12,7 +12,8 @@ mvreg(
   maxit = 100L,
   start.s2 = c("residuals", "gamma", "zero"),
   method = c("wls", "full_nr"),
-  vcov.type = c("expected", "observed")
+  vcov.type = c("expected", "observed"),
+  vcov.fit = c("expected", "observed")
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ mvreg(
 \item{method}{A character vector indicating the method chosen for estimation of parameters of mean component. See the documentation of \code{\link{mvreg_fit}} for details.}
 
 \item{vcov.type}{A character vector to specify whether to use observed or expected Fisher information matrix in order to compute variance-covariance matrix of estimates. See the documentation of \code{\link{mvreg_fit}}, \code{\link{mvreg_hessian_mu}}, \code{\link{mvreg_hessian_s2}}, \code{\link{mvreg_hessian_mus2}} and \code{\link{mvreg_hessian}} for details.}
+
+\item{vcov.fit}{A character vector to specify whether to use observed or expected Fisher information matrix in the fitting proces. See the documentation of \code{\link{mvreg_fit}}, \code{\link{mvreg_hessian_mu}}, \code{\link{mvreg_hessian_s2}}, \code{\link{mvreg_hessian_mus2}} and \code{\link{mvreg_hessian}} for details.}
 }
 \value{
 An object of class mvreg containing:
