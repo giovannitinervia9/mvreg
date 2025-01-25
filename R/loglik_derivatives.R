@@ -154,7 +154,7 @@ mvreg_hessian_mu <- function(y, x, z, b, t, type = c("observed", "expected")) {
 #' @details
 #' The gradient is calculated based on the partial derivatives of the log-likelihood function with respect to the variance coefficients \eqn{\boldsymbol{\tau}}.
 #' The \eqn{j}-th element of the gradient is computed as:
-#' \deqn{\dfrac{\partial \ell}{\partial \tau_j} = -\dfrac{1}{2}\sum_{i=1}^n\left\{ 1 - \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}z_{ij}\right\}}
+#' \deqn{\dfrac{\partial \ell}{\partial \tau_j} = -\dfrac{1}{2}\sum_{i=1}^n\left\{ 1 - \dfrac{\left(y_i - \mathbf{x}_i'\boldsymbol{\beta}\right)^2}{\exp\left\{\mathbf{z}_i'\boldsymbol{\tau}\right\}}\right\}z_{ij}}
 #'
 #' @export
 #'
