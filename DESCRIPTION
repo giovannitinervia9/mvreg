@@ -2,7 +2,7 @@ Package: mvreg
 Title: Heteroskedastic linear regression
 Version: 0.1.0
 Authors@R: 
-    person("Giovanni", "Tinervia", "giovannitinervia9@gmail.com", role = c("aut", "cre"))
+    person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre"))
 Description: Heteroskedastic linear regression model with variance component estimated via logarithmic link.
 License: GPL (>= 3)
 Encoding: UTF-8
